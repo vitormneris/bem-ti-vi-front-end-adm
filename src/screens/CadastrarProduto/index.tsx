@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 import styles from './style';
 
 type CategoriaType = {
@@ -12,9 +13,11 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
   const [categoria, setCategoria] = useState<string>('');
   const [nomeProduto, setNomeProduto] = useState<string>('');
   const [valorProduto, setValorProduto] = useState<string>('');
+  const [descricao, setDescricao] = useState<string>('');
+  const [imagem, setImagem] = useState<string | null>(null);
 
   const categorias: CategoriaType[] = [
-    { label: 'Selecione uma categoria', value: '' },
+    { label: '', value: '' },
     { label: 'Alimentos', value: 'Alimentos' },
     { label: 'Beleza', value: 'Beleza' },
     { label: 'Limpeza', value: 'Limpeza' },
@@ -22,8 +25,32 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
     { label: 'Brinquedos', value: 'Brinquedos' },
   ];
 
+  const selecionarImagem = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (status !== 'granted') {
+      Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setImagem(result.assets[0].uri);
+    }
+  };
+
   return (
-    <View style={styles.containerPrincipal}>
+    <ScrollView 
+      style={styles.containerPrincipal}
+      contentContainerStyle={styles.scrollContainer}
+      keyboardShouldPersistTaps="handled"
+    >
       {/* Header com seta e título */}
       <View style={styles.container}>
         <TouchableOpacity style={styles.botaoEsquerda}>
@@ -48,51 +75,87 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
         <View style={styles.linhaDivisoria} />
       </View>
 
-      {/* Campo Nome do Produto */}
+      {/* Campos do formulário */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Nome do Produto</Text>
         <TextInput
           style={styles.input}
-          placeholder="Insira o nome do produto"
+          placeholder="Digite o nome do produto"
           placeholderTextColor="#999"
           value={nomeProduto}
-          onChangeText={(text: string) => setNomeProduto(text)}
+          onChangeText={setNomeProduto}
         />
       </View>
 
-      {/* Campo Valor do Produto */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Valor do Produto</Text>
         <TextInput
           style={styles.input}
-          placeholder="Insira o valor do produto"
+          placeholder="Digite o valor do produto"
           placeholderTextColor="#999"
           keyboardType="numeric"
           value={valorProduto}
-          onChangeText={(text: string) => setValorProduto(text)}
+          onChangeText={setValorProduto}
         />
       </View>
 
-      {/* Campo Categoria do Produto */}
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Categoria</Text>
+        <Text style={styles.label}>Categoria do Produto</Text>
         <View style={styles.pickerContainer}>
+          {/* Placeholder overlay */}
+          {!categoria && (
+            <Text style={[styles.pickerPlaceholder, { position: 'absolute', left: 12, zIndex: 1 }]}>
+              Selecione uma categoria
+            </Text>
+          )}
           <Picker
             selectedValue={categoria}
-            onValueChange={(itemValue: string) => setCategoria(itemValue)}
+            onValueChange={setCategoria}
             style={styles.picker}
           >
             {categorias.map((item) => (
-              <Picker.Item 
-                key={item.value} 
-                label={item.label} 
-                value={item.value} 
-              />
+              <Picker.Item key={item.value} label={item.label} value={item.value} />
             ))}
           </Picker>
         </View>
       </View>
-    </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Imagem do Produto</Text>
+        <TouchableOpacity 
+          style={[
+            styles.fileInput, 
+            imagem ? styles.fileInputWithImage : null
+          ]} 
+          onPress={selecionarImagem}
+        >
+          <Text style={[
+            styles.fileInputText,
+            imagem ? styles.fileInputTextWithImage : null
+          ]}>
+            {imagem ? 'Imagem selecionada (clique para alterar)' : 'Selecione uma imagem'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Descrição do Produto</Text>
+        <TextInput
+          style={styles.descricaoInput}
+          placeholder="Digite a descrição do produto"
+          placeholderTextColor="#999"
+          multiline
+          value={descricao}
+          onChangeText={setDescricao}
+        />
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.cadastrarButton}>
+          <Text style={styles.cadastrarButtonText}>CADASTRAR</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
