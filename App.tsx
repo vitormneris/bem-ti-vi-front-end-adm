@@ -10,7 +10,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import GerenciarProduto from './src/screens/GerenciarProduto';
+import GerenciarProduto from './src/screens/ListarProduto';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
