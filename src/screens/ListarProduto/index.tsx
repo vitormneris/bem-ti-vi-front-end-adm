@@ -2,20 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
 import styles from './style';
 
-type ProdutoType = {
+type CategoriaType = {
   id: number;
   nome: string;
-  categoria: string;
-  valor: string;
+  imagem: any;
 };
 
-const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
+const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
-  const [produtos, setProdutos] = useState<ProdutoType[]>([
-    { id: 1, nome: 'Ração Golden', categoria: 'Alimentos', valor: 'R$148,90' },
-    { id: 2, nome: 'Petisco Whiskas', categoria: 'Alimentos', valor: 'R$59,90' },
-    { id: 3, nome: 'Roupinha de Cachorro Colorida', categoria: 'Beleza', valor: 'R$48,90' },
-    { id: 4, nome: 'Kit de Brinquedos para Gatos', categoria: 'Diversão', valor: 'R$99,90' },
+  const [categorias, setCategorias] = useState<CategoriaType[]>([
+    { id: 1, nome: 'Alimentos', imagem: require('../../assets/images/racao.jpg') },
+    { id: 2, nome: 'Beleza', imagem: require('../../assets/images/roupinha.jpg') },
+    { id: 3, nome: 'Diversão', imagem: require('../../assets/images/brinquedos.jpg') },
   ]);
 
   return (
@@ -36,7 +34,7 @@ const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{titulo}</Text>
             <Image 
-              source={require('../../assets/images/icone-menu.png')} 
+              source={require('../../assets/images/categorias.png')} 
               style={styles.menuIcon} 
             />
           </View>
@@ -50,22 +48,22 @@ const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Lista de Produtos */}
-        <View style={styles.produtosContainer}>
-          {produtos.map((produto) => (
-            <View key={produto.id} style={styles.produtoCard}>
-              <View style={styles.produtoInfo}>
-                <Text style={styles.produtoLabel}>Nome</Text>
-                <Text style={styles.produtoValue}>{produto.nome}</Text>
+        {/* Lista de Categorias */}
+        <View style={styles.categoriasContainer}>
+          {categorias.map((categoria) => (
+            <View key={categoria.id} style={styles.categoriaCard}>
+              <View style={styles.categoriaInfo}>
+                <Text style={styles.categoriaLabel}>Nome da Categoria</Text>
+                <Text style={styles.categoriaValue}>{categoria.nome}</Text>
                 
-                <Text style={styles.produtoLabel}>Categoria</Text>
-                <Text style={styles.produtoValue}>{produto.categoria}</Text>
-                
-                <Text style={styles.produtoLabel}>Valor</Text>
-                <Text style={styles.produtoValue}>{produto.valor}</Text>
+                <Text style={styles.categoriaLabel}>Imagem da categoria</Text>
+                <Image 
+                  source={categoria.imagem} 
+                  style={styles.categoriaImage} 
+                />
               </View>
               
-              <View style={styles.produtoActions}>
+              <View style={styles.categoriaActions}>
                 <TouchableOpacity>
                   <Image 
                     source={require('../../assets/images/olhos.png')} 
@@ -103,16 +101,16 @@ const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
         
         <TouchableOpacity 
           style={styles.navItem} 
-          onPress={() => setActiveTab('loja')}
+          onPress={() => setActiveTab('comprar')}
         >
           <View style={styles.navIconContainer}>
-            {activeTab === 'loja' && <View style={styles.activeIndicator} />}
+            {activeTab === 'comprar' && <View style={styles.activeIndicator} />}
             <Image 
-              source={require('../../assets/images/cachorro.png')} 
+              source={require('../../assets/images/carrinho.png')} 
               style={styles.navIcon} 
             />
           </View>
-          <Text style={styles.navLabel}>Loja</Text>
+          <Text style={styles.navLabel}>Comprar</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -122,7 +120,7 @@ const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
           <View style={styles.navIconContainer}>
             {activeTab === 'servicos' && <View style={styles.activeIndicator} />}
             <Image 
-              source={require('../../assets/images/carrinho.png')} 
+              source={require('../../assets/images/cachorro.png')} 
               style={styles.navIcon} 
             />
           </View>
@@ -147,4 +145,4 @@ const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
   );
 };
 
-export default Produtos;
+export default Categorias;

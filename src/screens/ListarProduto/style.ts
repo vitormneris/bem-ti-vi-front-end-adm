@@ -38,8 +38,9 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: 'flex-start', // Changed from 'center' to 'flex-start'
+    justifyContent: 'center',
+    paddingTop: 4 // Added for better alignment
   },
   title: {
     fontFamily: 'Montserrat-Black',
@@ -50,7 +51,8 @@ const styles = StyleSheet.create({
   menuIcon: {
     width: 24,
     height: 24,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
+    marginTop: 2 // Adjust this value to move the icon up/down
   },
   buttonContainer: {
     alignItems: 'center',
@@ -85,13 +87,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: '#fff'
   },
-  produtosContainer: {
+  categoriasContainer: {
     paddingHorizontal: 16,
     paddingBottom: 20,
     marginTop: 10
   },
-  produtoCard: {
-    backgroundColor: '#F8F8F8', // Changed from #fff to #EBEEF3
+  categoriaCard: {
+    backgroundColor: '#F8F8F8',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
@@ -106,22 +108,29 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#EEE'
   },
-  produtoInfo: {
+  categoriaInfo: {
     flex: 1
   },
-  produtoLabel: {
+  categoriaLabel: {
     fontFamily: 'Montserrat-Bold',
     fontSize: 14,
     color: '#666',
     marginBottom: 2
   },
-  produtoValue: {
+  categoriaValue: {
     fontFamily: 'Montserrat-Medium',
     fontSize: 13,
     color: '#333',
     marginBottom: 10
   },
-  produtoActions: {
+  categoriaImage: {
+    width: 100,
+    height: 100,
+    resizeMode: 'cover',
+    borderRadius: 8,
+    marginBottom: 10
+  },
+  categoriaActions: {
     flexDirection: 'row',
     marginLeft: -12,
     alignItems: 'center',
