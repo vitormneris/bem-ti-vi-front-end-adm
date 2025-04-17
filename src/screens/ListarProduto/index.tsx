@@ -110,7 +110,7 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
               style={styles.navIcon} 
             />
           </View>
-          <Text style={styles.navLabel}>Comprar</Text>
+          <Text style={styles.navLabel}>Loja</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 

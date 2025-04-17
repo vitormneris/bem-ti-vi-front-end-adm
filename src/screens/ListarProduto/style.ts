@@ -38,9 +38,9 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start', // Changed from 'center' to 'flex-start'
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingTop: 4 // Added for better alignment
+    paddingTop: 4
   },
   title: {
     fontFamily: 'Montserrat-Black',
@@ -52,11 +52,12 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     resizeMode: 'contain',
-    marginTop: 2 // Adjust this value to move the icon up/down
+    marginTop: 2
   },
   buttonContainer: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: 26,
+    marginBottom: 20,
     paddingHorizontal: 16
   },
   cadastrarButton: {
