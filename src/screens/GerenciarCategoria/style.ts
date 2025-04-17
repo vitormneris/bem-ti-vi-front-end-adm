@@ -38,14 +38,16 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    paddingBottom: 3
   },
   title: {
     fontFamily: 'Montserrat-Black',
     fontSize: 18,
     color: '#333',
-    marginRight: 8
+    marginRight: 8,
+    lineHeight: 24
   },
   menuIcon: {
     width: 24,
@@ -128,16 +130,31 @@ const styles = StyleSheet.create({
     borderColor: '#DDD',
     resizeMode: 'cover'
   },
-  submitButtonWrapper: {
+  submitButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     marginTop: 32,
     marginBottom: 30,
-    alignItems: 'center'
   },
   submitButton: {
     backgroundColor: '#006516',
     borderRadius: 35,
-    width: 205,
+    width: '48%',
+    height: 55,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4
+  },
+  deleteButton: {
+    backgroundColor: '#B40000',
+    borderRadius: 35,
+    width: '48%',
     height: 55,
     padding: 16,
     alignItems: 'center',

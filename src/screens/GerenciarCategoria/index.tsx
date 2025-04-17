@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, Safe
 import * as ImagePicker from 'expo-image-picker';
 import styles from './style';
 
-const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
+const GerenciarCategoria = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
   const [nomeCategoria, setNomeCategoria] = useState<string>('');
   const [imagem, setImagem] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('home');
@@ -99,10 +99,14 @@ const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
           )}
         </View>
 
-        {/* Submit Button */}
-        <View style={styles.submitButtonWrapper}>
+        {/* Submit Buttons */}
+        <View style={styles.submitButtonsContainer}>
+          <TouchableOpacity style={styles.deleteButton}>
+            <Text style={styles.submitButtonText}>DELETAR</Text>
+          </TouchableOpacity>
+          
           <TouchableOpacity style={styles.submitButton}>
-            <Text style={styles.submitButtonText}>CADASTRAR</Text>
+            <Text style={styles.submitButtonText}>ATUALIZAR</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -152,7 +156,7 @@ const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={styles.navItem}
+          style={styles.navItem} 
           onPress={() => setActiveTab('perfil')}
         >
           <View style={styles.navIconContainer}>
@@ -169,4 +173,4 @@ const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
   );
 };
 
-export default CadastrarCategoria;
+export default GerenciarCategoria;
