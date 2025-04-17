@@ -50,7 +50,8 @@ const styles = StyleSheet.create({
   menuIcon: {
     width: 24,
     height: 24,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
+    marginBottom: 5
   },
   sectionHeader: {
     paddingTop: 35,
@@ -92,31 +93,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     marginTop: 4
   },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 8,
-    backgroundColor: 'rgba(236, 234, 234, 0.4)',
-    overflow: 'hidden',
-    justifyContent: 'center',
-    marginTop: 4
-  },
-  picker: {
-    height: 55,
-    width: '100%',
-    color: '#333',
-    paddingVertical: 10,
-    backgroundColor: 'transparent'
-  },
-  pickerPlaceholder: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 1,
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
-    color: '#999',
-    top: 16
-  },
   imagePicker: {
     borderWidth: 1,
     borderColor: '#DDD',
@@ -140,17 +116,17 @@ const styles = StyleSheet.create({
     color: '#6200EE',
     fontFamily: 'Montserrat-Medium'
   },
-  descriptionInput: {
+  imagePreviewContainer: {
+    marginTop: 16,
+    alignItems: 'center'
+  },
+  imagePreview: {
+    width: 150,
+    height: 150,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#DDD',
-    borderRadius: 8,
-    padding: 14,
-    fontSize: 14,
-    backgroundColor: 'rgba(236, 234, 234, 0.4)',
-    height: 150,
-    textAlignVertical: 'top',
-    fontFamily: 'Montserrat-Medium',
-    marginTop: 4
+    resizeMode: 'cover'
   },
   submitButtonWrapper: {
     paddingHorizontal: 16,

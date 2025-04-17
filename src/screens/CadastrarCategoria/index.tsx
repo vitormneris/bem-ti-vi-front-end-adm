@@ -1,30 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import styles from './style';
 
-type CategoriaType = {
-  label: string;
-  value: string;
-};
-
-const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
-  const [categoria, setCategoria] = useState<string>('');
-  const [nomeProduto, setNomeProduto] = useState<string>('');
-  const [valorProduto, setValorProduto] = useState<string>('');
-  const [descricao, setDescricao] = useState<string>('');
+const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
+  const [nomeCategoria, setNomeCategoria] = useState<string>('');
   const [imagem, setImagem] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('home');
-
-  const categorias: CategoriaType[] = [
-    { label: '', value: '' },
-    { label: 'Alimentos', value: 'Alimentos' },
-    { label: 'Beleza', value: 'Beleza' },
-    { label: 'Limpeza', value: 'Limpeza' },
-    { label: 'Farmácia', value: 'Farmácia' },
-    { label: 'Brinquedos', value: 'Brinquedos' },
-  ];
 
   const selecionarImagem = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -65,64 +47,33 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{titulo}</Text>
             <Image 
-              source={require('../../assets/images/icone-menu.png')} 
+              source={require('../../assets/images/categorias.png')} 
               style={styles.menuIcon} 
             />
           </View>
         </View>
 
-        {/* Product Info Section */}
+        {/* Category Info Section */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Informações do Produto</Text>
+          <Text style={styles.sectionTitle}>Informações da Categoria</Text>
           <View style={styles.divider} />
         </View>
 
-        {/* Form Fields */}
+        {/* Nome da Categoria Input */}
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Nome do Produto</Text>
+          <Text style={styles.label}>Nome da Categoria</Text>
           <TextInput
             style={styles.inputField}
-            placeholder="Digite o nome do produto"
+            placeholder="Insira o nome da categoria"
             placeholderTextColor="#999"
-            value={nomeProduto}
-            onChangeText={setNomeProduto}
+            value={nomeCategoria}
+            onChangeText={setNomeCategoria}
           />
         </View>
 
+        {/* Image Picker */}
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Valor do Produto</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite o valor do produto"
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-            value={valorProduto}
-            onChangeText={setValorProduto}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Categoria do Produto</Text>
-          <View style={styles.pickerWrapper}>
-            {!categoria && (
-              <Text style={styles.pickerPlaceholder}>
-                Selecione uma categoria
-              </Text>
-            )}
-            <Picker
-              selectedValue={categoria}
-              onValueChange={setCategoria}
-              style={styles.picker}
-            >
-              {categorias.map((item) => (
-                <Picker.Item key={item.value} label={item.label} value={item.value} />
-              ))}
-            </Picker>
-          </View>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Imagem do Produto</Text>
+          <Text style={styles.label}>Imagem da Categoria</Text>
           <TouchableOpacity 
             style={[
               styles.imagePicker, 
@@ -137,18 +88,15 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
               {imagem ? 'Imagem selecionada (clique para alterar)' : 'Selecione uma imagem'}
             </Text>
           </TouchableOpacity>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Descrição do Produto</Text>
-          <TextInput
-            style={styles.descriptionInput}
-            placeholder="Digite a descrição do produto"
-            placeholderTextColor="#999"
-            multiline
-            value={descricao}
-            onChangeText={setDescricao}
-          />
+          
+          {imagem && (
+            <View style={styles.imagePreviewContainer}>
+              <Image 
+                source={{ uri: imagem }} 
+                style={styles.imagePreview} 
+              />
+            </View>
+          )}
         </View>
 
         {/* Submit Button */}
@@ -159,7 +107,7 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
         </View>
       </ScrollView>
 
-      {/* Fixed Bottom Navigation */}
+      {/* Bottom Navigation */}
       <View style={styles.bottomNavigation}>
         <TouchableOpacity 
           style={styles.navItem} 
@@ -182,7 +130,7 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
           <View style={styles.navIconContainer}>
             {activeTab === 'loja' && <View style={styles.activeIndicator} />}
             <Image 
-              source={require('../../assets/images/cachorro.png')} 
+              source={require('../../assets/images/carrinho.png')} 
               style={styles.navIcon} 
             />
           </View>
@@ -196,7 +144,7 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
           <View style={styles.navIconContainer}>
             {activeTab === 'servicos' && <View style={styles.activeIndicator} />}
             <Image 
-              source={require('../../assets/images/carrinho.png')} 
+              source={require('../../assets/images/cachorro.png')} 
               style={styles.navIcon} 
             />
           </View>
@@ -204,7 +152,7 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={styles.navItem} 
+          style={styles.navItem}
           onPress={() => setActiveTab('perfil')}
         >
           <View style={styles.navIconContainer}>
@@ -221,4 +169,4 @@ const CadastrarProduto = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
   );
 };
 
-export default CadastrarProduto;
+export default CadastrarCategoria;
