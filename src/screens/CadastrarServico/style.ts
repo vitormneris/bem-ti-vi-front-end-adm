@@ -50,7 +50,8 @@ const styles = StyleSheet.create({
   menuIcon: {
     width: 24,
     height: 24,
-    resizeMode: 'contain'
+    resizeMode: 'contain',
+    marginBottom: 5
   },
   sectionHeader: {
     paddingTop: 35,

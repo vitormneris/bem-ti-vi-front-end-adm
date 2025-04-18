@@ -10,7 +10,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import CadastrarProduto from './src/screens/CadastrarProduto';
+import CadastrarProduto from './src/screens/CadastrarServico';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
