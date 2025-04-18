@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import styles from './style';
 
-const CadastrarServico = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
+const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
   const [nomeServico, setNomeServico] = useState<string>('');
   const [descricaoServico, setDescricaoServico] = useState<string>('');
   const [precoServico, setPrecoServico] = useState<string>('');
@@ -128,10 +128,14 @@ const CadastrarServico = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
           />
         </View>
 
-        {/* Submit Button */}
-        <View style={styles.submitButtonWrapper}>
+        {/* Submit Buttons */}
+        <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={[styles.submitButton, styles.deleteButton]}>
+            <Text style={styles.submitButtonText}>DELETAR</Text>
+          </TouchableOpacity>
+          
           <TouchableOpacity style={styles.submitButton}>
-            <Text style={styles.submitButtonText}>CADASTRAR SERVIÇO</Text>
+            <Text style={styles.submitButtonText}>ATUALIZAR</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -198,4 +202,4 @@ const CadastrarServico = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
   );
 };
 
-export default CadastrarServico;
+export default GerenciarServico;

@@ -153,16 +153,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     marginTop: 4
   },
-  submitButtonWrapper: {
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     marginTop: 32,
     marginBottom: 30,
-    alignItems: 'center'
   },
   submitButton: {
     backgroundColor: '#006516',
     borderRadius: 35,
-    width: 205,
+    width: '48%',
     height: 55,
     padding: 16,
     alignItems: 'center',
@@ -173,11 +174,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4
   },
+  deleteButton: {
+    backgroundColor: '#B40000',
+  },
   submitButtonText: {
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Montserrat-Bold',
-    letterSpacing: 0.5
+    letterSpacing: 0.5,
+    textAlign: 'center'
   },
   bottomNavigation: {
     flexDirection: 'row',
