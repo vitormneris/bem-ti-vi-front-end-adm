@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
 import styles from './style';
 
 type CategoriaType = {
@@ -10,11 +10,16 @@ type CategoriaType = {
 
 const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
+  const [searchText, setSearchText] = useState('');
   const [categorias, setCategorias] = useState<CategoriaType[]>([
     { id: 1, nome: 'Alimentos', imagem: require('../../assets/images/racao.jpg') },
     { id: 2, nome: 'Beleza', imagem: require('../../assets/images/roupinha.jpg') },
     { id: 3, nome: 'Diversão', imagem: require('../../assets/images/brinquedos.jpg') },
   ]);
+
+  const filteredCategorias = categorias.filter(categoria =>
+    categoria.nome.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -48,9 +53,24 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
           </TouchableOpacity>
         </View>
 
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <Image 
+            source={require('../../assets/images/busca.png')} 
+            style={styles.searchIcon} 
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar categoria..."
+            placeholderTextColor="#999"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+        </View>
+
         {/* Lista de Categorias */}
         <View style={styles.categoriasContainer}>
-          {categorias.map((categoria) => (
+          {filteredCategorias.map((categoria) => (
             <View key={categoria.id} style={styles.categoriaCard}>
               <View style={styles.categoriaInfo}>
                 <Text style={styles.categoriaLabel}>Nome da Categoria</Text>
