@@ -85,13 +85,43 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     tintColor: '#fff'
   },
+  // Search styles
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    height: 45,
+    marginHorizontal: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    tintColor: '#666',
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 14,
+    color: '#333',
+    paddingVertical: 0,
+    paddingTop: 0,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
   produtosContainer: {
     paddingHorizontal: 16,
     paddingBottom: 20,
     marginTop: 10
   },
   produtoCard: {
-    backgroundColor: '#F8F8F8', // Changed from #fff to #EBEEF3
+    backgroundColor: '#F8F8F8',
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,

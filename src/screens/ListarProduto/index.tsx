@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
 import styles from './style';
 
 type ProdutoType = {
@@ -11,12 +11,18 @@ type ProdutoType = {
 
 const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
+  const [searchText, setSearchText] = useState('');
   const [produtos, setProdutos] = useState<ProdutoType[]>([
     { id: 1, nome: 'Ração Golden', categoria: 'Alimentos', valor: 'R$148,90' },
     { id: 2, nome: 'Petisco Whiskas', categoria: 'Alimentos', valor: 'R$59,90' },
     { id: 3, nome: 'Roupinha de Cachorro Colorida', categoria: 'Beleza', valor: 'R$48,90' },
     { id: 4, nome: 'Kit de Brinquedos para Gatos', categoria: 'Diversão', valor: 'R$99,90' },
   ]);
+
+  const filteredProdutos = produtos.filter(produto =>
+    produto.nome.toLowerCase().includes(searchText.toLowerCase()) ||
+    produto.categoria.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -50,9 +56,24 @@ const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
           </TouchableOpacity>
         </View>
 
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <Image 
+            source={require('../../assets/images/busca.png')} 
+            style={styles.searchIcon} 
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar produto..."
+            placeholderTextColor="#999"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+        </View>
+
         {/* Lista de Produtos */}
         <View style={styles.produtosContainer}>
-          {produtos.map((produto) => (
+          {filteredProdutos.map((produto) => (
             <View key={produto.id} style={styles.produtoCard}>
               <View style={styles.produtoInfo}>
                 <Text style={styles.produtoLabel}>Nome</Text>
