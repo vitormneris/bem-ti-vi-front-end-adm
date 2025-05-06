@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
 import styles from './style';
 
@@ -12,17 +12,34 @@ type ProdutoType = {
 const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [searchText, setSearchText] = useState('');
-  const [produtos, setProdutos] = useState<ProdutoType[]>([
-    { id: 1, nome: 'Ração Golden', categoria: 'Alimentos', valor: 'R$148,90' },
-    { id: 2, nome: 'Petisco Whiskas', categoria: 'Alimentos', valor: 'R$59,90' },
-    { id: 3, nome: 'Roupinha de Cachorro Colorida', categoria: 'Beleza', valor: 'R$48,90' },
-    { id: 4, nome: 'Kit de Brinquedos para Gatos', categoria: 'Diversão', valor: 'R$99,90' },
-  ]);
+  const [produtos, setProdutos] = useState<ProdutoType[]>([]);
 
   const filteredProdutos = produtos.filter(produto =>
     produto.nome.toLowerCase().includes(searchText.toLowerCase()) ||
     produto.categoria.toLowerCase().includes(searchText.toLowerCase())
   );
+  useEffect(() => {
+    const fetchProdutos = async () => {
+      try{
+        const response = await fetch('http://URL:8080/produto/paginacao?isActive=true&pageSize=5&page=0');
+        if (!response.ok){
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const produtosFormatados = data.content.map((item: any) => ({
+          id: item.id,
+          nome: item.name || 'Nome não disponível',
+          categoria: item.categories?.[0]?.name || 'Sem categoria',
+          valor: item.price ? `R$${item.price.toFixed(2).replace('.', ',')}` : 'R$0,00',
+        }));
+        setProdutos(produtosFormatados)
+      } catch (err){
+        console.error('Erro ao buscar produtos:',err);
+      }
+    }
+    fetchProdutos()
+  })
 
   return (
     <SafeAreaView style={styles.safeArea}>
