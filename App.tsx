@@ -10,7 +10,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import CadastrarProduto from './src/screens/GerenciarCategoria';
+import GerenciarProduto from './src/screens/GerenciarProduto';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -18,7 +18,7 @@ export default function App() {
     'Montserrat-Medium': Montserrat_500Medium,
     'Montserrat-SemiBold': Montserrat_600SemiBold,
     'Montserrat-Bold': Montserrat_700Bold,
-    'Montserrat-Black': Montserrat_900Black // Adicione esta linha
+    'Montserrat-Black': Montserrat_900Black
   });
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <CadastrarProduto />
+      <GerenciarProduto />
       <StatusBar style="auto" />
     </View>
   );
