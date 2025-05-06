@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'Montserrat-Medium',
     marginTop: 2
-  }
+  },
 });
 
 export default styles;
