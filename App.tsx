@@ -8,9 +8,10 @@ import {
   Montserrat_900Black // Adicione esta importação
 } from '@expo-google-fonts/montserrat';
 import * as SplashScreen from 'expo-splash-screen';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import CadastrarProduto from './src/screens/GerenciarServico';
+import GerenciarProduto from './src/screens/GerenciarProduto';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -18,7 +19,7 @@ export default function App() {
     'Montserrat-Medium': Montserrat_500Medium,
     'Montserrat-SemiBold': Montserrat_600SemiBold,
     'Montserrat-Bold': Montserrat_700Bold,
-    'Montserrat-Black': Montserrat_900Black // Adicione esta linha
+    'Montserrat-Black': Montserrat_900Black
   });
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <GerenciarProduto /> 
       <CadastrarProduto />
       <StatusBar style="auto" />
     </View>
