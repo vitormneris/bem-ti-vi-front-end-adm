@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -11,6 +11,8 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
   const [duracaoEstimada, setDuracaoEstimada] = useState<string>('');
   const [imagem, setImagem] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('home');
+
+  const serviceId = "id";
 
   const selecionarImagem = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -31,7 +33,103 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       setImagem(result.assets[0].uri);
     }
   };
+  useEffect(() => {
+    const buscarServico = async () => {
+      try {
+        const resposta = await fetch(`http://URL:8080/service/${serviceId}/buscar`);
+        if (!resposta.ok) {
+          throw new Error('Erro ao buscar servico');
+        }
+  
+        const servico = await resposta.json();
+        setNomeServico(servico.name || '');
+        setPrecoServico(String(servico.price) || '');
+        setDescricaoServico(servico.description || '');
+        setDuracaoEstimada(servico.estimated_duration || '');
+        setImagem(servico.pathImage);
+      } catch (erro) {
+        console.error('Erro ao buscar servico:', erro);
+        Alert.alert('Erro', 'Não foi possível carregar os dados do serviço.');
+      }
+    };
+  
+    buscarServico();
+  }, []);
 
+  const atualizarServico = async () => {
+    if (!nomeServico || !imagem) {
+      Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
+      return;
+    }
+  
+    const servico = {
+      name: nomeServico,
+      price: precoServico,
+      estimated_duration: duracaoEstimada,
+      description:descricaoServico 
+    };
+
+    const formData = new FormData();
+
+    formData.append('service', {
+      string: JSON.stringify(servico),
+      name: 'service',
+      type: 'application/json',
+    } as any);
+
+    formData.append('file', {
+      uri: imagem,
+      name: 'imagem.jpg',
+      type: 'image/jpeg',
+    } as any);
+  
+    try {
+      const response = await fetch(`http://URL:8080/service/${serviceId}/atualizar`, {
+        method: 'PUT',
+        body: formData,
+      });
+  
+      if (response.ok) {
+        Alert.alert("Sucesso", "Serviço atualizado com sucesso!");
+      } else {
+        const error = await response.json();
+        Alert.alert("Erro", error.message || "Erro ao atualizar o serviço.");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
+    }
+  };
+  
+  const deletarServico = async () => {
+    Alert.alert(
+      'Confirmação',
+      'Tem certeza que deseja deletar este serviço?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Deletar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await fetch(`http://URL:8080/service/${serviceId}/deletar`, {
+                method: 'DELETE',
+              });
+  
+              if (response.ok) {
+                Alert.alert('Sucesso', 'Serviço deletado com sucesso!');
+              } else {
+                const erro = await response.json();
+                Alert.alert('Erro', erro.message || 'Erro ao deletar o serviço.');
+              }
+            } catch (error) {
+              Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
+            }
+          },
+        },
+      ]
+    );
+  };
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView 
@@ -130,11 +228,11 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
 
         {/* Submit Buttons */}
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={[styles.submitButton, styles.deleteButton]}>
+          <TouchableOpacity style={[styles.submitButton, styles.deleteButton]} onPress={deletarServico}>
             <Text style={styles.submitButtonText}>DELETAR</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={atualizarServico}>
             <Text style={styles.submitButtonText}>ATUALIZAR</Text>
           </TouchableOpacity>
         </View>
