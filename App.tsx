@@ -10,6 +10,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
+import CadastrarProduto from './src/screens/GerenciarServico';
 import GerenciarProduto from './src/screens/GerenciarProduto';
 
 export default function App() {
@@ -45,7 +46,8 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <GerenciarProduto />
+      <GerenciarProduto /> 
+      <CadastrarProduto />
       <StatusBar style="auto" />
     </View>
   );
