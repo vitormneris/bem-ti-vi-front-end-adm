@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
 import styles from './style';
 
@@ -11,15 +11,33 @@ type CategoriaType = {
 const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [searchText, setSearchText] = useState('');
-  const [categorias, setCategorias] = useState<CategoriaType[]>([
-    { id: 1, nome: 'Alimentos', imagem: require('../../assets/images/racao.jpg') },
-    { id: 2, nome: 'Beleza', imagem: require('../../assets/images/roupinha.jpg') },
-    { id: 3, nome: 'Diversão', imagem: require('../../assets/images/brinquedos.jpg') },
-  ]);
+  const [categorias, setCategorias] = useState<CategoriaType[]>([]);
 
   const filteredCategorias = categorias.filter(categoria =>
     categoria.nome.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try{
+        const response = await fetch('http://URL:8080/categoria/paginacao?isActive=true&pageSize=3&page=0');
+        if (!response.ok){
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const categoriasFormatadas = data.content.map((item: any) => ({
+          id: item.id,
+          nome: item.name || 'Nome não disponível',
+          imagem: item.pathImage || null,
+        }));
+        setCategorias(categoriasFormatadas)
+      } catch (err){
+        console.error('Erro ao buscar categorias:',err);
+      }
+    }
+    fetchCategorias()
+  })
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -78,7 +96,7 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
                 
                 <Text style={styles.categoriaLabel}>Imagem da categoria</Text>
                 <Image 
-                  source={categoria.imagem} 
+                  source={{ uri: categoria.imagem }}  
                   style={styles.categoriaImage} 
                 />
               </View>
