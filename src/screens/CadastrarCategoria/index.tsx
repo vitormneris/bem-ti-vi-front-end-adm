@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import styles from './style';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  Alert,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import styles from "./style";
 
 const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
-  const [nomeCategoria, setNomeCategoria] = useState<string>('');
+  const [nomeCategoria, setNomeCategoria] = useState<string>("");
   const [imagem, setImagem] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState("home");
 
   const selecionarImagem = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -25,6 +34,58 @@ const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
 
     if (!result.canceled) {
       setImagem(result.assets[0].uri);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!nomeCategoria.trim() || !imagem) {
+      Alert.alert("Erro", "Preencha todos os campos!");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+
+      formData.append("category", {
+        uri: `data:application/json;base64,${btoa(
+          JSON.stringify({
+            name: nomeCategoria,
+            cardColor: "#FF00FF05",
+          })
+        )}`,
+        type: "application/json",
+        name: "category.json",
+      });
+
+      formData.append("file", {
+        uri: imagem,
+        type: "image/jpeg",
+        name: "categoria.jpg",
+      });
+
+      const response = await fetch(
+        "http://URL:8080/categoria/inserir",
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Erro no response:", errorText);
+        throw new Error("Erro ao cadastrar categoria");
+      }
+
+      Alert.alert("Sucesso", "Categoria cadastrada!");
+      setNomeCategoria("");
+      setImagem(null);
+    } catch (error: any) {
+      console.error("Erro detalhado:", error);
+      Alert.alert("Erro", error.message || "Falha ao cadastrar");
     }
   };
 
@@ -74,34 +135,33 @@ const CadastrarCategoria = ({ titulo = "CADASTRAR" }: { titulo?: string }) => {
         {/* Image Picker */}
         <View style={styles.formGroup}>
           <Text style={styles.label}>Imagem da Categoria</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
-              styles.imagePicker, 
-              imagem ? styles.imagePickerActive : null
-            ]} 
+              styles.imagePicker,
+              imagem ? styles.imagePickerActive : null,
+            ]}
             onPress={selecionarImagem}
           >
-            <Text style={[
-              styles.imagePickerText,
-              imagem ? styles.imagePickerTextActive : null
-            ]}>
-              {imagem ? 'Imagem selecionada (clique para alterar)' : 'Selecione uma imagem'}
+            <Text
+              style={[
+                styles.imagePickerText,
+                imagem ? styles.imagePickerTextActive : null,
+              ]}
+            >
+              {imagem ? "Imagem selecionada (clique para alterar)" : "Selecione uma imagem"}
             </Text>
           </TouchableOpacity>
-          
+
           {imagem && (
             <View style={styles.imagePreviewContainer}>
-              <Image 
-                source={{ uri: imagem }} 
-                style={styles.imagePreview} 
-              />
+              <Image source={{ uri: imagem }} style={styles.imagePreview} />
             </View>
           )}
         </View>
 
         {/* Submit Button */}
         <View style={styles.submitButtonWrapper}>
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
             <Text style={styles.submitButtonText}>CADASTRAR</Text>
           </TouchableOpacity>
         </View>
