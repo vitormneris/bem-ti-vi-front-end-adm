@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -17,15 +17,17 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
   const [imagem, setImagem] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('home');
 
+  const productId = "id";
+
   const categorias: CategoriaType[] = [
     { label: '', value: '' },
-    { label: 'Alimentos', value: 'Alimentos' },
+    { label: 'Alimentos', value: 'id' },
     { label: 'Beleza', value: 'Beleza' },
     { label: 'Limpeza', value: 'Limpeza' },
     { label: 'Farmácia', value: 'Farmácia' },
     { label: 'Brinquedos', value: 'Brinquedos' },
   ];
-
+  
   const selecionarImagem = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
@@ -45,7 +47,106 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       setImagem(result.assets[0].uri);
     }
   };
+  useEffect(() => {
+    const buscarProduto = async () => {
+      try {
+        const resposta = await fetch(`http://URL:8080/produto/${productId}/buscar`);
+        if (!resposta.ok) {
+          throw new Error('Erro ao buscar produto');
+        }
+  
+        const produto = await resposta.json();
+        setNomeProduto(produto.name || '');
+        setValorProduto(String(produto.price) || '');
+        setDescricao(produto.description || '');
+        setCategoria(produto.categories?.[0]?.id || '');
+        setImagem(produto.pathImage);
+      } catch (erro) {
+        console.error('Erro ao buscar produto:', erro);
+        Alert.alert('Erro', 'Não foi possível carregar os dados do produto.');
+      }
+    };
+  
+    buscarProduto();
+  }, []);
 
+  const atualizarProduto = async () => {
+    if (!nomeProduto || !valorProduto || !descricao || !categoria) {
+      Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
+      return;
+    }
+  
+    const produto = {
+      name: nomeProduto,
+      price: parseFloat(valorProduto),
+      categories: [
+        { id: "id" }
+      ],
+      description: descricao,
+    };
+
+    const formData = new FormData();
+
+    formData.append('product', {
+      string: JSON.stringify(produto),
+      name: 'product',
+      type: 'application/json',
+    } as any);
+
+    formData.append('file', {
+      uri: imagem,
+      name: 'imagem.jpg',
+      type: 'image/jpeg',
+    } as any);
+  
+    try {
+      const response = await fetch(`http://URL:8080/produto/${productId}/atualizar`, {
+        method: 'PUT',
+        body: formData,
+      });
+  
+      if (response.ok) {
+        Alert.alert("Sucesso", "Produto atualizado com sucesso!");
+      } else {
+        const error = await response.json();
+        Alert.alert("Erro", error.message || "Erro ao atualizar o produto.");
+      }
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível conectar ao servidor.");
+    }
+  };
+  
+  const deletarProduto = async () => {
+    Alert.alert(
+      'Confirmação',
+      'Tem certeza que deseja deletar este produto?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Deletar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await fetch(`http://URL:8080/produto/${productId}/deletar`, {
+                method: 'DELETE',
+              });
+  
+              if (response.ok) {
+                Alert.alert('Sucesso', 'Produto deletado com sucesso!');
+              } else {
+                const erro = await response.json();
+                Alert.alert('Erro', erro.message || 'Erro ao deletar o produto.');
+              }
+            } catch (error) {
+              Alert.alert('Erro', 'Não foi possível conectar ao servidor.');
+            }
+          },
+        },
+      ]
+    );
+  };
+  
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView 
@@ -130,12 +231,19 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
             ]} 
             onPress={selecionarImagem}
           >
-            <Text style={[
-              styles.imagePickerText,
-              imagem ? styles.imagePickerTextActive : null
-            ]}>
-              {imagem ? 'Imagem selecionada (clique para alterar)' : 'Selecione uma imagem'}
-            </Text>
+            {imagem ? (
+              <Image 
+                source={{ uri: imagem }} 
+                style={styles.imagePreview}
+              />
+            ) : (
+              <Text style={[
+                styles.imagePickerText,
+                imagem ? styles.imagePickerTextActive : null
+              ]}>
+                {imagem ? 'Imagem selecionada (clique para alterar)' : 'Selecione uma imagem'}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -153,11 +261,11 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
 
         {/* Submit Buttons */}
         <View style={styles.submitButtonsContainer}>
-          <TouchableOpacity style={styles.deleteButton}>
+          <TouchableOpacity style={styles.deleteButton} onPress={deletarProduto}>
             <Text style={styles.submitButtonText}>DELETAR</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={atualizarProduto}>
             <Text style={styles.submitButtonText}>ATUALIZAR</Text>
           </TouchableOpacity>
         </View>
