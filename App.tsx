@@ -10,8 +10,9 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import CadastrarProduto from './src/screens/GerenciarServico';
+import GerenciarServico from './src/screens/GerenciarServico';
 import GerenciarProduto from './src/screens/GerenciarProduto';
+import GerenciarCategoria from './src/screens/GerenciarCategoria';
 import TelaLogin from './src/screens/TelaLogin';
 
 export default function App() {
@@ -49,7 +50,8 @@ export default function App() {
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <TelaLogin />
       <GerenciarProduto /> 
-      <CadastrarProduto />
+      <GerenciarServico />
+      <GerenciarCategoria />
       <StatusBar style="auto" />
     </View>
   );
