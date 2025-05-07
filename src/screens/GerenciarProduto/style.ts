@@ -94,7 +94,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     marginTop: 4
   },
-  submitButtonsContainer: {
+  buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 16,

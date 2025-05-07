@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
+
 import * as ImagePicker from 'expo-image-picker';
-import styles from './style';
+
 import { Header } from '../../components/Header';
 import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { NavigationBar } from '../../components/NavigationBar';
 
-const GerenciarCategoria = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
+import { styles } from './style';
+
+export default function GerenciarCategoria() {
   const [nomeCategoria, setNomeCategoria] = useState<string>('');
   const [imagem, setImagem] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('home');
 
   const categoryId = "id";
 
@@ -179,7 +181,7 @@ const GerenciarCategoria = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
         </View>
 
         {/* Submit Buttons */}
-        <View style={styles.submitButtonsContainer}>
+        <View style={styles.buttonsContainer}>
               <Button text="DELETAR" color="#B40000" action={deletarCategoria} />
               <Button text="ATUALIZAR" color="#006516" action={atualizarCategoria} />
         </View>
@@ -190,5 +192,3 @@ const GerenciarCategoria = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
     </SafeAreaView>
   );
 };
-
-export default GerenciarCategoria;

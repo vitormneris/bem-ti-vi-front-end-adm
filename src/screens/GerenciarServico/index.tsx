@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
+
 import * as ImagePicker from 'expo-image-picker';
-import styles from './style';
+
 import { Header } from '../../components/Header';
 import { Title } from '../../components/Title';
-import { NavigationBar } from '../../components/NavigationBar';
 import { Button } from '../../components/Button';
+import { NavigationBar } from '../../components/NavigationBar';
+
+import {styles} from './style';
 
 export default function GerenciarServico() {
   const [nomeServico, setNomeServico] = useState<string>('');

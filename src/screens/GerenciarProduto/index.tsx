@@ -6,8 +6,8 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { Header } from '../../components/Header';
 import { Title } from '../../components/Title';
-import { NavigationBar } from '../../components/NavigationBar';
 import { Button } from '../../components/Button';
+import { NavigationBar } from '../../components/NavigationBar';
 
 import { styles } from './style';
 
@@ -248,7 +248,7 @@ export default function GerenciarProduto() {
         </View>
 
         {/* Submit Buttons */}
-        <View style={styles.submitButtonsContainer}>
+        <View style={styles.buttonsContainer}>
           <Button text="DELETAR" color="#B40000" action={deletarProduto} />
           <Button text="ATUALIZAR" color="#006516" action={atualizarProduto} />
         </View>
