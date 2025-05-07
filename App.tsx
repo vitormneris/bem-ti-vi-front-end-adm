@@ -5,12 +5,14 @@ import {
   Montserrat_500Medium,
   Montserrat_600SemiBold,
   Montserrat_700Bold,
-  Montserrat_900Black
+  Montserrat_900Black // Adicione esta importação
 } from '@expo-google-fonts/montserrat';
 import * as SplashScreen from 'expo-splash-screen';
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import GerenciarProduto from './src/screens/TelaLogin';
+import CadastrarProduto from './src/screens/GerenciarServico';
+import GerenciarProduto from './src/screens/GerenciarProduto';
+import TelaLogin from './src/screens/TelaLogin';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -45,7 +47,9 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <GerenciarProduto />
+      <TelaLogin />
+      <GerenciarProduto /> 
+      <CadastrarProduto />
       <StatusBar style="auto" />
     </View>
   );
