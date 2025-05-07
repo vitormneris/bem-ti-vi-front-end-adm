@@ -121,6 +121,7 @@ export const styles = StyleSheet.create({
     marginRight: 10,
     tintColor: '#666',
   },
+
   searchInput: {
     flex: 1,
     height: '100%',
@@ -133,13 +134,13 @@ export const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
 
-  produtosContainer: {
+  categoriasContainer: {
     paddingHorizontal: 16,
     paddingBottom: 20,
     marginTop: 10
   },
 
-  produtoCard: {
+  categoriaCard: {
     backgroundColor: '#F8F8F8',
     borderRadius: 8,
     padding: 16,
@@ -191,7 +192,7 @@ export const styles = StyleSheet.create({
     height: 80,
     justifyContent: 'flex-start'
   },
-
+  
   actionIcon: {
     width: 50,
     height: 50,

@@ -14,7 +14,7 @@ import GerenciarServico from './src/screens/GerenciarServico';
 import GerenciarProduto from './src/screens/GerenciarProduto';
 import GerenciarCategoria from './src/screens/GerenciarCategoria';
 import TelaLogin from './src/screens/TelaLogin';
-import ListarProduto from './src/screens/ListarProduto';
+import ListarProduto from './src/screens/ListarCategoria';
 
 export default function App() {
   const [fontsLoaded] = useFonts({

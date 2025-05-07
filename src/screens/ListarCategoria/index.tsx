@@ -11,34 +11,32 @@ type CategoriaType = {
 const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [searchText, setSearchText] = useState('');
-  const [produtos, setProdutos] = useState<ProdutoType[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaType[]>([]);
 
-  const filteredProdutos = produtos.filter(produto =>
-    produto.nome.toLowerCase().includes(searchText.toLowerCase()) ||
-    produto.categoria.toLowerCase().includes(searchText.toLowerCase())
+  const filteredCategorias = categorias.filter(categoria =>
+    categoria.nome.toLowerCase().includes(searchText.toLowerCase())
   );
+
   useEffect(() => {
-    const fetchProdutos = async () => {
+    const fetchCategorias = async () => {
       try{
-        const response = await fetch('http://URL:8080/produto/paginacao?isActive=true&pageSize=5&page=0');
+        const response = await fetch('http://URL:8080/categoria/paginacao?isActive=true&pageSize=3&page=0');
         if (!response.ok){
           throw new Error(`Erro HTTP: ${response.status}`);
         }
 
         const data = await response.json();
-
-        const produtosFormatados = data.content.map((item: any) => ({
+        const categoriasFormatadas = data.content.map((item: any) => ({
           id: item.id,
           nome: item.name || 'Nome não disponível',
-          categoria: item.categories?.[0]?.name || 'Sem categoria',
-          valor: item.price ? `R$${item.price.toFixed(2).replace('.', ',')}` : 'R$0,00',
+          imagem: item.pathImage || null,
         }));
-        setProdutos(produtosFormatados)
+        setCategorias(categoriasFormatadas)
       } catch (err){
-        console.error('Erro ao buscar produtos:',err);
+        console.error('Erro ao buscar categorias:',err);
       }
     }
-    fetchProdutos()
+    fetchCategorias()
   })
 
   return (
@@ -81,21 +79,20 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Buscar produto..."
+            placeholder="Buscar categoria..."
             placeholderTextColor="#999"
             value={searchText}
             onChangeText={setSearchText}
           />
         </View>
 
-
-        {/* Lista de Produtos */}
-        <View style={styles.produtosContainer}>
-          {filteredProdutos.map((produto) => (
-            <View key={produto.id} style={styles.produtoCard}>
-              <View style={styles.produtoInfo}>
-                <Text style={styles.produtoLabel}>Nome</Text>
-                <Text style={styles.produtoValue}>{produto.nome}</Text>
+        {/* Lista de Categorias */}
+        <View style={styles.categoriasContainer}>
+          {filteredCategorias.map((categoria) => (
+            <View key={categoria.id} style={styles.categoriaCard}>
+              <View style={styles.categoriaInfo}>
+                <Text style={styles.categoriaLabel}>Nome da Categoria</Text>
+                <Text style={styles.categoriaValue}>{categoria.nome}</Text>
                 
                 <Text style={styles.categoriaLabel}>Imagem da categoria</Text>
                 <Image 
