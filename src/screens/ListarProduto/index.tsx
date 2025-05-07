@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
 import styles from './style';
 
-type CategoriaType = {
+type ProdutoType = {
   id: number;
   nome: string;
-  imagem: any;
+  categoria: string;
+  valor: string;
 };
 
-const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
+const Produtos = ({ titulo = "   PRODUTOS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [searchText, setSearchText] = useState('');
   const [produtos, setProdutos] = useState<ProdutoType[]>([]);
@@ -26,7 +27,6 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
         }
 
         const data = await response.json();
-
         const produtosFormatados = data.content.map((item: any) => ({
           id: item.id,
           nome: item.name || 'Nome não disponível',
@@ -59,7 +59,7 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{titulo}</Text>
             <Image 
-              source={require('../../assets/images/categorias.png')} 
+              source={require('../../assets/images/icone-menu.png')} 
               style={styles.menuIcon} 
             />
           </View>
@@ -88,7 +88,6 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
           />
         </View>
 
-
         {/* Lista de Produtos */}
         <View style={styles.produtosContainer}>
           {filteredProdutos.map((produto) => (
@@ -97,14 +96,14 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
                 <Text style={styles.produtoLabel}>Nome</Text>
                 <Text style={styles.produtoValue}>{produto.nome}</Text>
                 
-                <Text style={styles.categoriaLabel}>Imagem da categoria</Text>
-                <Image 
-                  source={{ uri: categoria.imagem }}  
-                  style={styles.categoriaImage} 
-                />
+                <Text style={styles.produtoLabel}>Categoria</Text>
+                <Text style={styles.produtoValue}>{produto.categoria}</Text>
+                
+                <Text style={styles.produtoLabel}>Valor</Text>
+                <Text style={styles.produtoValue}>{produto.valor}</Text>
               </View>
               
-              <View style={styles.categoriaActions}>
+              <View style={styles.produtoActions}>
                 <TouchableOpacity>
                   <Image 
                     source={require('../../assets/images/olhos.png')} 
@@ -142,12 +141,12 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
         
         <TouchableOpacity 
           style={styles.navItem} 
-          onPress={() => setActiveTab('comprar')}
+          onPress={() => setActiveTab('loja')}
         >
           <View style={styles.navIconContainer}>
-            {activeTab === 'comprar' && <View style={styles.activeIndicator} />}
+            {activeTab === 'loja' && <View style={styles.activeIndicator} />}
             <Image 
-              source={require('../../assets/images/carrinho.png')} 
+              source={require('../../assets/images/cachorro.png')} 
               style={styles.navIcon} 
             />
           </View>
@@ -161,7 +160,7 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
           <View style={styles.navIconContainer}>
             {activeTab === 'servicos' && <View style={styles.activeIndicator} />}
             <Image 
-              source={require('../../assets/images/cachorro.png')} 
+              source={require('../../assets/images/carrinho.png')} 
               style={styles.navIcon} 
             />
           </View>
@@ -186,4 +185,4 @@ const Categorias = ({ titulo = "   CATEGORIAS" }: { titulo?: string }) => {
   );
 };
 
-export default Categorias;
+export default Produtos;
