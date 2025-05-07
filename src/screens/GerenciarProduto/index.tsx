@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
+
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
-import styles from './style';
+
+import { Header } from '../../components/Header';
+import { Title } from '../../components/Title';
+import { NavigationBar } from '../../components/NavigationBar';
+import { Button } from '../../components/Button';
+
+import { styles } from './style';
 
 type CategoriaType = {
   label: string;
   value: string;
 };
 
-const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
+export default function GerenciarProduto() {
   const [categoria, setCategoria] = useState<string>('');
   const [nomeProduto, setNomeProduto] = useState<string>('');
   const [valorProduto, setValorProduto] = useState<string>('');
   const [descricao, setDescricao] = useState<string>('');
   const [imagem, setImagem] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('home');
 
   const productId = "id";
 
@@ -27,10 +33,10 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
     { label: 'Farmácia', value: 'Farmácia' },
     { label: 'Brinquedos', value: 'Brinquedos' },
   ];
-  
+
   const selecionarImagem = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (status !== 'granted') {
       Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
       return;
@@ -54,7 +60,7 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
         if (!resposta.ok) {
           throw new Error('Erro ao buscar produto');
         }
-  
+
         const produto = await resposta.json();
         setNomeProduto(produto.name || '');
         setValorProduto(String(produto.price) || '');
@@ -66,7 +72,7 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
         Alert.alert('Erro', 'Não foi possível carregar os dados do produto.');
       }
     };
-  
+
     buscarProduto();
   }, []);
 
@@ -75,7 +81,7 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
       return;
     }
-  
+
     const produto = {
       name: nomeProduto,
       price: parseFloat(valorProduto),
@@ -98,13 +104,13 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       name: 'imagem.jpg',
       type: 'image/jpeg',
     } as any);
-  
+
     try {
       const response = await fetch(`http://URL:8080/produto/${productId}/atualizar`, {
         method: 'PUT',
         body: formData,
       });
-  
+
       if (response.ok) {
         Alert.alert("Sucesso", "Produto atualizado com sucesso!");
       } else {
@@ -115,7 +121,7 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       Alert.alert("Erro", "Não foi possível conectar ao servidor.");
     }
   };
-  
+
   const deletarProduto = async () => {
     Alert.alert(
       'Confirmação',
@@ -130,7 +136,7 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
               const response = await fetch(`http://URL:8080/produto/${productId}/deletar`, {
                 method: 'DELETE',
               });
-  
+
               if (response.ok) {
                 Alert.alert('Sucesso', 'Produto deletado com sucesso!');
               } else {
@@ -145,38 +151,20 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       ]
     );
   };
-  
-  
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
-            <Image 
-              source={require('../../assets/images/seta-voltar.png')} 
-              style={styles.backIcon} 
-            />
-          </TouchableOpacity>
-
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{titulo}</Text>
-            <Image 
-              source={require('../../assets/images/icone-menu.png')} 
-              style={styles.menuIcon} 
-            />
-          </View>
-        </View>
+        <Header title="GERENCIAR" icon={require('../../assets/images/icone-menu.png')} />
 
         {/* Product Info Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Informações do Produto</Text>
-          <View style={styles.divider} />
-        </View>
+        <Title text="Informações do Produto" />
 
         {/* Form Fields */}
         <View style={styles.formGroup}>
@@ -224,16 +212,16 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Imagem do Produto</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
-              styles.imagePicker, 
+              styles.imagePicker,
               imagem ? styles.imagePickerActive : null
-            ]} 
+            ]}
             onPress={selecionarImagem}
           >
             {imagem ? (
-              <Image 
-                source={{ uri: imagem }} 
+              <Image
+                source={{ uri: imagem }}
                 style={styles.imagePreview}
               />
             ) : (
@@ -261,76 +249,13 @@ const CadastrarProduto = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
 
         {/* Submit Buttons */}
         <View style={styles.submitButtonsContainer}>
-          <TouchableOpacity style={styles.deleteButton} onPress={deletarProduto}>
-            <Text style={styles.submitButtonText}>DELETAR</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.submitButton} onPress={atualizarProduto}>
-            <Text style={styles.submitButtonText}>ATUALIZAR</Text>
-          </TouchableOpacity>
+          <Button text="DELETAR" color="#B40000" action={deletarProduto} />
+          <Button text="ATUALIZAR" color="#006516" action={atualizarProduto} />
         </View>
       </ScrollView>
 
       {/* Fixed Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('home')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'home' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/home.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Home</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('loja')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'loja' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/cachorro.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Loja</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('servicos')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'servicos' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/carrinho.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Serviços</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('perfil')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'perfil' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/perfil.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Perfil</Text>
-        </TouchableOpacity>
-      </View>
+      <NavigationBar />
     </SafeAreaView>
   );
 };
-
-export default CadastrarProduto;

@@ -49,9 +49,9 @@ export default function App() {
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <TelaLogin />
-      <GerenciarProduto /> 
-      <GerenciarServico />
-      <GerenciarCategoria />
+      {/* <GerenciarProduto />  */}
+      {/* <GerenciarServico /> */}
+      {/* <GerenciarCategoria />  */}
       <StatusBar style="auto" />
     </View>
   );

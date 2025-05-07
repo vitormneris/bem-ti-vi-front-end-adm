@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, TouchableOpacity, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import styles from './style';
+import { Header } from '../../components/Header';
+import { Title } from '../../components/Title';
+import { NavigationBar } from '../../components/NavigationBar';
+import { Button } from '../../components/Button';
 
-const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
+export default function GerenciarServico() {
   const [nomeServico, setNomeServico] = useState<string>('');
   const [descricaoServico, setDescricaoServico] = useState<string>('');
   const [precoServico, setPrecoServico] = useState<string>('');
   const [duracaoEstimada, setDuracaoEstimada] = useState<string>('');
   const [imagem, setImagem] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('home');
 
   const serviceId = "id";
 
   const selecionarImagem = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (status !== 'granted') {
       Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
       return;
@@ -40,7 +42,7 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
         if (!resposta.ok) {
           throw new Error('Erro ao buscar servico');
         }
-  
+
         const servico = await resposta.json();
         setNomeServico(servico.name || '');
         setPrecoServico(String(servico.price) || '');
@@ -52,7 +54,7 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
         Alert.alert('Erro', 'Não foi possível carregar os dados do serviço.');
       }
     };
-  
+
     buscarServico();
   }, []);
 
@@ -61,12 +63,12 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
       return;
     }
-  
+
     const servico = {
       name: nomeServico,
       price: precoServico,
       estimated_duration: duracaoEstimada,
-      description:descricaoServico 
+      description: descricaoServico
     };
 
     const formData = new FormData();
@@ -82,13 +84,13 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       name: 'imagem.jpg',
       type: 'image/jpeg',
     } as any);
-  
+
     try {
       const response = await fetch(`http://URL:8080/service/${serviceId}/atualizar`, {
         method: 'PUT',
         body: formData,
       });
-  
+
       if (response.ok) {
         Alert.alert("Sucesso", "Serviço atualizado com sucesso!");
       } else {
@@ -99,7 +101,7 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       Alert.alert("Erro", "Não foi possível conectar ao servidor.");
     }
   };
-  
+
   const deletarServico = async () => {
     Alert.alert(
       'Confirmação',
@@ -114,7 +116,7 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
               const response = await fetch(`http://URL:8080/service/${serviceId}/deletar`, {
                 method: 'DELETE',
               });
-  
+
               if (response.ok) {
                 Alert.alert('Sucesso', 'Serviço deletado com sucesso!');
               } else {
@@ -129,37 +131,19 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
       ]
     );
   };
-  
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
-            <Image 
-              source={require('../../assets/images/seta-voltar.png')} 
-              style={styles.backIcon} 
-            />
-          </TouchableOpacity>
-
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{titulo}</Text>
-            <Image 
-              source={require('../../assets/images/cachorro.png')} 
-              style={styles.menuIcon} 
-            />
-          </View>
-        </View>
+        <Header title="GERENCIAR" icon={require('../../assets/images/cachorro.png')} />
 
         {/* Service Info Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Informações do Serviço</Text>
-          <View style={styles.divider} />
-        </View>
+        <Title text="Informações do Serviço" />
 
         {/* Form Fields */}
         <View style={styles.formGroup}>
@@ -198,11 +182,11 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Imagem do Serviço</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
-              styles.imagePicker, 
+              styles.imagePicker,
               imagem ? styles.imagePickerActive : null
-            ]} 
+            ]}
             onPress={selecionarImagem}
           >
             <Text style={[
@@ -228,76 +212,13 @@ const GerenciarServico = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
 
         {/* Submit Buttons */}
         <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={[styles.submitButton, styles.deleteButton]} onPress={deletarServico}>
-            <Text style={styles.submitButtonText}>DELETAR</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.submitButton} onPress={atualizarServico}>
-            <Text style={styles.submitButtonText}>ATUALIZAR</Text>
-          </TouchableOpacity>
+          <Button text="DELETAR" color="#B40000" action={deletarServico} />
+          <Button text="ATUALIZAR" color="#006516" action={atualizarServico} />
         </View>
       </ScrollView>
 
       {/* Fixed Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('home')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'home' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/home.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Home</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('loja')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'loja' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/carrinho.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Loja</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('servicos')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'servicos' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/cachorro.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Serviços</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('perfil')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'perfil' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/perfil.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Perfil</Text>
-        </TouchableOpacity>
-      </View>
+      <NavigationBar />
     </SafeAreaView>
   );
 };
-
-export default GerenciarServico;

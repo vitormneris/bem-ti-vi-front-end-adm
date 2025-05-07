@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, Alert, ScrollView, SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import styles from './style';
+import { Header } from '../../components/Header';
+import { Title } from '../../components/Title';
+import { Button } from '../../components/Button';
+import { NavigationBar } from '../../components/NavigationBar';
 
 const GerenciarCategoria = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
   const [nomeCategoria, setNomeCategoria] = useState<string>('');
@@ -129,28 +133,10 @@ const GerenciarCategoria = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
         keyboardShouldPersistTaps="handled"
       >
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton}>
-            <Image 
-              source={require('../../assets/images/seta-voltar.png')} 
-              style={styles.backIcon} 
-            />
-          </TouchableOpacity>
-
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>{titulo}</Text>
-            <Image 
-              source={require('../../assets/images/categorias.png')} 
-              style={styles.menuIcon} 
-            />
-          </View>
-        </View>
+        <Header title="GERENCIAR" icon={require('../../assets/images/categorias.png')} />
 
         {/* Category Info Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Informações da Categoria</Text>
-          <View style={styles.divider} />
-        </View>
+        <Title text="Informações da Categoria" />
 
         {/* Nome da Categoria Input */}
         <View style={styles.formGroup}>
@@ -194,74 +180,13 @@ const GerenciarCategoria = ({ titulo = "GERENCIAR" }: { titulo?: string }) => {
 
         {/* Submit Buttons */}
         <View style={styles.submitButtonsContainer}>
-          <TouchableOpacity style={styles.deleteButton} onPress={deletarCategoria}>
-            <Text style={styles.submitButtonText}>DELETAR</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.submitButton} onPress={atualizarCategoria}>
-            <Text style={styles.submitButtonText}>ATUALIZAR</Text>
-          </TouchableOpacity>
+              <Button text="DELETAR" color="#B40000" action={deletarCategoria} />
+              <Button text="ATUALIZAR" color="#006516" action={atualizarCategoria} />
         </View>
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('home')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'home' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/home.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Home</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('loja')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'loja' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/carrinho.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Loja</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('servicos')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'servicos' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/cachorro.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Serviços</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.navItem} 
-          onPress={() => setActiveTab('perfil')}
-        >
-          <View style={styles.navIconContainer}>
-            {activeTab === 'perfil' && <View style={styles.activeIndicator} />}
-            <Image 
-              source={require('../../assets/images/perfil.png')} 
-              style={styles.navIcon} 
-            />
-          </View>
-          <Text style={styles.navLabel}>Perfil</Text>
-        </TouchableOpacity>
-      </View>
+      <NavigationBar />
     </SafeAreaView>
   );
 };
