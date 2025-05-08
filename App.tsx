@@ -1,4 +1,8 @@
+import React, { useCallback, useEffect } from 'react';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import SplashScreen from 'expo-splash-screen';
+
 import { 
   useFonts, 
   Montserrat_400Regular,
@@ -7,14 +11,8 @@ import {
   Montserrat_700Bold,
   Montserrat_900Black // Adicione esta importação
 } from '@expo-google-fonts/montserrat';
-import * as SplashScreen from 'expo-splash-screen';
-import React, { useCallback, useEffect } from 'react';
-import { View } from 'react-native';
-import GerenciarServico from './src/screens/GerenciarServico';
-import GerenciarProduto from './src/screens/GerenciarProduto';
-import GerenciarCategoria from './src/screens/GerenciarCategoria';
-import TelaLogin from './src/screens/TelaLogin';
-import ListarProduto from './src/screens/ListarCategoria';
+
+import AppRoute from './src/routes';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -49,10 +47,7 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <TelaLogin />
-      {/* <GerenciarProduto />  */}
-      {/* <GerenciarServico /> */}
-      {/* <GerenciarCategoria />  */}
+      <AppRoute />
       <StatusBar style="auto" />
     </View>
   );

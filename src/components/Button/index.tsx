@@ -6,7 +6,8 @@ import { styles } from "./style"
 export const Button = (props: any) => {
     return (
         <TouchableOpacity style={[styles.button, {backgroundColor: props.color}]} onPress={props.action}>
-            <Text style={styles.submitButtonText}>{props.text}</Text>
+            <Image source={props.icon} style={styles.icon} />
+            <Text style={styles.text}>{props.text}</Text>
         </TouchableOpacity>
     )
 
