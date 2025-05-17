@@ -5,6 +5,8 @@ import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-na
 import { Home } from '../screens/Home';
 import { Header } from '../components/Header';
 import { ShowProfile } from '../screens/ShowProfile';
+import { ListAdmScreen } from '../screens/ListAdmScreen';
+
 
 import { CreateProduct } from '../screens/CreateProduct';
 import ManageProduct from '../screens/ManageProduct';
@@ -24,6 +26,7 @@ const Stack = createNativeStackNavigator();
 type RootStackParamList = {
     Home: undefined;
     ShowProfile: undefined;
+    ListAdm: undefined;
     CreateProduct: undefined;
     ManageProduct: undefined;
     SearchProduct: undefined;
@@ -56,7 +59,13 @@ export default function AppRoute() {
                         header: () => <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/perfil.png')} />
                     })}
                 />
-                {/* All other screens remain the same */}
+                <Stack.Screen 
+                    name='ListAdm' 
+                    component={ListAdmScreen} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="ADMINISTRADORES" icon={require('../assets/images/adms.png')} />
+                    })}
+                />
                 <Stack.Screen 
                     name='CreateProduct' 
                     component={CreateProduct} 
@@ -64,7 +73,41 @@ export default function AppRoute() {
                         header: () => <Header activateBackButton={true} title="CADASTRAR" icon={require('../assets/images/icone-menu.png')} />
                     })}
                 />
-                {/* ... keep all other existing screen configurations ... */}
+                <Stack.Screen 
+                    name='ManageProduct' 
+                    component={ManageProduct} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="GERENCIAR" icon={require('../assets/images/icone-menu.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='SearchProduct' 
+                    component={SearchProduct} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="PRODUTOS" icon={require('../assets/images/icone-menu.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='CreateService' 
+                    component={CreateService} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="CADASTRAR" icon={require('../assets/images/cachorro.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='ManageService' 
+                    component={ManageService} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/perfil.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='CreateProduct' 
+                    component={CreateProduct} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="CADASTRAR" icon={require('../assets/images/icone-menu.png')} />
+                    })}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
