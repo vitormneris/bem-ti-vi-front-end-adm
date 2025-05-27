@@ -19,7 +19,8 @@ export const ListAdmScreen = () => {
         },
     ];
 
-    const handleDisable = (adminName) => {
+    const handleDisable = (adminName: string) => {
+
         Alert.alert(
             "Desabilitar Administrador",
             `Deseja desabilitar o administrador ${adminName}?`,
@@ -39,7 +40,8 @@ export const ListAdmScreen = () => {
         );
     };
 
-    const handleDelete = (adminName) => {
+    const handleDelete = (adminName: string) => {
+
         Alert.alert(
             "Excluir Administrador",
             `Deseja excluir permanentemente o administrador ${adminName}?`,

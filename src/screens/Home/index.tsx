@@ -9,6 +9,7 @@ export const Home = () => {
 
     return (
         <View style={styles.screen}>
+
             <Button text="Cadastrar produto" screen={() => navigate("CreateProduct")} />
             {/* <Button text="Gerenciar produto" screen={() => navigate("ManageProduct")} /> */}
             <Button text="Pesquisar produto" screen={() => navigate("SearchProduct")} />
@@ -20,7 +21,7 @@ export const Home = () => {
             <Button text="Cadastrar categoria" screen={() => navigate("CreateCategory")} />
             {/* <Button text="Gerenciar categoria" screen={() => navigate("ManageCategory")} /> */}
             <Button text="Pesquisar categoria" screen={() => navigate("SearchCategory")} />
-
+        
             {/* Login Button */}
             <Button text="Login" onPress={() => navigate("Login")} />
         </View>

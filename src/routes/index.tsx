@@ -6,7 +6,7 @@ import { Home } from '../screens/Home';
 import { Header } from '../components/Header';
 import { ShowProfile } from '../screens/ShowProfile';
 import { ListAdmScreen } from '../screens/ListAdmScreen';
-
+import { ManageProfile } from '../screens/ManageProfile';
 
 import { CreateProduct } from '../screens/CreateProduct';
 import ManageProduct from '../screens/ManageProduct';
@@ -27,6 +27,7 @@ type RootStackParamList = {
     Home: undefined;
     ShowProfile: undefined;
     ListAdm: undefined;
+    ManageProfile: undefined;
     CreateProduct: undefined;
     ManageProduct: { id : string};
     SearchProduct: undefined;
@@ -67,6 +68,14 @@ export default function AppRoute() {
                     })}
                 />
                 <Stack.Screen 
+                    name='ManageProfile' 
+                    component={ManageProfile} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="GERENCIAR PERFIL" icon={require('../assets/images/perfil.png')} />
+                    })}
+                />
+                <Stack.Screen 
+
                     name='CreateProduct' 
                     component={CreateProduct} 
                     options={() => ({
