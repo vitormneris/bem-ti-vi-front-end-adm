@@ -79,7 +79,7 @@ export const ListAdmScreen = () => {
                         <Image source={admin.photo} style={styles.adminImage} />
                         <Text style={styles.adminName}>{admin.name}</Text>
                         <View style={styles.adminActions}>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.actionButton}
                                 onPress={() => handleDisable(admin.name)}
                             >

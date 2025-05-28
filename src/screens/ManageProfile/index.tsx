@@ -7,6 +7,7 @@ import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { NavigationBar } from '../../components/NavigationBar';
 import { FormProfile } from '../../components/Forms/FormProfile';
+
 import { RootStackParamList } from '../../routes';
 
 import { styles } from './style';
@@ -42,7 +43,7 @@ export default function ManageProfile() {
 
     useEffect(() => {
         const buscarPerfil = async () => {
-            try {
+          try {
                 const resposta = await fetch(`http://URL:8080/administrador/${adminId}/buscar`);
                 if (!resposta.ok) {
                     throw new Error('Erro ao buscar perfil');
@@ -168,7 +169,7 @@ export default function ManageProfile() {
 
                 <View style={styles.buttonsContainer}>
                     <Button 
-                        icon={require('../../assets/icons/deletar.png')} 
+                        icon={require('../../assets/icons/delete.png')} 
                         text="DELETAR" 
                         color="#B40000" 
                         action={deletarPerfil} 

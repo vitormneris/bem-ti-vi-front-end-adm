@@ -6,7 +6,7 @@ import { Home } from '../screens/Home';
 import { Header } from '../components/Header';
 import { ShowProfile } from '../screens/ShowProfile';
 import { ListAdmScreen } from '../screens/ListAdmScreen';
-import { ManageProfile } from '../screens/ManageProfile';
+import ManageProfile from '../screens/ManageProfile';
 
 import { CreateProduct } from '../screens/CreateProduct';
 import ManageProduct from '../screens/ManageProduct';
@@ -23,7 +23,7 @@ import { Login } from '../screens/Login';
 
 const Stack = createNativeStackNavigator();
 
-type RootStackParamList = {
+export type RootStackParamList = {
     Home: undefined;
     ShowProfile: undefined;
     ListAdm: undefined;
@@ -108,13 +108,6 @@ export default function AppRoute() {
                     component={ManageService} 
                     options={() => ({
                         header: () => <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/perfil.png')} />
-                    })}
-                />
-                <Stack.Screen 
-                    name='CreateProduct' 
-                    component={CreateProduct} 
-                    options={() => ({
-                        header: () => <Header activateBackButton={true} title="CADASTRAR" icon={require('../assets/images/icone-menu.png')} />
                     })}
                 />
             </Stack.Navigator>
