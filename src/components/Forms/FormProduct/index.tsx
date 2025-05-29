@@ -1,11 +1,41 @@
-import React from "react"
+import React, { Dispatch, SetStateAction } from "react"
 
 import { Input } from "../Inputs/Input"
 import { InputDescription } from "../Inputs/InputDescription"
 import { InputImage } from "../Inputs/InputImage"
 import { InputCategory } from "../Inputs/InputCategory"
+import { CategoryFormated } from "../../../api/category/search/getCategoryList"
 
-export const FormProduct = (props: any) => {
+type FormProduct = {
+    label1: string,
+    placeholder1: string,
+    keyboardType1: string,
+    value1: string,
+    onChangeText1: Dispatch<SetStateAction<string>>
+
+    label2: string,
+    placeholder2: string,
+    keyboardType2: string,
+    value2: string,
+    onChangeText2: Dispatch<SetStateAction<string>>
+
+    label3: string,
+    category3: string,
+    setCategory3: Dispatch<SetStateAction<string>>,
+    categories3: CategoryFormated[] | undefined
+
+    label4: string,
+    image4: string | null,
+    selectImage4: Dispatch<SetStateAction<string>>,
+
+    label5: string,
+    placeholder5: string,
+    keyboardType5: string,
+    value5: string,
+    onChangeText5: Dispatch<SetStateAction<string>>
+}
+
+export const FormProduct = (props: FormProduct) => {
     return (
         <>
             <Input
@@ -28,7 +58,7 @@ export const FormProduct = (props: any) => {
                 label={props.label3}
                 category={props.category3}
                 setCategory={props.setCategory3}
-                categories={props.categories3}
+                categoriesToSelect={props.categories3}
             />
 
             <InputImage

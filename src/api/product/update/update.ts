@@ -1,23 +1,23 @@
-const API_URL = 'URL'
+import { GLOBAL_VAR } from "../../config/globalVar";
+import { Product } from "../create/create";
 
-export async function updateService( servico, imagem, serviceId ){
+export async function update( product: Product, image: string | null, productId: string ){
 
         const formData = new FormData();
 
-        formData.append('service', {
-            string: JSON.stringify(servico),
-            name: 'service',
+        formData.append('product', {
+            string: JSON.stringify(product),
             type: 'application/json',
-        });
+        } as any);
 
         formData.append('file', {
-            uri: imagem,
+            uri: image,
             name: 'imagem.jpg',
             type: 'image/jpeg',
-        });
+        } as any);
 
         try {
-            const response = await fetch(`${API_URL}service/${serviceId}/atualizar`, {
+            const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produto/${productId}/atualizar`, {
                 method: 'PUT',
                 body: formData,
             });

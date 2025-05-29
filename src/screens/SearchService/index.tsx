@@ -1,61 +1,57 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, SafeAreaView, } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
+
 import { NavigationBar } from '../../components/NavigationBar';
 import { SearchInput } from '../../components/SearchInput';
 import { Button } from '../../components/Button';
 import { ListService } from '../../components/ListItems/ListService';
 import { PaginationControls } from '../../components/PaginationControls';
 
-import { styles } from './style';
-
-import { searchService } from '../../api/service/search/searchService';
-import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../routes/index';
 
-type ServicoType = {
-    id: number;
-    name: string;
-    price: string;
-    image: any;
-    description: string;
-    estimated_duration: string;
-};
+import { Service } from '../../api/service/create/create';
+import { search, ServicePages } from '../../api/service/search/search';
+
+import { styles } from './style';
 
 export const SearchService = () => {
     const { navigate } = useNavigation<NavigationProps>()
-    const [searchText, setSearchText] = useState('');
-    const [pageIndex, setPageIndex] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
-    const [servicos, setServicos] = useState<ServicoType[]>([]);
+    const [searchText, setSearchText] = useState<string>('');
+    const [pageIndex, setPageIndex] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [servicos, setServicos] = useState<Service[]>([]);
 
-    const filteredServicos = servicos.filter(servico =>
+    const filteredServicos : Service[] = servicos.filter(servico =>
         servico.name.toLowerCase().includes(searchText.toLowerCase())
     );
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             async function carregarServicos() {
-                const data = await searchService(searchText, pageIndex);
-                setServicos(data?.servicos || []);
-                setTotalPages(data?.totalDePaginas || []);
+                const data: ServicePages | undefined = await search(searchText, pageIndex);
+                if (data != undefined) {
+                    setServicos(data.services);
+                    setTotalPages(data.totalPages);
+                }
             }
 
             carregarServicos();
         }, 750);
 
         return () => clearTimeout(delayDebounce);
-    }, [searchText,pageIndex]);
+    }, [searchText, pageIndex]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
-                <Button 
-                    icon={require('../../assets/images/add.png')} 
-                    text="CADASTRAR" 
-                    color="#256489" 
-                    action={() => navigate('CreateService')} 
+                <Button
+                    icon={require('../../assets/images/add.png')}
+                    text="CADASTRAR"
+                    color="#256489"
+                    action={() => navigate('CreateService')}
                 />
 
                 <SearchInput
@@ -64,18 +60,18 @@ export const SearchService = () => {
                     setSearchText={setSearchText}
                 />
 
-                <ListService filteredItems={filteredServicos} />
-               
-                <PaginationControls 
+                <ListService services={filteredServicos} />
+
+                <PaginationControls
                     pageIndex={pageIndex}
                     totalPages={totalPages}
-                    onNext={()=>setPageIndex(prev => prev + 1)}
-                    onPrev={()=>setPageIndex(prev => prev - 1)}
+                    onNext={() => setPageIndex(prev => prev + 1)}
+                    onPrev={() => setPageIndex(prev => prev - 1)}
                 />
 
             </ScrollView>
 
-            <NavigationBar initialTab='servicos'/>
+            <NavigationBar initialTab='servicos' />
         </SafeAreaView>
     );
 };

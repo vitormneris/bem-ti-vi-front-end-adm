@@ -1,10 +1,10 @@
-const API_URL = 'URL'
+import { GLOBAL_VAR } from "../../config/globalVar";
 
-export async function deleteProduct( productId ){
+export async function deleteById( categoryId: string ) {
 
     try {
 
-        const response = await fetch(`${API_URL}produto/${productId}/deletar`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categoria/${categoryId}/deletar`,{
             method: 'DELETE',
         })
 

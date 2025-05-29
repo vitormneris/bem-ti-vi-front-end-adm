@@ -9,14 +9,9 @@ import { FormProduct } from '../../components/Forms/FormProduct';
 
 import { styles } from './style';
 
-import { postProduct } from '../../api/product/create/createProduct';
-import { listCategory } from '../../api/category/search/listCategory';
-
-type CategoriaType = {
-	nome: string;
-	value: string;
-};
-
+import { create } from '../../api/product/create/create';
+import { CategoryFormated, getCategoryList } from '../../api/category/search/getCategoryList';
+import { Category } from '../../api/category/create/create';
 
 export const CreateProduct = () => {
 	const [categoria, setCategoria] = useState<string>('');
@@ -24,8 +19,7 @@ export const CreateProduct = () => {
 	const [valorProduto, setValorProduto] = useState<string>('');
 	const [descricaoProduto, setDescricaoProduto] = useState<string>('');
 	const [imagem, setImagem] = useState<string | null>(null);
-	const [categorias, setCategorias] = useState<CategoriaType[]>([]);
-
+	const [categorias, setCategorias] = useState<CategoryFormated[] | void>([]);
 
 	const selecionarImagem = async () => {
 		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -36,7 +30,7 @@ export const CreateProduct = () => {
 		}
 
 		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			mediaTypes: 'images',
 			allowsEditing: true,
 			aspect: [4, 3],
 			quality: 0.8,
@@ -50,8 +44,8 @@ export const CreateProduct = () => {
 	useEffect(() => {
 		async function carregarCategorias() {
 			try {
-				const categoriasFormatadas = await listCategory();
-				setCategorias(categoriasFormatadas);
+				const categoriesForInput: CategoryFormated[] | void = await getCategoryList();
+				setCategorias(categoriesForInput);
 			} catch (error) {
 				console.error('Erro ao carregar categorias:', error);
 			}
@@ -61,15 +55,20 @@ export const CreateProduct = () => {
 
 
 	const handlePost = async () => {
+		const category: Category = { id: categoria, name: "", pathImage: "", cardColor: "" };
 		const produto = {
+			id: null,
 			name: nomeProduto,
-			price: valorProduto,
+			price: parseFloat(valorProduto),
+			pathImage: imagem,
 			description: descricaoProduto,
-			categories: [{id: categoria,}],
+			categories: [
+				category
+			],
 		};
 
-      	try {
-			const success = await postProduct(produto, imagem);
+		try {
+			const success = await create(produto, imagem);
 			if (success) {
 				setCategoria('')
 				setNomeProduto('')
@@ -78,11 +77,11 @@ export const CreateProduct = () => {
 				setImagem(null)
 				Alert.alert('Sucesso!', 'O produto foi cadastrado.')
 			}
-    	} catch (error) {
+		} catch (error) {
 			console.error('POST request failed:', error);
 			Alert.alert('Erro', 'Não foi possível cadastrar o produto.');
 		}
-    };
+	};
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -121,11 +120,11 @@ export const CreateProduct = () => {
 				/>
 
 				<View style={styles.buttonsContainer}>
-					<Button icon={require('../../assets/icons/add.png')} text="CADASTRAR PRODUTO" color="#006316"  action={handlePost}  />	
+					<Button icon={require('../../assets/icons/add.png')} text="CADASTRAR PRODUTO" color="#006316" action={handlePost} />
 				</View>
 			</ScrollView>
 
-			<NavigationBar initialTab='loja'/>
+			<NavigationBar initialTab='loja' />
 		</SafeAreaView>
 	);
 };

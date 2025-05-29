@@ -1,38 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
-import * as ImagePicker from 'expo-image-picker';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import ImagePicker from 'expo-image-picker';
 
 import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { NavigationBar } from '../../components/NavigationBar';
 import { FormProduct } from '../../components/Forms/FormProduct';
-import { searchProductById } from '../../api/product/search/searchProductById';
-import { deleteProduct } from '../../api/product/delete/deleteProduct';
-import { updateProduct } from '../../api/product/update/updateProduct';
-import { listCategory } from '../../api/category/search/listCategory';
-import { useRoute, useNavigation } from '@react-navigation/native';
+
+import { findById } from '../../api/product/search/findById';
+import { deleteById } from '../../api/product/delete/deleteById';
+import { update } from '../../api/product/update/update';
+import { CategoryFormated, getCategoryList } from '../../api/category/search/getCategoryList';
+import { Category } from '../../api/category/create/create';
+import { Product } from '../../api/product/create/create';
+
 import { NavigationProps } from '../../routes/index';
 
 import { styles } from './style';
-
-type CategoriaType = {
-    nome: string;
-    value: string;
-};
 
 export default function ManageProduct() {
     const { navigate } = useNavigation<NavigationProps>();
     const route = useRoute();
     const { id: productId } = route.params as { id: string };
 
-    const [categoria, setCategoria] = useState<string>('');
+    const [categoriesId, setCategoriesId] = useState<string>('');
     const [nomeProduto, setNomeProduto] = useState<string>('');
     const [valorProduto, setValorProduto] = useState<string>('');
     const [descricao, setDescricao] = useState<string>('');
-    const [imagem, setImagem] = useState<string | null>(null);
-    const [categorias, setCategorias] = useState<CategoriaType[]>([]);
-
+    const [imagem, setImagem] = useState<string>('');
+    const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[] | undefined>([]);
 
     const selecionarImagem = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -43,7 +41,7 @@ export default function ManageProduct() {
         }
 
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: 'images',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
@@ -53,22 +51,27 @@ export default function ManageProduct() {
             setImagem(result.assets[0].uri);
         }
     };
-     
+
 
     useEffect(() => {
         const buscarProduto = async () => {
             try {
-                const data = await searchProductById(productId);
+                const data: Product | undefined = await findById(productId);
                 if (!data) {
                     throw new Error('Erro ao buscar produto');
                 }
 
-                const categoriasFormatadas = await listCategory();
-                setCategorias(categoriasFormatadas);
+                const categoriesToSelect: CategoryFormated[] | undefined = await getCategoryList();
+
+                const selectedCategories = data.categories;
+
+                const selectedCategoriesFormated: string[] = selectedCategories.map((item: Category) => (item.id == null) ? '' : item.id)
+
+                setCategoriesToSelect(categoriesToSelect);
                 setNomeProduto(data.name);
                 setValorProduto(String(data.price));
                 setDescricao(data.description);
-                setCategoria(data.categories?.[0]?.id);
+                setCategoriesId(selectedCategoriesFormated[0]);
                 setImagem(data.pathImage);
             } catch (erro) {
                 console.error('Erro ao buscar produto:', erro);
@@ -80,22 +83,25 @@ export default function ManageProduct() {
     }, [productId]);
 
     const handleUpdate = async () => {
-        if (!nomeProduto || !valorProduto || !descricao || !categoria) {
+        if (!nomeProduto || !valorProduto || !descricao || !categoriesId) {
             Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
             return;
         }
 
-        const produto = {
+        const category: Category = { id: categoriesId , name: "", pathImage: "", cardColor: "" };
+        const produto: Product = {
+            id: productId,
             name: nomeProduto,
             price: parseFloat(valorProduto),
-            categories: [
-                { id: categoria }
-            ],
+            pathImage: imagem,
             description: descricao,
+            categories: [
+                category
+            ],
         };
 
         try {
-            const success = await updateProduct( produto, imagem, productId )
+            const success = await update(produto, imagem, productId)
 
             if (success) {
                 Alert.alert("Sucesso!", "O produto foi atualizado.");
@@ -113,10 +119,10 @@ export default function ManageProduct() {
             'Confirmação',
             'Tem certeza que deseja excluir este produto?',
             [
-                { text: 'Cancelar', style: 'cancel' }, 
-                { 
+                { text: 'Cancelar', style: 'cancel' },
+                {
                     text: 'Excluir',
-                    style: 'destructive', 
+                    style: 'destructive',
                     onPress: () => confirmDelete(productId),
                 },
             ]
@@ -125,8 +131,8 @@ export default function ManageProduct() {
 
     const confirmDelete = async (productId: string) => {
         try {
-            const success = await deleteProduct(productId);
-            
+            const success = await deleteById(productId);
+
             if (success) {
                 Alert.alert('Sucesso!', 'O produto foi excluído.');
                 navigate('SearchProduct')
@@ -158,14 +164,13 @@ export default function ManageProduct() {
                     onChangeText2={setValorProduto}
 
                     label3="Categoria do Produto"
-                    category3={categoria}
-                    setCategory3={setCategoria}
-                    categories3={categorias}
+                    category3={categoriesId}
+                    setCategory3={setCategoriesId}
+                    categories3={categoriesToSelect}
 
                     label4="Imagem do Serviço"
                     image4={imagem}
                     selectImage4={selecionarImagem}
-
 
                     label5="Descrição do Serviço"
                     placeholder5="Descreva o serviço em detalhes"
@@ -180,7 +185,7 @@ export default function ManageProduct() {
                 </View>
             </ScrollView>
 
-            <NavigationBar initialTab='loja'/>
+            <NavigationBar initialTab='loja' />
         </SafeAreaView>
     );
 };

@@ -14,12 +14,12 @@ export const styles = StyleSheet.create({
     scrollContent: {
         paddingBottom: 40
     },
-    
+
     buttonsContainer: {
-      justifyContent: 'center',
-      paddingHorizontal: 16,
-      marginTop: 32,
-      marginBottom: 30,
-  },
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+        marginTop: 32,
+        marginBottom: 30,
+    },
 
 });

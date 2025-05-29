@@ -30,7 +30,7 @@ export default function ManageProfile() {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: 'images',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
@@ -43,7 +43,7 @@ export default function ManageProfile() {
 
     useEffect(() => {
         const buscarPerfil = async () => {
-          try {
+            try {
                 const resposta = await fetch(`http://URL:8080/administrador/${adminId}/buscar`);
                 if (!resposta.ok) {
                     throw new Error('Erro ao buscar perfil');
@@ -140,9 +140,9 @@ export default function ManageProfile() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView 
-                style={styles.scrollView} 
-                contentContainerStyle={styles.scrollContent} 
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
                 keyboardShouldPersistTaps="handled"
             >
                 <Title text="Gerenciar Perfil" />
@@ -168,17 +168,17 @@ export default function ManageProfile() {
                 />
 
                 <View style={styles.buttonsContainer}>
-                    <Button 
-                        icon={require('../../assets/icons/delete.png')} 
-                        text="DELETAR" 
-                        color="#B40000" 
-                        action={deletarPerfil} 
+                    <Button
+                        icon={require('../../assets/icons/delete.png')}
+                        text="DELETAR"
+                        color="#B40000"
+                        action={deletarPerfil}
                     />
-                    <Button 
-                        icon={require('../../assets/icons/edit.png')} 
-                        text="ATUALIZAR" 
-                        color="#006516" 
-                        action={atualizarPerfil} 
+                    <Button
+                        icon={require('../../assets/icons/edit.png')}
+                        text="ATUALIZAR"
+                        color="#006516"
+                        action={atualizarPerfil}
                     />
                 </View>
             </ScrollView>

@@ -7,9 +7,9 @@ import { NavigationBar } from '../../components/NavigationBar';
 import { Button } from '../../components/Button';
 import { FormService } from '../../components/Forms/FormService';
 
-import { styles } from './style';
+import { create, Service } from '../../api/service/create/create';
 
-import { postService } from '../../api/service/create/createService';
+import { styles } from './style';
 
 export const CreateService = () => {
     const [nomeServico, setNomeServico] = useState<string>('');
@@ -27,7 +27,7 @@ export const CreateService = () => {
         }
 
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: 'images',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
@@ -39,15 +39,17 @@ export const CreateService = () => {
     };
     
     const handlePost = async () => {
-        const servico = {
+        const servico: Service = {
+            id: null,
             name: nomeServico,
-            price: precoServico,
-            estimated_duration: duracaoEstimada,
+            price: parseFloat(precoServico),
+            pathImage: imagem,
+            estimatedDuration: duracaoEstimada,
             description: descricaoServico,
         };
 
         try {
-            const success = await postService(servico, imagem);
+            const success = await create(servico, imagem);
             if (success){
                 setNomeServico('')
                 setPrecoServico('')

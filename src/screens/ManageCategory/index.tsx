@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
-import * as ImagePicker from 'expo-image-picker';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import ImagePicker from 'expo-image-picker';
 
 import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { NavigationBar } from '../../components/NavigationBar';
 import { FormCategory } from '../../components/Forms/FormCategory';
+import ColorPickerModal from "../../components/ColorPickerModal";
+
+import { findById } from '../../api/category/search/findById';
+import { deleteById } from '../../api/category/delete/deleteById';
+import { update } from '../../api/category/update/update';
+
+import { NavigationProps } from '../../routes/index';
 
 import { styles } from './style';
-import { searchCategoryById } from '../../api/category/search/searchCategoryById';
-import { deleteCategory } from '../../api/category/delete/deleteCategory';
-import { updateCategory } from '../../api/category/update/updateCategory';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { NavigationProps } from '../../routes/index';
-import ColorPickerModal from "../../components/ColorPickerModal";
 
 export default function ManageCategory() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -34,7 +36,7 @@ export default function ManageCategory() {
         }
 
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: 'images',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
@@ -48,7 +50,7 @@ export default function ManageCategory() {
     useEffect(() => {
         const buscarCategoria = async () => {
             try {
-                const data = await searchCategoryById(categoryId);
+                const data = await findById(categoryId);
                 if (!data) {
                     throw new Error('Erro ao buscar categoria');
                 }
@@ -72,12 +74,14 @@ export default function ManageCategory() {
         }
 
         const categoria = {
+            id: categoryId,
             name: nomeCategoria,
+            pathImage: "",
             cardColor: corCard
         };
 
         try {
-            const success = await updateCategory(categoria, imagem, categoryId);
+            const success = await update(categoria, imagem, categoryId);
 
             if (success) {
                 Alert.alert("Sucesso!", "A categoria foi atualizada.");
@@ -107,7 +111,7 @@ export default function ManageCategory() {
 
     const confirmDelete = async (categoryId: string) => {
     try {
-        const success = await deleteCategory(categoryId);
+        const success = await deleteById(categoryId);
         
         if (success) {
             Alert.alert('Sucesso!', 'A categoria foi excluída.');

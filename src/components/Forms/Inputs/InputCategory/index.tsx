@@ -1,27 +1,43 @@
-import React from "react"
+import React, { Dispatch, SetStateAction } from "react"
 import { Text, View } from "react-native"
 
 import { Picker } from "@react-native-picker/picker"
 
+import { CategoryFormated } from "../../../../api/category/search/getCategoryList"
+
 import { styles } from "./style"
 
-export const InputCategory = (props: any) => {
+type InputCategoryProps = {
+    label: string
+    categoriesToSelect: CategoryFormated[] | undefined,
+    category: string,
+    setCategory: Dispatch<SetStateAction<string>>
+}
+
+export const InputCategory = ({ label, categoriesToSelect, category, setCategory }: InputCategoryProps) => {
+    if (categoriesToSelect == undefined) {
+        return <></>;
+    }
+
+    if (!categoriesToSelect.some((c: CategoryFormated) => c.key === "")) {
+        categoriesToSelect.unshift({key: '', label:''});
+    }
     return (
         <View style={styles.formGroup}>
-            <Text style={styles.label}>{props.label}</Text>
+            <Text style={styles.label}>{label}</Text>
             <View style={styles.pickerWrapper}>
-                {!props.category && (
+                {!category && (
                     <Text style={styles.pickerPlaceholder}>
                         Selecione uma categoria
                     </Text>
                 )}
                 <Picker
-                    selectedValue={props.category}
-                    onValueChange={props.setCategory}
+                    selectedValue={category}
+                    onValueChange={setCategory}
                     style={styles.picker}
                 >
-                    {props.categories.map((item: any) => (
-                        <Picker.Item key={item.value} label={item.label} value={item.value} />
+                    {categoriesToSelect.map((item: CategoryFormated) => (
+                        <Picker.Item key={item.key} label={item.label} value={item.key} />
                     ))}
                 </Picker>
             </View>

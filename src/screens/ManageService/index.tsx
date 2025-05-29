@@ -1,32 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
-import * as ImagePicker from 'expo-image-picker';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import ImagePicker from 'expo-image-picker';
 
 import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { NavigationBar } from '../../components/NavigationBar';
 import { FormService } from '../../components/Forms/FormService';
 
-import { styles } from './style';
-import { searchServiceById } from '../../api/service/search/searchServiceById';
-import { deleteService } from '../../api/service/delete/deleteService';
-import { updateService } from '../../api/service/update/updateService';
-import { useRoute, useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../routes/index';
 
+import { findById } from '../../api/service/search/findById';
+import { deleteById } from '../../api/service/delete/deleteById';
+import { update } from '../../api/service/update/update';
+import { Service } from '../../api/service/create/create';
+
+import { styles } from './style';
 
 export default function ManageService() {
-    const { navigate } = useNavigation<NavigationProps>();
     const route = useRoute();
     const { id: serviceId } = route.params as { id: string };
+    const { navigate } = useNavigation<NavigationProps>();
 
     const [nomeServico, setNomeServico] = useState<string>('');
     const [descricaoServico, setDescricaoServico] = useState<string>('');
     const [precoServico, setPrecoServico] = useState<string>('');
     const [duracaoEstimada, setDuracaoEstimada] = useState<string>('');
     const [imagem, setImagem] = useState<string | null>(null);
-
 
     const selecionarImagem = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,7 +38,7 @@ export default function ManageService() {
         }
 
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: 'images',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
@@ -50,7 +51,7 @@ export default function ManageService() {
     useEffect(() => {
         const buscarServico = async () => {
             try {
-                const data = await searchServiceById( serviceId );
+                const data: Service | undefined = await findById( serviceId );
                 if (!data) {
                     throw new Error('Erro ao buscar servico');
                 }
@@ -58,7 +59,7 @@ export default function ManageService() {
                 setNomeServico(data.name);
                 setPrecoServico(String(data.price));
                 setDescricaoServico(data.description);
-                setDuracaoEstimada(data.estimated_duration);
+                setDuracaoEstimada(data.estimatedDuration);
                 setImagem(data.pathImage);
             } catch (erro) {
                 console.error('Erro ao buscar servico:', erro);
@@ -75,15 +76,17 @@ export default function ManageService() {
                 return;
         }
         
-        const servico = {
+        const servico: Service = {
+            id: null,
             name: nomeServico,
-            price: precoServico,
-            estimated_duration: duracaoEstimada,
+            price: parseFloat(precoServico),
+            pathImage: imagem,
+            estimatedDuration: duracaoEstimada,
             description: descricaoServico
         };
 
         try {
-            const success = await updateService(servico, imagem, serviceId);
+            const success = await update(servico, imagem, serviceId);
 
             if (success){
                 Alert.alert('Sucesso!', 'O serviço foi atualizado.');
@@ -113,7 +116,7 @@ export default function ManageService() {
 
     const confirmDelete = async (serviceId: string) => {
     try {
-        const success = await deleteService(serviceId);
+        const success = await deleteById(serviceId);
         
         if (success) {
             Alert.alert('Sucesso!', 'O serviço foi excluído.');

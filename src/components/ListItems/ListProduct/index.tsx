@@ -1,43 +1,56 @@
 import React from "react"
 import { View } from "react-native"
 
+import { useNavigation } from '@react-navigation/native';
+
 import { InputItem } from "../InputItems/InputItem"
 import { ButtonItem } from "../InputItems/ButtonItem"
+import { InputImageItem } from "../InputItems/InputImageItem"
 
-import { styles } from "../style"
-import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../../routes/index';
 
-export const ListProduct = (props: any) => {
+import { Product } from "../../../api/product/create/create"
+
+import { styles } from "../style"
+
+type ListProductProps = {
+    products: Product[]
+}
+
+export const ListProduct = ({ products }: ListProductProps) => {
     return (
         <View style={styles.itemContainer}>
-            {props.filteredItems.map((item: any) => (
-                <ItemService
-                    key={item.id}
-                    id={item.id}
-                    name={item.name}
-                    category={item.category}
-                    price={item.price}
-                />
+            {products.map((item: Product) => (
+                <ItemProduct key={item.id} product={item} />
             ))}
         </View>
     )
 }
 
-export const ItemService = (props: any) => {
+type ItemProductProps = {
+    product: Product
+}
+
+export const ItemProduct = ({ product }: ItemProductProps) => {
     const { navigate } = useNavigation<NavigationProps>();
+    
+    const productId = (product.id == null) ? "" : product.id;
 
     return (
-        <View key={props.id} style={styles.card}>
+        <View style={styles.card}>
             <View style={styles.info}>
-                <InputItem label="Nome" value={props.name} />
-                <InputItem label="Categoria" value={props.category} />
-                <InputItem label="Valor" value={props.price} />
+                <InputItem label="Nome" value={product.name} />
+                <InputItem label="Categoria" value={product.categories[0].name} />
+                <InputItem label="Valor" value={product.price} />
+                <InputImageItem label="Imagem do produto" imagem={product.pathImage} />
             </View>
 
             <View style={styles.actions}>
                 <ButtonItem source={require('../../../assets/images/olhos.png')} />
-                <ButtonItem source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageProduct', {id:props.id})} />
+                <ButtonItem 
+                    source={require('../../../assets/images/configuracao.png')} 
+                    onPress={() => navigate('ManageProduct', {id: productId})} 
+                />
             </View>
         </View>
     )

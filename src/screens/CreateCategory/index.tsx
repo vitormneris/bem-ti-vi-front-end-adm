@@ -7,11 +7,11 @@ import { Title } from "../../components/Title";
 import { NavigationBar } from "../../components/NavigationBar";
 import { Button } from "../../components/Button";
 import { FormCategory } from "../../components/Forms/FormCategory";
+import ColorPickerModal from "../../components/ColorPickerModal";
+
+import { Category, create } from "../../api/category/create/create";
 
 import { styles } from "./style";
-
-import { postCategory } from "../../api/category/create/createCategory";
-import ColorPickerModal from "../../components/ColorPickerModal";
 
 export const CreateCategory = () => {
     const [nomeCategoria, setNomeCategoria] = useState<string>("");
@@ -27,26 +27,27 @@ export const CreateCategory = () => {
             return;
         }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: 'images',
             allowsEditing: true,
             aspect: [4, 3],
             quality: 0.8,
         });
 
         if (!result.canceled) {
-            setImagem(result.assets[0].uri);
+			setImagem(result.assets[0].uri);
         }
     };
 
     const handlePost = async () => {
-        const categoria = {
+        const categoria: Category = {
+            id: null,
             name: nomeCategoria,
             cardColor: corCard,
         };
-    
+
         try {
-            const success = await postCategory(categoria, imagem);
+            const success = await create(categoria, imagem);
             if (success) {
                 setNomeCategoria('')
                 setCorCard('#8b5cf6')
@@ -57,7 +58,7 @@ export const CreateCategory = () => {
             console.error('POST request failed:', error);
             Alert.alert('Erro', 'Não foi possível cadastrar a categoria.');
         }
-        };
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -98,7 +99,7 @@ export const CreateCategory = () => {
                     setColorModalVisible(false);
                 }}
             />
-            <NavigationBar initialTab="categorias"/>
+            <NavigationBar initialTab="categorias" />
         </SafeAreaView>
     );
 };

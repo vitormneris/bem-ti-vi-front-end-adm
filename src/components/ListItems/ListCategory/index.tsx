@@ -1,42 +1,51 @@
 import React from "react"
 import { View } from "react-native"
 
+import { useNavigation } from '@react-navigation/native';
+
 import { InputItem } from "../InputItems/InputItem"
 import { ButtonItem } from "../InputItems/ButtonItem"
 import { InputImageItem } from "../InputItems/InputImageItem"
 
-import { styles } from "../style"
-import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../../routes/index';
 
-export const ListCategory = (props: any) => {
+import { Category } from "../../../api/category/create/create"
+
+import { styles } from "../style"
+
+type ListCategoryProps = {
+    categories: Category[]
+}
+
+export const ListCategory = ({ categories }: ListCategoryProps) => {
     return (
         <View style={styles.itemContainer}>
-            {props.filteredItems.map((item: any) => (
-                <ItemService
-                    key={item.id}
-                    id={item.id}
-                    name={item.nome}
-                    image={item.imagem}
-                />
+            {categories.map((item: Category) => (
+                <ItemCategory key={item.id} category={item} />
             ))}
         </View>
     )
 }
 
-export const ItemService = (props: any) => {
+type ItemCategoryProps = {
+    category: Category
+}
+
+export const ItemCategory = ({ category }: ItemCategoryProps) => {
     const { navigate } = useNavigation<NavigationProps>();
 
+    const categoryId = (category.id == null) ? '' : category.id; 
+
     return (
-        <View key={props.id} style={styles.card}>
+        <View key={categoryId} style={styles.card}>
             <View style={styles.info}>
-                <InputItem label="Nome da Categoria" value={props.name} />
-                <InputImageItem label="Imagem da categoria" imagem={props.image} />
+                <InputItem label="Nome das Categoria" value={category.name} />
+                <InputImageItem label="Imagem da categoria" imagem={category.pathImage} />
             </View>
 
             <View style={styles.actions}>
                 <ButtonItem source={require('../../../assets/images/olhos.png')} />
-                <ButtonItem source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageCategory',{id:props.id})} />
+                <ButtonItem source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageCategory', {id: categoryId})} />
             </View>
         </View>
     )

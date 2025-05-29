@@ -1,41 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
+
 import { NavigationBar } from '../../components/NavigationBar';
 import { SearchInput } from '../../components/SearchInput';
 import { Button } from '../../components/Button';
 import { ListCategory } from '../../components/ListItems/ListCategory';
 import { PaginationControls } from '../../components/PaginationControls';
 
-import { styles } from './style';
-import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../routes/index';
 
-import { searchCategory } from '../../api/category/search/searchCategory';
+import { CategoryPages, search } from '../../api/category/search/search';
+import { Category } from '../../api/category/create/create';
 
-type CategoriaType = {
-    id: number;
-    nome: string;
-    imagem: any;
-};
+import { styles } from './style';
 
 export const SearchCategory = () => {
     const { navigate } = useNavigation<NavigationProps>();
-    const [searchText, setSearchText] = useState('');
-    const [pageIndex, setPageIndex] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
-    const [categorias, setCategorias] = useState<CategoriaType[]>([]);
+    const [searchText, setSearchText] = useState<string>('');
+    const [pageIndex, setPageIndex] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [categorias, setCategorias] = useState<Category[]>([]);
 
-    const filteredCategorias = categorias.filter(categoria =>
-        categoria.nome.toLowerCase().includes(searchText.toLowerCase())
+    const filteredCategorias = categorias.filter(category =>
+        category.name.toLowerCase().includes(searchText.toLowerCase())
     );
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             async function carregarCategorias() {
-                const data = await searchCategory(searchText, pageIndex);
-                setCategorias(data?.categorias || []);
-                setTotalPages(data?.totalDePaginas || []);
+                const data: CategoryPages | undefined = await search(searchText, pageIndex);
+                if (data != undefined) {
+                    setCategorias(data.categories);
+                    setTotalPages(data.totalPages);   
+                }
             }
 
             carregarCategorias();
@@ -62,7 +61,7 @@ export const SearchCategory = () => {
                 />
 
                 {/* Lista de Categorias */}
-                <ListCategory filteredItems={filteredCategorias} />
+                <ListCategory categories={filteredCategorias} />
 
                 <PaginationControls 
                     pageIndex={pageIndex}

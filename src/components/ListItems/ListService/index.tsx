@@ -8,45 +8,49 @@ import { InputImageItem } from "../InputItems/InputImageItem"
 import { styles } from "../style"
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../../routes/index';
+import { Service } from "../../../api/service/create/create"
 
+type ListServiceProps = {
+    services: Service[]
+}
 
-export const ListService = (props: any) => {
+export const ListService = ({ services }: ListServiceProps) => {
     return (
         <View style={styles.itemContainer}>
-            {props.filteredItems.map((item: any) => (
-                <ItemService
-                    key={item.id}
-                    id={item.id}
-                    name={item.name}
-                    price={item.price}
-                    image={item.image}
-                />
+            {services.map((item: Service) => (
+                <ItemService key={item.id} service={item} />
             ))}
         </View>
     )
 }
 
-export const ItemService = (props: any) => {
+type ItemServiceProps = {
+    service: Service
+}
+
+export const ItemService = ({ service }: ItemServiceProps) => {
     const { navigate } = useNavigation<NavigationProps>();
+
+    const serviceId: string = (service.id == null) ? '' : service.id;
 
     return (
 
-        <View key={props.id} style={styles.card}>
+        <View style={styles.card}>
             <View style={styles.info}>
-   
-                <InputItem label="Nome do Serviço" value={props.name} />
-                
-                {/* <InputItem label="Preço" value={props.price} /> */}
+
+                <InputItem label="Nome do Serviço" value={service.name} />
+
+                {/* <InputItem label="Preço" value={service.price} /> */}
 
                 <Text style={styles.label}>Preço</Text>
-                <Text style={[styles.value, { marginBottom: 10 }]}> {props.price} </Text>
+                <Text style={[styles.value, { marginBottom: 10 }]}> {service.price} </Text>
 
-                <InputImageItem label="Imagem" imagem={ props.image } />                
+                <InputImageItem label="Imagem" imagem={service.pathImage} />
             </View>
 
             <View style={styles.actions}>
                 <ButtonItem source={require('../../../assets/images/olhos.png')} />
-                <ButtonItem source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageService',{id:props.id})} />
+                <ButtonItem source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageService', { id: serviceId })} />
             </View>
         </View>
     )

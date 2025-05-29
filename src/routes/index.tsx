@@ -1,12 +1,9 @@
-import React from 'react';
+import React from 'react'
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { Home } from '../screens/Home';
 import { Header } from '../components/Header';
-import { ShowProfile } from '../screens/ShowProfile';
-import { ListAdmScreen } from '../screens/ListAdmScreen';
-import ManageProfile from '../screens/ManageProfile';
 
 import { CreateProduct } from '../screens/CreateProduct';
 import ManageProduct from '../screens/ManageProduct';
@@ -25,9 +22,6 @@ const Stack = createNativeStackNavigator();
 
 export type RootStackParamList = {
     Home: undefined;
-    ShowProfile: undefined;
-    ListAdm: undefined;
-    ManageProfile: undefined;
     CreateProduct: undefined;
     ManageProduct: { id : string};
     SearchProduct: undefined;
@@ -40,7 +34,7 @@ export type RootStackParamList = {
     Login: undefined;
 };
 
-export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
+export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Home">;
 
 export default function AppRoute() {
     return (
@@ -54,28 +48,6 @@ export default function AppRoute() {
                     })}
                 />
                 <Stack.Screen 
-                    name='ShowProfile' 
-                    component={ShowProfile} 
-                    options={() => ({
-                        header: () => <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/perfil.png')} />
-                    })}
-                />
-                <Stack.Screen 
-                    name='ListAdm' 
-                    component={ListAdmScreen} 
-                    options={() => ({
-                        header: () => <Header activateBackButton={true} title="ADMINISTRADORES" icon={require('../assets/images/adms.png')} />
-                    })}
-                />
-                <Stack.Screen 
-                    name='ManageProfile' 
-                    component={ManageProfile} 
-                    options={() => ({
-                        header: () => <Header activateBackButton={true} title="GERENCIAR PERFIL" icon={require('../assets/images/perfil.png')} />
-                    })}
-                />
-                <Stack.Screen 
-
                     name='CreateProduct' 
                     component={CreateProduct} 
                     options={() => ({
@@ -107,10 +79,45 @@ export default function AppRoute() {
                     name='ManageService' 
                     component={ManageService} 
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/perfil.png')} />
+                        header: () => <Header activateBackButton={true} title="GERENCIAR" icon={require('../assets/images/cachorro.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='SearchService' 
+                    component={SearchService} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="SERVIÇOS" icon={require('../assets/images/cachorro.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='CreateCategory' 
+                    component={CreateCategory} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="CADASTRAR" icon={require('../assets/images/categorias.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='ManageCategory' 
+                    component={ManageCategory} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="GERENCIAR" icon={require('../assets/images/categorias.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='SearchCategory' 
+                    component={SearchCategory} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="CATEGORIAS" icon={require('../assets/images/categorias.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='Login' 
+                    component={Login} 
+                    options={() => ({
+                        header: () => <></>
                     })}
                 />
             </Stack.Navigator>
         </NavigationContainer>
-    );
+    )
 }
