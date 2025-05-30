@@ -2,21 +2,26 @@ import React from 'react'
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { Home } from '../screens/Home';
 import { Header } from '../components/Header';
 
-import { CreateProduct } from '../screens/CreateProduct';
-import ManageProduct from '../screens/ManageProduct';
-import { SearchProduct } from '../screens/SearchProduct';
-
-import { CreateService } from '../screens/CreateService';
-import ManageService from '../screens/ManageService';
-import { SearchService } from '../screens/SearchService';
-
-import { CreateCategory } from '../screens/CreateCategory';
-import ManageCategory from '../screens/ManageCategory';
-import { SearchCategory } from '../screens/SearchCategory';
+import { Home } from '../screens/Home';
 import { Login } from '../screens/Login';
+
+import { CreateProduct } from '../screens/create/CreateProduct';
+import ManageProduct from '../screens/manage/ManageProduct';
+import { SearchProduct } from '../screens/search/SearchProduct';
+
+import { CreateService } from '../screens/create/CreateService';
+import ManageService from '../screens/manage/ManageService';
+import { SearchService } from '../screens/search/SearchService';
+
+import { CreateCategory } from '../screens/create/CreateCategory';
+import ManageCategory from '../screens/manage/ManageCategory';
+import { SearchCategory } from '../screens/search/SearchCategory';
+
+import { ShowProfile } from '../screens/ShowProfile';
+import ManageProfile from '../screens/manage/ManageProfile';
+import { SearchAdministrator } from '../screens/search/SearchAdministrator';
 
 const Stack = createNativeStackNavigator();
 
@@ -31,7 +36,10 @@ export type RootStackParamList = {
     CreateCategory: undefined;
     ManageCategory: { id : string};
     SearchCategory: undefined;
+    ManageProfile: undefined;
+    ShowProfile: undefined;
     Login: undefined;
+    SearchAdministrator: undefined;
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -104,6 +112,13 @@ export default function AppRoute() {
                     })}
                 />
                 <Stack.Screen 
+                    name='ShowProfile' 
+                    component={ShowProfile} 
+                    options={() => ({
+                        header: () => <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/categorias.png')} />
+                    })}
+                />
+                <Stack.Screen 
                     name='SearchCategory' 
                     component={SearchCategory} 
                     options={() => ({
@@ -115,6 +130,20 @@ export default function AppRoute() {
                     component={Login} 
                     options={() => ({
                         header: () => <></>
+                    })}
+                />
+                <Stack.Screen 
+                    name='ManageProfile' 
+                    component={ManageProfile} 
+                    options={() => ({
+                        header: () =>  <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/categorias.png')} />
+                    })}
+                />
+                <Stack.Screen 
+                    name='SearchAdministrator' 
+                    component={SearchAdministrator} 
+                    options={() => ({
+                        header: () =>  <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/categorias.png')} />
                     })}
                 />
             </Stack.Navigator>

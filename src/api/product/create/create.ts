@@ -5,7 +5,7 @@ export type Product = {
     id: string | null,
     name: string,
     price: number,
-    pathImage: string,
+    pathImage: string | null,
     description: string,
     categories: Category[],
 };

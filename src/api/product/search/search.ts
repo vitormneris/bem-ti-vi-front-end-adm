@@ -6,7 +6,7 @@ export type ProductPages = {
     totalPages: number
 }
 
-export async function searchProduct( searchText: string, pageIndex: number ): Promise<ProductPages | undefined> {
+export async function search( searchText: string, pageIndex: number ): Promise<ProductPages | undefined> {
     try {
 
         const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produto/paginacao?isActive=true&pageSize=3&page=${pageIndex}&name=${searchText}`,{

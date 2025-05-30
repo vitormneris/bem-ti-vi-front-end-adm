@@ -1,7 +1,10 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+
 import { useNavigation } from "@react-navigation/native";
+
 import { NavigationProps } from "../../routes";
+
 import { styles } from "./style";
 
 export const Home = () => {
@@ -18,7 +21,11 @@ export const Home = () => {
 
             <Button text="Cadastrar categoria" onPress={() => navigate("CreateCategory")} />
             <Button text="Pesquisar categoria" onPress={() => navigate("SearchCategory")} />
-        
+
+            <Button text="Gerenciar perfil" onPress={() => navigate("ManageProfile")} />
+            <Button text="Mostrar perfil" onPress={() => navigate("ShowProfile")} />
+            <Button text="Listar Adm" onPress={() => navigate("SearchAdministrator")} />
+
             <Button text="Login" onPress={() => navigate("Login")} />
         </View>
     );

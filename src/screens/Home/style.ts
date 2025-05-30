@@ -18,7 +18,7 @@ export const styles = StyleSheet.create({
         padding: 10,
         margin: 10,
         width: '40%',
-        height: 50,
+        height: 80,
         backgroundColor: '#FFFFFF',
         elevation: 1,
         justifyContent: 'center',
