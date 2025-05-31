@@ -6,19 +6,22 @@ export type ProductPages = {
     totalPages: number
 }
 
-export async function search( searchText: string, pageIndex: number ): Promise<ProductPages | undefined> {
+export async function search(searchText: string, pageIndex: number): Promise<ProductPages | undefined> {
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produto/paginacao?isActive=true&pageSize=3&page=${pageIndex}&name=${searchText}`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produtos/paginacao?isActive=true&pageSize=3&page=${pageIndex}&name=${searchText}`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'GET',
         })
 
-        if (!response.ok){
+        if (!response.ok) {
             console.error(`Algo errado no response: ${response.status}`)
         }
 
         const data = await response.json()
-        
+
         const products: Product[] = data.content.map((item: Product) => ({
             id: item.id,
             name: item.name,
@@ -27,7 +30,7 @@ export async function search( searchText: string, pageIndex: number ): Promise<P
             description: item.description,
             categories: item.categories,
         }));
-        
+
         return {
             product: products,
             totalPages: data.totalPages

@@ -4,7 +4,10 @@ import { Category } from "../create/create"
 export async function findById( categoryId: string ): Promise<Category | undefined> {
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categoria/${categoryId}/buscar`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categorias/${categoryId}/buscar`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'GET',
         })
 

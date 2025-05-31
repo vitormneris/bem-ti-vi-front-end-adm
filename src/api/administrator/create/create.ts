@@ -2,14 +2,14 @@ import { Alert } from 'react-native';
 import { GLOBAL_VAR } from '../../config/globalVar';
 
 export type Administrator = {
-    id: string | null;
+    id: string;
     name: string;
     email: string;
     password: string;
-    pathImage: string | null;
+    pathImage: string;
 };
 
-export async function create(administrator: Administrator, image: string | null) {
+export async function create(administrator: Administrator, image: string) {
     if (!image) {
         Alert.alert("Atenção!", "Você precisa enviar uma imagem.");
         return false;
@@ -29,7 +29,10 @@ export async function create(administrator: Administrator, image: string | null)
     } as any);
 
     try {
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administrador/inserir`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/inserir`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'POST',
             body: formData
         });

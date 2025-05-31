@@ -5,12 +5,12 @@ export type Product = {
     id: string | null,
     name: string,
     price: number,
-    pathImage: string | null,
+    pathImage: string,
     description: string,
     categories: Category[],
 };
 
-export async function create(product: Product, image: string | null) {
+export async function create(product: Product, image: string) {
     try {
         const formData = new FormData();
 
@@ -25,7 +25,10 @@ export async function create(product: Product, image: string | null) {
             type: 'image/jpeg',
         } as any);
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produto/inserir`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produtos/inserir`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'POST',
             body: formData,
         });

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView, SafeAreaView } from 'react-native';
 
-import ImagePicker from 'expo-image-picker';
 import { NavigationProp, useNavigation, useRoute } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
@@ -11,66 +10,33 @@ import { Input } from '../../../components/Inputs/Input';
 import { InputImage } from '../../../components/Inputs/InputImage';
 import { InputPassword } from '../../../components/Inputs/InputPassword';
 
-import { RootStackParamList } from '../../../routes';
+import { NavigationProps } from "../../../routes/AppRoute";
 
-import { Administrator } from '../../../api/administrator/create/create';
-import { findById } from '../../../api/administrator/search/findById';
 import { deleteById } from '../../../api/administrator/delete/deleteById';
 import { update } from '../../../api/administrator/update/update';
 
 import { styles } from './style';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
+import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
 export default function ManageProfile() {
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const navigation = useNavigation<NavigationProp<NavigationProps>>();
     const route = useRoute();
     const { id: adminId } = route.params as { id: string };
 
     const [nome, setNome] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [senha, setSenha] = useState<string>('');
-    const [fotoPerfil, setFotoPerfil] = useState<string | null>(null);
+    const [fotoPerfil, setFotoPerfil] = useState<string>('');
+
+    useValidateToken();
 
     const selecionarImagem = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== 'granted') {
-            Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-        });
-
-        if (!result.canceled) {
-            setFotoPerfil(result.assets[0].uri);
+        const imageSelected = await selectImageFromGalery();
+        if (imageSelected) {
+            setFotoPerfil(imageSelected);
         }
     };
-
-    useEffect(() => {
-        const buscarPerfil = async () => {
-            try {
-                const data: Administrator | undefined = await findById(adminId);
-
-                if (!data) {
-                    throw new Error('Erro ao buscar produto');
-                }    
-
-                setNome(data.name);
-                setEmail(data.email);
-                setSenha(data.password)
-                setFotoPerfil(data.pathImage);
-            } catch (erro) {
-                console.error('Erro ao buscar perfil:', erro);
-                Alert.alert('Erro', 'Não foi possível carregar os dados do perfil.');
-            }
-        };
-
-        buscarPerfil();
-    }, [adminId]);
 
     return (
         <SafeAreaView style={styles.safeArea}>

@@ -4,7 +4,10 @@ export async function deleteById( productId: string ) {
 
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produto/${productId}/deletar`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produtos/${productId}/deletar`,{
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'DELETE',
         })
 

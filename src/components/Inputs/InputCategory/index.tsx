@@ -3,7 +3,7 @@ import { Text, View } from "react-native"
 
 import { Picker } from "@react-native-picker/picker"
 
-import { CategoryFormated } from "../../../api/category/search/getCategoryList"
+import { CategoryFormated } from "../../../api/category/search/findAll"
 
 import { styles } from "./style"
 

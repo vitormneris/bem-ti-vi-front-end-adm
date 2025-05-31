@@ -1,40 +1,40 @@
 import React, { useEffect, useState } from "react";
 import { View, ScrollView, Text, TouchableOpacity, Image } from "react-native";
+
 import { useNavigation } from "@react-navigation/native";
 
 import { Administrator } from "../../../api/administrator/create/create";
-import { AdministratorPages, search } from "../../../api/administrator/search/search";
+import { findAll } from "../../../api/administrator/search/findAll";
 
-import { NavigationProps } from "../../../routes";
+import { NavigationProps } from "../../../routes/AppRoute";
 
-import { PaginationControls } from "../../../components/PaginationControls";
 import { SearchInput } from "../../../components/SearchInput";
 import { Button } from "../../../components/Button";
+
+import { useValidateToken } from "../../../utils/UseValidateToken/useValidateToken";
 
 import { styles } from "./style";
 
 export const SearchAdministrator = () => {
     const { navigate } = useNavigation<NavigationProps>();
     const [searchText, setSearchText] = useState<string>('');
-    const [pageIndex, setPageIndex] = useState<number>(0);
-    const [totalPages, setTotalPages] = useState<number>(1);
     const [administrators, setAdministrators] = useState<Administrator[]>([]);
 
+    useValidateToken();
+
     useEffect(() => {
-        const delayDebounce = setTimeout(() => {
-            async function carregarProdutos() {
-                const data: AdministratorPages | undefined = await search(searchText, pageIndex);
-                if (data != undefined) {
-                    setAdministrators(data.administrators);
-                    setTotalPages(data.totalPages);
+        async function loadAdministrators() {
+            try {
+                const administrators: Administrator[] | undefined = await findAll();
+                if (administrators != undefined) {
+                    setAdministrators(administrators);
                 }
+            } catch (error) {
+                console.error('Erro ao carregar administradores:', error);
             }
-
-            carregarProdutos();
-        }, 750);
-
-        return () => clearTimeout(delayDebounce);
-    }, [searchText, pageIndex]);
+        }
+        loadAdministrators();
+    }, []);
 
     return (
         <ScrollView style={styles.safeArea} contentContainerStyle={styles.scrollContent}>
@@ -62,13 +62,6 @@ export const SearchAdministrator = () => {
                     <ItemAdministrator key={admin.id} administrator={admin} />
                 ))}
             </View>
-
-            <PaginationControls
-                pageIndex={pageIndex}
-                totalPages={totalPages}
-                onNext={() => setPageIndex(prev => prev + 1)}
-                onPrev={() => setPageIndex(prev => prev - 1)}
-            />
         </ScrollView>
     );
 };

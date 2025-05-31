@@ -11,14 +11,15 @@ import { ItemText } from '../../../components/Items/ItemText/ItemText';
 import { ItemImage } from '../../../components/Items/ItemImage/ItemImage';
 import { ItemButton } from '../../../components/Items/ItemButton/ItemButton';
 
-import { NavigationProps } from '../../../routes/index';
+import { NavigationProps } from "../../../routes/AppRoute";
 
 import { ProductPages, search } from '../../../api/product/search/search';
 import { Product } from '../../../api/product/create/create';
 import { Category } from '../../../api/category/create/create';
 
-import { styles } from './style';
 import { stylesItem } from '../style';
+import { styles } from './style';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 export const SearchProduct = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -26,6 +27,8 @@ export const SearchProduct = () => {
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [produtos, setProdutos] = useState<Product[]>([]);
+
+    useValidateToken();
 
     const filteredProdutos: Product[] = produtos.filter(produto =>
         produto.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -108,7 +111,7 @@ export const ItemProduct = ({ product }: ItemProductProps) => {
                 <ItemButton source={require('../../../assets/images/olhos.png')} />
                 <ItemButton
                     source={require('../../../assets/images/configuracao.png')}
-                    onPress={() => navigate('ManageProduct', { id: productId })}
+                    onPress={() => navigate('ManageProduct', { productId: productId })}
                 />
             </View>
         </View>

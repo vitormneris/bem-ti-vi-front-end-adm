@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
-import ImagePicker from 'expo-image-picker';
 
 import { Title } from '../../../components/Title';
 import { Button } from '../../../components/Button';
@@ -15,7 +14,10 @@ import { findById } from '../../../api/category/search/findById';
 import { deleteById } from '../../../api/category/delete/deleteById';
 import { update } from '../../../api/category/update/update';
 
-import { NavigationProps } from '../../../routes/index';
+import { NavigationProps } from "../../../routes/AppRoute";
+
+import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 import { styles } from './style';
 
@@ -27,25 +29,14 @@ export default function ManageCategory() {
     const [nomeCategoria, setNomeCategoria] = useState<string>('');
     const [corCard, setCorCard] = useState<string>('#8b5cf6');
     const [colorModalVisible, setColorModalVisible] = useState(false);
-    const [imagem, setImagem] = useState<string | null>(null);
+    const [imagem, setImagem] = useState<string>('');
+
+    useValidateToken();
 
     const selecionarImagem = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== 'granted') {
-            Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-            return;
-        }
-
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-        });
-
-        if (!result.canceled) {
-            setImagem(result.assets[0].uri);
+        const imageSelected = await selectImageFromGalery();
+        if (imageSelected) {
+            setImagem(imageSelected);
         }
     };
 
@@ -78,8 +69,8 @@ export default function ManageCategory() {
         const categoria = {
             id: categoryId,
             name: nomeCategoria,
+            cardColor: corCard,
             pathImage: "",
-            cardColor: corCard
         };
 
         try {

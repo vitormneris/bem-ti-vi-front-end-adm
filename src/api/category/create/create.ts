@@ -2,13 +2,13 @@ import { Alert } from 'react-native';
 import { GLOBAL_VAR } from '../../config/globalVar';
 
 export type Category = {
-    id: string | null;
+    id: string;
     name: string;
-    pathImage: string | null;
+    pathImage: string;
     cardColor: string;
 };
 
-export async function create(category: Category, image: string | null) {
+export async function create(category: Category, image: string) {
     if (!image) {
         Alert.alert("Atenção!", "Você precisa enviar uma imagem.");
         return false;
@@ -28,7 +28,10 @@ export async function create(category: Category, image: string | null) {
     } as any);
 
     try {
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categoria/inserir`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categorias/inserir`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'POST',
             body: formData
         });

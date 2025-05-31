@@ -4,7 +4,10 @@ export async function deleteById( categoryId: string ) {
 
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categoria/${categoryId}/deletar`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categorias/${categoryId}/deletar`,{
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'DELETE',
         })
 

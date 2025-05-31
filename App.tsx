@@ -12,7 +12,7 @@ import {
   Montserrat_900Black // Adicione esta importação
 } from '@expo-google-fonts/montserrat';
 
-import AppRoute from './src/routes';
+import AppRoute from './src/routes/AppRoute';
 
 export default function App() {
   const [fontsLoaded] = useFonts({

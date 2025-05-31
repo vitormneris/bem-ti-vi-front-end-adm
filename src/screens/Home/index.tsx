@@ -1,14 +1,18 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, } from "@react-navigation/native";
 
-import { NavigationProps } from "../../routes";
+import { NavigationProps } from "../../routes/AppRoute";
+
+import { useValidateToken } from "../../utils/UseValidateToken/useValidateToken";
 
 import { styles } from "./style";
 
 export const Home = () => {
     const { navigate } = useNavigation<NavigationProps>();
+
+    useValidateToken();
 
     return (
         <View style={styles.screen}>
@@ -22,6 +26,7 @@ export const Home = () => {
             <Button text="Cadastrar categoria" onPress={() => navigate("CreateCategory")} />
             <Button text="Pesquisar categoria" onPress={() => navigate("SearchCategory")} />
 
+            <Button text="Cadastrar Adm" onPress={() => navigate("CreateAdministrator")} />
             <Button text="Gerenciar perfil" onPress={() => navigate("ManageProfile")} />
             <Button text="Mostrar perfil" onPress={() => navigate("ShowProfile")} />
             <Button text="Listar Adm" onPress={() => navigate("SearchAdministrator")} />

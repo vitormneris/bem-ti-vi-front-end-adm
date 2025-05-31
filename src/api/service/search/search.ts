@@ -6,20 +6,23 @@ export type ServicePages = {
     totalPages: number
 }
 
-export async function search( searchText: string, pageIndex: number ): Promise<ServicePages | undefined> {
+export async function search(searchText: string, pageIndex: number): Promise<ServicePages | undefined> {
 
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/service/paginacao?isActive=true&pageSize=3&page=${pageIndex}&name=${searchText}`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/paginacao?isActive=true&pageSize=3&page=${pageIndex}&name=${searchText}`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'GET',
         })
 
-        if (!response.ok){
+        if (!response.ok) {
             console.error(`Algo errado no response: ${response.status}`)
         }
 
         const data = await response.json()
-        
+
         const services: Service[] = data.content.map((item: Service) => ({
             id: item.id,
             name: item.name,
@@ -28,7 +31,7 @@ export async function search( searchText: string, pageIndex: number ): Promise<S
             description: item.description,
             estimatedDuration: item.estimatedDuration,
         }));
-        
+
         return {
             services: services,
             totalPages: data.totalPages

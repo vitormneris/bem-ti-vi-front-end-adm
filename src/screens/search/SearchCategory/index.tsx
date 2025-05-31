@@ -11,13 +11,14 @@ import { ItemText } from '../../../components/Items/ItemText/ItemText';
 import { ItemImage } from '../../../components/Items/ItemImage/ItemImage';
 import { ItemButton } from '../../../components/Items/ItemButton/ItemButton';
 
-import { NavigationProps } from '../../../routes/index';
+import { NavigationProps } from "../../../routes/AppRoute";
 
 import { CategoryPages, search } from '../../../api/category/search/search';
 import { Category } from '../../../api/category/create/create';
 
 import { styles } from './style';
 import { stylesItem } from '../style';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 export const SearchCategory = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -25,6 +26,8 @@ export const SearchCategory = () => {
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [categorias, setCategorias] = useState<Category[]>([]);
+
+    useValidateToken();
 
     const filteredCategorias = categorias.filter(category =>
         category.name.toLowerCase().includes(searchText.toLowerCase())
@@ -36,7 +39,7 @@ export const SearchCategory = () => {
                 const data: CategoryPages | undefined = await search(searchText, pageIndex);
                 if (data != undefined) {
                     setCategorias(data.categories);
-                    setTotalPages(data.totalPages);   
+                    setTotalPages(data.totalPages);
                 }
             }
 
@@ -44,17 +47,17 @@ export const SearchCategory = () => {
         }, 750);
 
         return () => clearTimeout(delayDebounce);
-    }, [searchText,pageIndex]);
+    }, [searchText, pageIndex]);
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
-                <Button 
-                    icon={require('../../../assets/images/add.png')} 
-                    text="CADASTRAR" 
-                    color="#256489" 
-                    action={() => navigate('CreateCategory')} 
+                <Button
+                    icon={require('../../../assets/images/add.png')}
+                    text="CADASTRAR"
+                    color="#256489"
+                    action={() => navigate('CreateCategory')}
                 />
 
                 <SearchInput
@@ -63,22 +66,22 @@ export const SearchCategory = () => {
                     setSearchText={setSearchText}
                 />
 
+                <View style={stylesItem.itemContainer}>
+                    {filteredCategorias.map((item: Category) => (
+                        <ItemCategory key={item.id} category={item} />
+                    ))}
+                </View>
 
-        <View style={stylesItem.itemContainer}>
-            {filteredCategorias.map((item: Category) => (
-                <ItemCategory key={item.id} category={item} />
-            ))}
-        </View>
-                <PaginationControls 
+                <PaginationControls
                     pageIndex={pageIndex}
                     totalPages={totalPages}
-                    onNext={()=>setPageIndex(prev => prev + 1)}
-                    onPrev={()=>setPageIndex(prev => prev - 1)}
+                    onNext={() => setPageIndex(prev => prev + 1)}
+                    onPrev={() => setPageIndex(prev => prev - 1)}
                 />
 
             </ScrollView>
 
-            <NavigationBar initialTab='categorias'/>
+            <NavigationBar initialTab='categorias' />
         </SafeAreaView>
     );
 };
@@ -101,7 +104,7 @@ export const ItemCategory = ({ category }: ItemCategoryProps) => {
 
             <View style={stylesItem.actions}>
                 <ItemButton source={require('../../../assets/images/olhos.png')} />
-                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageCategory', { id: categoryId })} />
+                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageCategory', { categoryId: categoryId })} />
             </View>
         </View>
     )

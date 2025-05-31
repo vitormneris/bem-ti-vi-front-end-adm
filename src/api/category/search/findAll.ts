@@ -6,11 +6,14 @@ export type CategoryFormated = {
     key: string
 }
 
-export async function getCategoryList(): Promise<CategoryFormated[] | undefined> {
+export async function findAll(): Promise<CategoryFormated[] | undefined> {
 
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categoria/paginacao?isActive=true&pageSize=30&page=0`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categorias/buscartodos`,{
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'GET',
         })
 
@@ -18,9 +21,9 @@ export async function getCategoryList(): Promise<CategoryFormated[] | undefined>
             console.error(`Algo errado no response: ${response.status}`)
         }
 
-        const data = await response.json()
+        const data: Category[] = await response.json()
         
-        const categoriesFormated: CategoryFormated[] = data.content.map((item: Category) => ({
+        const categoriesFormated: CategoryFormated[] = data.map((item: Category) => ({
             key: item.id,
             label: item.name,
         }));

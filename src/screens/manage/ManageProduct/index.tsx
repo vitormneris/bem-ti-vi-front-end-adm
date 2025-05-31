@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
-import ImagePicker from 'expo-image-picker';
 
 import { Title } from '../../../components/Title';
 import { Button } from '../../../components/Button';
@@ -15,13 +14,15 @@ import { Input } from '../../../components/Inputs/Input';
 import { findById } from '../../../api/product/search/findById';
 import { deleteById } from '../../../api/product/delete/deleteById';
 import { update } from '../../../api/product/update/update';
-import { CategoryFormated, getCategoryList } from '../../../api/category/search/getCategoryList';
+import { CategoryFormated, findAll } from '../../../api/category/search/findAll';
 import { Category } from '../../../api/category/create/create';
 import { Product } from '../../../api/product/create/create';
 
-import { NavigationProps } from '../../../routes/index';
+import { NavigationProps } from "../../../routes/AppRoute";
 
 import { styles } from './style';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
+import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
 export default function ManageProduct() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -31,27 +32,16 @@ export default function ManageProduct() {
     const [nomeProduto, setNomeProduto] = useState<string>('');
     const [valorProduto, setValorProduto] = useState<string>('');
     const [descricao, setDescricao] = useState<string>('');
-    const [imagem, setImagem] = useState<string | null>('');
+    const [imagem, setImagem] = useState<string>('');
     const [categoriesId, setCategoriesId] = useState<string>('');
     const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[] | undefined>([]);
 
+    useValidateToken();
+
     const selecionarImagem = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== 'granted') {
-            Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-            return;
-        }
-
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-        });
-
-        if (!result.canceled) {
-            setImagem(result.assets[0].uri);
+        const imageSelected = await selectImageFromGalery();
+        if (imageSelected) {
+            setImagem(imageSelected);
         }
     };
 
@@ -64,7 +54,7 @@ export default function ManageProduct() {
                     throw new Error('Erro ao buscar produto');
                 }
 
-                const categoriesToSelect: CategoryFormated[] | undefined = await getCategoryList();
+                const categoriesToSelect: CategoryFormated[] | undefined = await findAll();
 
                 const selectedCategories = data.categories;
 

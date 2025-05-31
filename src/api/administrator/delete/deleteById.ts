@@ -3,7 +3,10 @@ import { GLOBAL_VAR } from "../../config/globalVar";
 export async function deleteById( administratorId: string ) {
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administrador/${administratorId}/deletar`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/${administratorId}/deletar`,{
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'DELETE',
         })
 

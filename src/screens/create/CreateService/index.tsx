@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
-import ImagePicker from 'expo-image-picker';
-
 import { Title } from '../../../components/Title';
 import { NavigationBar } from '../../../components/NavigationBar';
 import { Button } from '../../../components/Button';
@@ -12,6 +10,9 @@ import { InputDescription } from '../../../components/Inputs/InputDescription';
 
 import { create, Service } from '../../../api/service/create/create';
 
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
+import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
+
 import { styles } from './style';
 
 export const CreateService = () => {
@@ -19,29 +20,18 @@ export const CreateService = () => {
     const [descricaoServico, setDescricaoServico] = useState<string>('');
     const [precoServico, setPrecoServico] = useState<string>('');
     const [duracaoEstimada, setDuracaoEstimada] = useState<string>('');
-    const [imagem, setImagem] = useState<string | null>(null);
+    const [imagem, setImagem] = useState<string>('');
+
+    useValidateToken();
 
     const selecionarImagem = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== 'granted') {
-            Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-            return;
-        }
-
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-        });
-
-        if (!result.canceled) {
-            setImagem(result.assets[0].uri);
+        const imageSelected = await selectImageFromGalery();
+        if (imageSelected) {
+            setImagem(imageSelected);
         }
     };
 
-    const handlePost = async () => {
+    const sendRequestCreate = async () => {
         const servico: Service = {
             id: null,
             name: nomeServico,
@@ -58,7 +48,7 @@ export const CreateService = () => {
                 setPrecoServico('')
                 setDuracaoEstimada('')
                 setDescricaoServico('')
-                setImagem(null)
+                setImagem('')
                 Alert.alert('Sucesso!', 'O serviço foi cadastrado.')
             }
         } catch (error) {
@@ -113,7 +103,12 @@ export const CreateService = () => {
 
 
                 <View style={styles.buttonsContainer}>
-                    <Button icon={require('../../../assets/icons/add.png')} text="CADASTRAR SERVIÇO" color="#006316" action={handlePost} />
+                    <Button 
+                        icon={require('../../../assets/icons/add.png')} 
+                        text="CADASTRAR SERVIÇO" 
+                        color="#006316" 
+                        action={sendRequestCreate}
+                    />
                 </View>
             </ScrollView>
 

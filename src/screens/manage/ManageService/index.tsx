@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
-import ImagePicker from 'expo-image-picker';
+
+import * as ImagePicker from 'expo-image-picker';
 
 import { Title } from '../../../components/Title';
 import { Button } from '../../../components/Button';
@@ -11,7 +12,7 @@ import { InputDescription } from '../../../components/Inputs/InputDescription';
 import { InputImage } from '../../../components/Inputs/InputImage';
 import { Input } from '../../../components/Inputs/Input';
 
-import { NavigationProps } from '../../../routes/index';
+import { NavigationProps } from '../../../routes/AppRoute';
 
 import { findById } from '../../../api/service/search/findById';
 import { deleteById } from '../../../api/service/delete/deleteById';
@@ -19,6 +20,8 @@ import { update } from '../../../api/service/update/update';
 import { Service } from '../../../api/service/create/create';
 
 import { styles } from './style';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
+import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
 export default function ManageService() {
     const route = useRoute();
@@ -29,27 +32,17 @@ export default function ManageService() {
     const [descricaoServico, setDescricaoServico] = useState<string>('');
     const [precoServico, setPrecoServico] = useState<string>('');
     const [duracaoEstimada, setDuracaoEstimada] = useState<string>('');
-    const [imagem, setImagem] = useState<string | null>(null);
+    const [imagem, setImagem] = useState<string>('');
+
+    useValidateToken();
 
     const selecionarImagem = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== 'granted') {
-            Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-            return;
-        }
-
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-        });
-
-        if (!result.canceled) {
-            setImagem(result.assets[0].uri);
+        const imageSelected = await selectImageFromGalery();
+        if (imageSelected) {
+            setImagem(imageSelected);
         }
     };
+
     useEffect(() => {
         const buscarServico = async () => {
             try {
@@ -88,7 +81,7 @@ export default function ManageService() {
         };
 
         try {
-            const success = await update(servico, imagem, serviceId);
+            const success = await update(serviceId, servico, imagem);
 
             if (success) {
                 Alert.alert('Sucesso!', 'O serviço foi atualizado.');

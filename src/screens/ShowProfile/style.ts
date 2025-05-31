@@ -5,18 +5,22 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff'
     },
+
     scrollView: {
         flex: 1,
         marginBottom: 70
     },
+
     scrollContent: {
         paddingBottom: 40
     },
+
     profileSection: {
         alignItems: 'center',
         marginTop: 30,
         marginBottom: 10
     },
+
     profileImage: {
         width: 120,
         height: 120,
@@ -25,6 +29,7 @@ export const styles = StyleSheet.create({
         borderColor: '#fff',
         backgroundColor: '#fff'
     },
+
     profileLabel: {
         fontFamily: 'Montserrat-Bold',
         fontSize: 18,
@@ -32,6 +37,7 @@ export const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: 'center'
     },
+
     profileCard: {
         backgroundColor: '#fff',
         borderRadius: 15,
@@ -45,6 +51,7 @@ export const styles = StyleSheet.create({
         elevation: 3,
         marginBottom: 20
     },
+    
     menuContainer: {
         marginBottom: 10
     },

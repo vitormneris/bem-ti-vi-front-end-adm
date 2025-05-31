@@ -8,21 +8,25 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: 10,
   },
+
   logoContainer: {
     alignItems: 'center',
     marginTop: 8,
     marginBottom: 10,
   },
+
   logo: {
     width: 500,
     height: 300,
   },
+
   logoSubText: {
     fontSize: 22,
     fontFamily: 'Montserrat-Black',
     color: '#256489',
     marginBottom: 2,
   },
+
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -35,12 +39,14 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(37, 100, 137, 0.3)',
     height: 48,
   },
+
   inputIcon: {
     width: 28,
     height: 28,
     marginRight: 10,
     opacity: 0.65,
   },
+
   input: {
     flex: 1,
     fontSize: 15,
@@ -48,17 +54,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     paddingVertical: 0,
   },
+
   forgotPasswordButton: {
     alignSelf: 'flex-end',
     marginRight: 15,
     marginBottom: 30,
     marginTop: -8,
   },
+
   forgotPasswordText: {
     color: '#256489',
     fontSize: 12,
     fontFamily: 'Montserrat-Medium',
   },
+
   loginButton: {
     backgroundColor: '#256489',
     borderRadius: 30,
@@ -75,6 +84,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 8,
   },
+
   loginButtonText: {
     color: 'white',
     fontSize: 20,
@@ -83,23 +93,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
+
   registerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 8,
   },
+
   registerText: {
     color: '#256489',
     fontSize: 12,
     fontFamily: 'Montserrat-Medium',
   },
+
   registerLink: {
     color: '#256489',
     fontSize: 12,
     fontFamily: 'Montserrat-Bold',
     textDecorationLine: 'underline',
   },
+
+  
 });
 
 export default styles;

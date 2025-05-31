@@ -4,12 +4,12 @@ export type Service = {
     id: string | null,
     name: string,
     price: number,
-    pathImage: string | null,
+    pathImage: string,
     estimatedDuration: string,
     description: string
 };
 
-export async function create(service: Service, image: string | null) {
+export async function create(service: Service, image: string) {
 
     try {
 
@@ -25,7 +25,10 @@ export async function create(service: Service, image: string | null) {
             type: 'image/jpeg',
         } as any);
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/service/inserir`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/inserir`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'POST',
             body: formData,
         });

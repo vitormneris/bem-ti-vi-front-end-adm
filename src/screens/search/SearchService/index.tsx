@@ -11,13 +11,14 @@ import { ItemText } from '../../../components/Items/ItemText/ItemText';
 import { ItemImage } from '../../../components/Items/ItemImage/ItemImage';
 import { ItemButton } from '../../../components/Items/ItemButton/ItemButton';
 
-import { NavigationProps } from '../../../routes/index';
+import { NavigationProps } from '../../../routes/AppRoute';
 
 import { Service } from '../../../api/service/create/create';
 import { search, ServicePages } from '../../../api/service/search/search';
 
 import { styles } from './style';
 import { stylesItem } from '../style';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 export const SearchService = () => {
     const { navigate } = useNavigation<NavigationProps>()
@@ -25,6 +26,8 @@ export const SearchService = () => {
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [servicos, setServicos] = useState<Service[]>([]);
+
+    useValidateToken();
 
     const filteredServicos: Service[] = servicos.filter(servico =>
         servico.name.toLowerCase().includes(searchText.toLowerCase())
@@ -106,7 +109,7 @@ export const ItemService = ({ service }: ItemServiceProps) => {
 
             <View style={stylesItem.actions}>
                 <ItemButton source={require('../../../assets/images/olhos.png')} />
-                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageService', { id: serviceId })} />
+                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageService', { serviceId: serviceId })} />
             </View>
         </View>
     )

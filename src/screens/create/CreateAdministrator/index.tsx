@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
 
-import ImagePicker from 'expo-image-picker';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-
 import { Title } from '../../../components/Title';
 import { Button } from '../../../components/Button';
 import { NavigationBar } from '../../../components/NavigationBar';
@@ -11,57 +8,45 @@ import { Input } from '../../../components/Inputs/Input';
 import { InputImage } from '../../../components/Inputs/InputImage';
 import { InputPassword } from '../../../components/Inputs/InputPassword';
 
-import { RootStackParamList } from '../../../routes';
-
 import { Administrator, create } from '../../../api/administrator/create/create';
+
+import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 import { styles } from './style';
 
 export default function CreateAdministrator() {
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
     const [nome, setNome] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [senha, setSenha] = useState<string>('');
-    const [fotoPerfil, setFotoPerfil] = useState<string | null>(null);
+    const [fotoPerfil, setFotoPerfil] = useState<string>('');
+
+    useValidateToken();
 
     const selecionarImagem = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (status !== 'granted') {
-            Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-            return;
-        }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.8,
-        });
-
-        if (!result.canceled) {
-            setFotoPerfil(result.assets[0].uri);
+        const imageSelected = await selectImageFromGalery();
+        if (imageSelected) {
+            setFotoPerfil(imageSelected);
         }
     };
 
     const sendRequestCreate = async () => {
         const administrator: Administrator = {
-            id: null,
+            id: '',
             name: nome,
             email: email,
             password: senha,
-            pathImage: "",
+            pathImage: '',
         };
 
         try {
             const success = await create(administrator, fotoPerfil);
             if (success) {
-                setNome('')
-                setEmail('')
-                setSenha('')
-                setFotoPerfil(null)
-                Alert.alert('Sucesso!', 'O administrador foi cadastrada.')
+                setNome('');
+                setEmail('');
+                setSenha('');
+                setFotoPerfil('');
+                Alert.alert('Sucesso!', 'O administrador foi cadastrada.');
             }
         } catch (error) {
             console.error('POST request failed:', error);

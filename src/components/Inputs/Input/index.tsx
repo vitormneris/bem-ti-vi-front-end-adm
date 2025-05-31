@@ -1,19 +1,27 @@
-import React from "react"
-import { Text, TextInput, View } from "react-native"
+import React, { Dispatch, SetStateAction } from "react"
+import { KeyboardTypeOptions, Text, TextInput, View } from "react-native"
 
 import { styles } from "./style"
 
-export const Input = (props: any) => {
+export type InputProps = {
+    label: string,
+    placeholder: string,
+    keyboardType: KeyboardTypeOptions,
+    value: string,
+    onChangeText: Dispatch<SetStateAction<string>>,
+}
+
+export const Input = ({label, placeholder, keyboardType, value, onChangeText}: InputProps) => {
     return (
         <View style={styles.formGroup}>
-            <Text style={styles.label}>{props.label}</Text>
+            <Text style={styles.label}>{label}</Text>
             <TextInput
                 style={styles.inputField}
-                placeholder={props.placeholder}
+                placeholder={placeholder}
                 placeholderTextColor="#999"
-                keyboardType={props.keyboardType}
-                value={props.value}
-                onChangeText={props.onChangeText}
+                keyboardType={keyboardType}
+                value={value}
+                onChangeText={onChangeText}
             />
         </View>
     )

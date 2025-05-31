@@ -1,9 +1,12 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
 
-export async function deleteById( serviceId: string ){
+export async function deleteById(serviceId: string) {
 
     try {
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/service/${serviceId}/deletar`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/${serviceId}/deletar`, {
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'DELETE',
         })
 

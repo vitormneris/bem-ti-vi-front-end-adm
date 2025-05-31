@@ -10,7 +10,10 @@ export async function search( searchText: string, pageIndex: number ): Promise<C
 
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categoria/paginacao?isActive=true&pageSize=10&page=${pageIndex}&name=${searchText}`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/categorias/paginacao?isActive=true&pageSize=10&page=${pageIndex}&name=${searchText}`,{
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
+            },
             method: 'GET',
         })
 
