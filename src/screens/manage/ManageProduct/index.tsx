@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
-
+import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
@@ -34,80 +33,101 @@ export default function ManageProduct() {
     const [descricao, setDescricao] = useState<string>('');
     const [imagem, setImagem] = useState<string>('');
     const [categoriesId, setCategoriesId] = useState<string>('');
-    const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[] | undefined>([]);
+    const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[]>([]);
+
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
 
     const selecionarImagem = async () => {
-        const imageSelected = await selectImageFromGalery();
-        if (imageSelected) {
-            setImagem(imageSelected);
+        try {
+            const imageSelected = await selectImageFromGalery();
+            if (imageSelected) {
+                setImagem(imageSelected);
+            }
+        } catch (error) {
+            console.error('Erro ao selecionar imagem:', error);
         }
     };
 
-
     useEffect(() => {
-        const buscarProduto = async () => {
+        const carregarProduto = async () => {
             try {
-                const data: Product | undefined = await findById(productId);
-                if (!data) {
-                    throw new Error('Erro ao buscar produto');
+                const produto: Product | undefined = await findById(productId);
+                if (!produto) {
+                    Alert.alert('Erro', 'Produto não encontrado.');
+                    navigate('SearchProduct');
+                    return;
                 }
 
-                const categoriesToSelect: CategoryFormated[] | undefined = await findAll();
+                const categorias: CategoryFormated[] | undefined = await findAll();
+                setCategoriesToSelect(categorias || []);
 
-                const selectedCategories = data.categories;
+                setNomeProduto(produto.name);
+                setValorProduto(String(produto.price));
+                setDescricao(produto.description);
+                setImagem(produto.pathImage);
 
-                const selectedCategoriesFormated: string[] = selectedCategories.map((item: Category) => (item.id == null) ? '' : item.id)
+                const selectedCategoryId = produto.categories[0]?.id ?? '';
+                setCategoriesId(selectedCategoryId);
 
-                setCategoriesToSelect(categoriesToSelect);
-                setNomeProduto(data.name);
-                setValorProduto(String(data.price));
-                setDescricao(data.description);
-                setCategoriesId(selectedCategoriesFormated[0]);
-                setImagem(data.pathImage);
-            } catch (erro) {
-                console.error('Erro ao buscar produto:', erro);
-                Alert.alert('Erro', 'Não foi possível carregar os dados do produto.');
+            } catch (error) {
+                console.error('Erro ao carregar produto:', error);
+                Alert.alert('Erro', 'Não foi possível carregar o produto.');
             }
         };
 
-        buscarProduto();
-    }, [productId]);
+        carregarProduto();
+    }, [productId, navigate]);
 
     const handleUpdate = async () => {
-        if (!nomeProduto || !valorProduto || !descricao || !categoriesId) {
+        if (!nomeProduto.trim() || !valorProduto.trim() || !descricao.trim() || !categoriesId.trim()) {
             Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
             return;
         }
 
-        const category: Category = { id: categoriesId , name: "", pathImage: "", cardColor: "" };
-        const produto: Product = {
+        const preco = parseFloat(valorProduto.replace(',', '.'));
+        if (isNaN(preco)) {
+            Alert.alert("Valor inválido", "Insira um valor numérico válido para o preço.");
+            return;
+        }
+
+        const categoria: Category = {
+            id: categoriesId,
+            name: "",
+            pathImage: "",
+            cardColor: ""
+        };
+
+        const produtoAtualizado: Product = {
             id: productId,
             name: nomeProduto,
-            price: parseFloat(valorProduto),
+            price: preco,
             pathImage: imagem,
             description: descricao,
-            categories: [
-                category
-            ],
+            categories: [categoria]
         };
 
         try {
-            const success = await update(produto, imagem, productId)
+            const result = await update(produtoAtualizado, imagem, productId);
 
-            if (success) {
-                Alert.alert("Sucesso!", "O produto foi atualizado.");
-                navigate('SearchProduct')
+            if (typeof result === "boolean") {
+                if (result) {
+                    Alert.alert("Sucesso!", "O produto foi atualizado.");
+                    navigate('SearchProduct');
+                }
+            } else {
+                setError(result.message || "Erro desconhecido.");
+                setFields(result.errorFields?.map(field => field.description) || []);
             }
 
         } catch (error) {
-            console.error('UPDATE request failed:', error);
-            Alert.alert('Erro!', 'Falha ao atualizar o produto.');
+            setError('Não foi possível atualizar o produto. Verifique sua conexão.');
         }
     };
 
-    const handleDelete = async () => {
+    const handleDelete = () => {
         Alert.alert(
             'Confirmação',
             'Tem certeza que deseja excluir este produto?',
@@ -122,17 +142,16 @@ export default function ManageProduct() {
         );
     };
 
-    const confirmDelete = async (productId: string) => {
+    const confirmDelete = async (id: string) => {
         try {
-            const success = await deleteById(productId);
+            const success = await deleteById(id);
 
             if (success) {
                 Alert.alert('Sucesso!', 'O produto foi excluído.');
-                navigate('SearchProduct')
+                navigate('SearchProduct');
             }
-
         } catch (error) {
-            console.error('Erro ao excluir:', error);
+            console.error('Erro ao excluir produto:', error);
             Alert.alert('Erro', 'Não foi possível excluir o produto.');
         }
     };
@@ -142,7 +161,6 @@ export default function ManageProduct() {
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
 
                 <Title text="Informações do Produto" />
-
 
                 <Input
                     label="Nome do Produto"
@@ -182,12 +200,32 @@ export default function ManageProduct() {
                 />
 
                 <View style={styles.buttonsContainer}>
-                    <Button icon={require('../../../assets/icons/delete.png')} text="DELETAR" color="#B40000" action={handleDelete} />
-                    <Button icon={require('../../../assets/icons/edit.png')} text="ATUALIZAR" color="#006516" action={handleUpdate} />
+                    <Button
+                        icon={require('../../../assets/icons/delete.png')}
+                        text="DELETAR"
+                        color="#B40000"
+                        action={handleDelete}
+                    />
+                    <Button
+                        icon={require('../../../assets/icons/edit.png')}
+                        text="ATUALIZAR"
+                        color="#006516"
+                        action={handleUpdate}
+                    />
                 </View>
+
+                {error ? (
+                    <View style={{ marginTop: 10 }}>
+                        <Text style={styles.error}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={styles.field}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
+
             </ScrollView>
 
             <NavigationBar initialTab='loja' />
         </SafeAreaView>
     );
-};
+}

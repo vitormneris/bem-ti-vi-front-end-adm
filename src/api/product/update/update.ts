@@ -1,8 +1,20 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
 import { Product } from "../create/create";
 
-export async function update(product: Product, image: string, productId: string) {
+export type Error = {
+    code: string;
+    status: string;
+    message: string;
+    timestamp: string;
+    path: string;
+    errorFields: {
+        name: string;
+        description: string;
+        value: string;
+    }[] | null;
+};
 
+export async function update(product: Product, image: string, productId: string): Promise<boolean | Error> {
     const formData = new FormData();
 
     formData.append('product', {
@@ -25,15 +37,29 @@ export async function update(product: Product, image: string, productId: string)
             body: formData,
         });
 
-        if (response.status === 200) {
+        const data = await response.json();
+
+        if (response.ok) {
             return true;
         } else {
-            console.error(`Erro ao atualizar: código ${response.status}`);
-            return false;
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? `/produtos/${productId}/atualizar`,
+                errorFields: data.errorFields ?? null
+            };
         }
 
     } catch (error) {
-        console.error('Erro na requisição UPDATE: ', error)
-        throw error;
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: `/produtos/${productId}/atualizar`,
+            errorFields: null
+        };
     }
-};
+}

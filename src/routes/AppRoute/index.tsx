@@ -23,25 +23,27 @@ import { ShowProfile } from '../../screens/ShowProfile';
 import ManageProfile from '../../screens/manage/ManageProfile';
 import { SearchAdministrator } from '../../screens/search/SearchAdministrator';
 import CreateAdministrator from '../../screens/create/CreateAdministrator';
+import { SearchDeactivatedAdministrator } from '../../screens/search/SearchDeactivatedAdministrator';
 
 const Stack = createNativeStackNavigator();
 
 export type RootStackParamList = {
     Home: undefined;
     CreateProduct: undefined;
-    ManageProduct: { productId : string};
+    ManageProduct: { id : string};
     SearchProduct: undefined;
     CreateService: undefined;
-    ManageService: { serviceId : string};
+    ManageService: { id : string};
     SearchService: undefined;
     CreateCategory: undefined;
-    ManageCategory: { categoryId : string};
+    ManageCategory: { id : string};
     SearchCategory: undefined;
     ManageProfile: undefined;
     ShowProfile: undefined;
     SearchAdministrator: undefined;
     CreateAdministrator: undefined;
     Login: undefined;
+    SearchDeactivatedAdministrator: undefined;
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -152,7 +154,15 @@ export default function AppRoute() {
                     name='SearchAdministrator' 
                     component={SearchAdministrator} 
                     options={() => ({
-                        header: () =>  <Header activateBackButton={true} title="PERFIL" icon={require('../../assets/images/categorias.png')} />
+                        header: () =>  <Header activateBackButton={true} title="ADM'S" icon={require('../../assets/images/categorias.png')} />
+                    })}
+                />
+
+                <Stack.Screen 
+                    name='SearchDeactivatedAdministrator' 
+                    component={SearchDeactivatedAdministrator} 
+                    options={() => ({
+                        header: () =>  <Header activateBackButton={true} title="ADM'S" icon={require('../../assets/images/categorias.png')} />
                     })}
                 />
             </Stack.Navigator>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
 
 import { Title } from '../../../components/Title';
 import { NavigationBar } from '../../../components/NavigationBar';
@@ -26,6 +26,9 @@ export const CreateProduct = () => {
 	const [categoriesId, setCategoriesId] = useState<string>('');
 	const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[] | undefined>([]);
 
+	const [error, setError] = useState<string>('');
+	const [fields, setFields] = useState<string[]>([]);
+
 	useValidateToken();
 
 	const selecionarImagem = async () => {
@@ -41,7 +44,7 @@ export const CreateProduct = () => {
 				const categoriesForInput: CategoryFormated[] | undefined = await findAll();
 				setCategoriesToSelect(categoriesForInput);
 			} catch (error) {
-				console.error('Erro ao carregar categorias:', error);
+				setError('Não foi possível atualizar. Verifique sua conexão.');
 			}
 		}
 		carregarCategorias();
@@ -63,17 +66,28 @@ export const CreateProduct = () => {
 
 		try {
 			const success = await create(produto, imagem);
-			if (success) {
-				setCategoriesId('');
-				setNomeProduto('');
-				setValorProduto('');
-				setDescricaoProduto('');
-				setImagem('');
-				Alert.alert('Sucesso!', 'O produto foi cadastrado.');
+
+
+			if (typeof success === "boolean") {
+				if (success) {
+					setCategoriesId('');
+					setNomeProduto('');
+					setValorProduto('');
+					setDescricaoProduto('');
+					setImagem('');
+					setError('');
+					setFields([]);
+					Alert.alert('Sucesso!', 'O produto foi cadastrado.');
+				}
+			} else {
+				setError(success.message || "Erro desconhecido.");
+
+				setFields(success.errorFields?.map(field => field.description) || []);
 			}
+
+
 		} catch (error) {
-			console.error('POST request failed:', error);
-			Alert.alert('Erro', 'Não foi possível cadastrar o produto.');
+			setError('Não foi possível atualizar. Verifique sua conexão.');
 		}
 	};
 
@@ -121,13 +135,21 @@ export const CreateProduct = () => {
 				/>
 
 				<View style={styles.buttonsContainer}>
-					<Button 
-						icon={require('../../../assets/icons/add.png')} 
-						text="CADASTRAR PRODUTO" 
-						color="#006316" 
-						action={sendRequestCreate} 
+					<Button
+						icon={require('../../../assets/icons/add.png')}
+						text="CADASTRAR PRODUTO"
+						color="#006316"
+						action={sendRequestCreate}
 					/>
 				</View>
+				{error ? (
+					<View style={{ marginVertical: 10, alignSelf: 'center' }}>
+						<Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+						{fields.map((field, index) => (
+							<Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+						))}
+					</View>
+				) : null}
 			</ScrollView>
 
 			<NavigationBar initialTab='loja' />

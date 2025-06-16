@@ -10,16 +10,35 @@ import { AdministratorId, validateTokenAdm } from '../../api/auth/validateTokenA
 import { Administrator } from '../../api/administrator/create/create';
 
 import { NavigationProps } from '../../routes/AppRoute';
+import { GLOBAL_VAR } from '../../api/config/globalVar';
 
 import { styles } from './style';
 
+const logoutRequest = (navigate: any) => {
+    Alert.alert(
+        'Confirmação',
+        'Tem certeza que deseja sair?',
+        [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Sair',
+                style: 'destructive',
+                onPress: () => {
+                    GLOBAL_VAR.TOKEN_JWT = "";
+                    navigate("Login");
+                },
+            },
+        ]
+    );
+}
+
 export const ShowProfile = () => {
     const { navigate } = useNavigation<NavigationProps>();
-    
+
     const [name, setName] = useState<string>('');
     const [photoProfile, setPhotoProgile] = useState<string>('');
 
-    let administratorId: string = '';
+    let administratorId: string = "";
     useEffect(() => {
         async function loadAdministratorId() {
             try {
@@ -30,36 +49,25 @@ export const ShowProfile = () => {
                 } else {
                     administratorId = administradorId.id;
                 }
-            } catch (error) {
-                console.error('Erro ao carregar o administrador:', error);
-            }
-        }
-        loadAdministratorId();
-    }, []);
 
-    useEffect(() => {
-        const getAdministrator = async () => {
-            try {
                 if (administratorId == '') {
                     return;
                 }
 
                 const administrator: Administrator | undefined = await findById(administratorId);
-                
+
                 if (administrator == undefined) {
                     throw new Error('Erro ao buscar administrador');
                 } else {
                     setName(administrator.name);
                     setPhotoProgile(administrator.pathImage);
                 }
-            } catch (erro) {
-                console.error(erro);
-                Alert.alert('Erro', 'Não foi possível carregar os dados do administrador.');
+            } catch (error) {
+                console.error('Erro ao carregar o administrador:', error);
             }
-        };
-
-        getAdministrator();
-    }, [administratorId]);
+        }
+        loadAdministratorId();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -69,7 +77,7 @@ export const ShowProfile = () => {
             >
                 <View style={styles.profileSection}>
                     <Image
-                        source={{ uri: photoProfile}}
+                        source={{ uri: photoProfile }}
                         style={styles.profileImage}
                     />
                     <Text style={styles.profileLabel}>{name}</Text>
@@ -78,15 +86,43 @@ export const ShowProfile = () => {
                 <View style={styles.profileCard}>
                     <View style={styles.menuContainer}>
 
-                        <ItemProfile label="Ver Meus Dados" image={require('../../assets/images/ver.png')} />
-                        <ItemProfile label="Editar Perfil" image={require('../../assets/images/editar.png')} />
-                        <ItemProfile label="Alterar senha" image={require('../../assets/images/password.png')} />
-                        <ItemProfile label="Cadastrar Adm's" image={require('../../assets/images/adm.png')} />
-                        <ItemProfile label="Histórico de Adm's" image={require('../../assets/images/ver.png')} />
+                        <ItemProfile
+                            screen={"Home"}
+                            navigate={navigate}
+                            label="Ver Meus Dados"
+                            image={require('../../assets/images/ver.png')}
+                        />
 
+                        <ItemProfile
+                            screen={"ManageProfile"}
+                            navigate={navigate}
+                            label="Editar Perfil"
+                            image={require('../../assets/images/editar.png')}
+                        />
+
+                        <ItemProfile
+                            screen={"Home"}
+                            navigate={navigate}
+                            label="Alterar senha"
+                            image={require('../../assets/images/password.png')}
+                        />
+
+                        <ItemProfile
+                            screen={"CreateAdministrator"}
+                            navigate={navigate}
+                            label="Cadastrar Adm's"
+                            image={require('../../assets/images/adm.png')}
+                        />
+
+                        <ItemProfile
+                            screen={"SearchAdministrator"}
+                            navigate={navigate}
+                            label="Histórico de Adm's"
+                            image={require('../../assets/images/ver.png')}
+                        />
                     </View>
 
-                    <TouchableOpacity style={styles.logoutButton}>
+                    <TouchableOpacity style={styles.logoutButton} onPress={() => logoutRequest(navigate)}>
                         <Image source={require('../../assets/images/logout.png')} style={styles.logoutIcon} />
                         <Text style={styles.logoutText}>Deslogar Perfil</Text>
                     </TouchableOpacity>
@@ -100,12 +136,14 @@ export const ShowProfile = () => {
 
 type ItemProfileProps = {
     image: ImageSourcePropType,
-    label: string
+    label: string,
+    navigate: (screen: string) => void,
+    screen: string
 }
 
-function ItemProfile({ label, image }: ItemProfileProps) {
+function ItemProfile({ label, image, navigate, screen }: ItemProfileProps) {
     return (
-        <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => navigate(screen)}>
             <Image source={image} style={styles.menuItemIcon} />
             <Text style={styles.menuItemText}>{label}</Text>
         </TouchableOpacity>

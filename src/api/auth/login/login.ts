@@ -6,29 +6,51 @@ export type UserAuth = {
 };
 
 export type Token = {
-    token: string
-}
+    token: string;
+};
 
-export async function login(userAuth : UserAuth): Promise<Token> {
+export type Error = {
+    code: string;
+    status: string;
+    message: string;
+    timestamp: string;
+    path: string;
+    errorFields: string | null;
+};
+
+export async function login(userAuth: UserAuth): Promise<Token | Error> {
     try {
-
         const response = await fetch(`${GLOBAL_VAR.BASE_URL}/autenticacao/login`, {
-            headers: {
-                'Content-Type': 'application/json'
-            },
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(userAuth),
         });
 
-        if (!response.ok){
-            console.error(`Algo errado no response: ${response.status}`)
+        const data = await response.json();
+
+        if (!response.ok) {
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? '/autenticacao/login',
+                errorFields: data.errorFields ?? null
+            };
         }
 
-        const data: Token = await response.json();
-        
-        return data;
-    } catch (error) {
-        console.error('Erro na requisição POST: ', error)
-        throw error;
+        return { token: data.token };
+
+    } catch (err) {
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: '/autenticacao/login',
+            errorFields: null,
+        };
     }
-} 
+}

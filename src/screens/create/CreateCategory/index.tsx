@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
 
 import { Title } from "../../../components/Title";
 import { NavigationBar } from "../../../components/NavigationBar";
@@ -21,6 +21,9 @@ export const CreateCategory = () => {
     const [colorModalVisible, setColorModalVisible] = useState(false);
     const [imagem, setImagem] = useState<string>('');
 
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+
     useValidateToken();
 
     const selecionarImagem = async () => {
@@ -40,15 +43,23 @@ export const CreateCategory = () => {
 
         try {
             const success = await create(categoria, imagem);
-            if (success) {
-                setNomeCategoria('');
-                setCorCard('#8b5cf6');
-                setImagem('');
-                Alert.alert('Sucesso!', 'A categoria foi cadastrada.');
+
+            if (typeof success === "boolean") {
+                if (success) {
+                    setNomeCategoria('');
+                    setCorCard('#8b5cf6');
+                    setImagem('');
+                    setError('');
+                    setFields([]);
+                    Alert.alert('Sucesso!', 'A categoria foi cadastrada.');
+                }
+            } else {
+                setError(success.message || "Erro desconhecido.");
+
+                setFields(success.errorFields?.map(field => field.description) || []);
             }
         } catch (error) {
-            console.error('POST request failed:', error);
-            Alert.alert('Erro', 'Não foi possível cadastrar a categoria.');
+            setError('Não foi possível atualizar. Verifique sua conexão.');
         }
     };
 
@@ -82,13 +93,21 @@ export const CreateCategory = () => {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button 
-                        icon={require('../../../assets/icons/add.png')} 
-                        text="CADASTRAR SERVIÇO" 
-                        color="#006316" 
-                        action={sendRequestCreate} 
+                    <Button
+                        icon={require('../../../assets/icons/add.png')}
+                        text="CADASTRAR SERVIÇO"
+                        color="#006316"
+                        action={sendRequestCreate}
                     />
                 </View>
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
             </ScrollView>
 
             <ColorPickerModal

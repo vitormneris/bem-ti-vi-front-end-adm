@@ -147,8 +147,5 @@ export const styles = StyleSheet.create({
         height: 24,
         resizeMode: 'contain',
         tintColor: '#fff'
-    },
-    containerButton: {
-        flexDirection: 'row'
     }
 });

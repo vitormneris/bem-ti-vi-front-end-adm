@@ -4,10 +4,10 @@ import { Image, Text, TouchableOpacity, View } from "react-native"
 import { styles } from "./style"
 
 import { useNavigation } from '@react-navigation/native';
-import { NavigationProps } from '../../routes/index';
+import { NavigationProps } from "../../routes/AppRoute";
 
 type NavigationBarProps = {
-  initialTab?: string;
+    initialTab?: string;
 };
 
 export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
@@ -21,7 +21,7 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
                 activeTab={activeTab}
                 type="home"
                 icon={require('../../assets/images/home.png')}
-                text="Home"
+                text="Início"
                 onPress={() => navigate('Home')}
             />
             <NavItem
@@ -29,7 +29,7 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
                 activeTab={activeTab}
                 type="loja"
                 icon={require('../../assets/images/cachorro.png')}
-                text="Loja"
+                text="Produtos"
                 onPress={() => navigate('SearchProduct')}
             />
 
@@ -56,7 +56,7 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
                 type="perfil"
                 icon={require('../../assets/images/perfil.png')}
                 text="Perfil"
-                onPress={() => navigate('Login')}
+                onPress={() => navigate('ShowProfile')}
             />
         </View>
     )
@@ -65,7 +65,7 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
 
 function NavItem(props: any) {
     return (
-        <TouchableOpacity style={styles.navItem} onPress={() => {props.setActiveTab(); props.onPress()}}>
+        <TouchableOpacity style={styles.navItem} onPress={() => { props.setActiveTab(); props.onPress() }}>
             <View style={styles.navIconContainer}>
                 {props.activeTab === props.type &&
                     <View style={styles.activeIndicator} />

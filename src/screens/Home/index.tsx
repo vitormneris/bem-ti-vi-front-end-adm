@@ -8,6 +8,8 @@ import { NavigationProps } from "../../routes/AppRoute";
 import { useValidateToken } from "../../utils/UseValidateToken/useValidateToken";
 
 import { styles } from "./style";
+import { NavigationBar } from "../../components/NavigationBar";
+import { Title } from "../../components/Title";
 
 export const Home = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -17,21 +19,17 @@ export const Home = () => {
     return (
         <View style={styles.screen}>
 
-            <Button text="Cadastrar produto" onPress={() => navigate("CreateProduct")} />
+            <Title text={"Seja bem vindo!"} />
+
             <Button text="Pesquisar produto" onPress={() => navigate("SearchProduct")} />
 
-            <Button text="Cadastrar serviço" onPress={() => navigate("CreateService")} />
             <Button text="Pesquisar serviço" onPress={() => navigate("SearchService")} />
 
-            <Button text="Cadastrar categoria" onPress={() => navigate("CreateCategory")} />
             <Button text="Pesquisar categoria" onPress={() => navigate("SearchCategory")} />
 
-            <Button text="Cadastrar Adm" onPress={() => navigate("CreateAdministrator")} />
-            <Button text="Gerenciar perfil" onPress={() => navigate("ManageProfile")} />
             <Button text="Mostrar perfil" onPress={() => navigate("ShowProfile")} />
-            <Button text="Listar Adm" onPress={() => navigate("SearchAdministrator")} />
 
-            <Button text="Login" onPress={() => navigate("Login")} />
+            <NavigationBar />
         </View>
     );
 };

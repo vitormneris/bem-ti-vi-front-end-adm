@@ -15,8 +15,9 @@ import { Button } from "../../../components/Button";
 import { useValidateToken } from "../../../utils/UseValidateToken/useValidateToken";
 
 import { styles } from "./style";
+import { activationById } from "../../../api/administrator/delete/activationById";
 
-export const SearchAdministrator = () => {
+export const SearchDeactivatedAdministrator = () => {
     const { navigate } = useNavigation<NavigationProps>();
     const [searchText, setSearchText] = useState<string>('');
     const [administrators, setAdministrators] = useState<Administrator[]>([]);
@@ -26,7 +27,7 @@ export const SearchAdministrator = () => {
     useEffect(() => {
         async function loadAdministrators() {
             try {
-                const administrators: Administrator[] | undefined = await findByStatus(true);
+                const administrators: Administrator[] | undefined = await findByStatus(false);
                 if (administrators != undefined) {
                     setAdministrators(administrators);
                 }
@@ -40,11 +41,11 @@ export const SearchAdministrator = () => {
     const handleDeactivate = async (id: string, name: string) => {
         Alert.alert(
             'Atenção!',
-            'Tem certeza que deseja desativar a conta de ' + name + '?',
+            'Tem certeza que deseja ativar a conta de ' + name + '?',
             [
                 { text: 'Cancelar', style: 'cancel' },
                 {
-                    text: 'Desativar',
+                    text: 'Ativar',
                     style: 'destructive',
                     onPress: () => confirmDeactivate(id),
                 },
@@ -54,15 +55,15 @@ export const SearchAdministrator = () => {
 
     const confirmDeactivate = async (admId: string) => {
         try {
-            const success = await deactivationById(admId);
+            const success = await activationById(admId);
 
             if (success) {
-                Alert.alert('Sucesso!', 'A conta do administrador foi desativada.');
-                navigate('SearchDeactivatedAdministrator')
+                Alert.alert('Sucesso!', 'A conta do administrador foi sativada.');
+                navigate('SearchAdministrator')
             }
 
         } catch (error) {
-            Alert.alert('Erro', 'Não foi possível desativar a conta do administrador.');
+            Alert.alert('Erro', 'Não foi possível ativar a conta do administrador.');
         }
     };
 
@@ -70,32 +71,15 @@ export const SearchAdministrator = () => {
         <ScrollView style={styles.safeArea} contentContainerStyle={styles.scrollContent}>
 
             <View style={[styles.greetingContainer, { marginTop: 30 }]}>
-                <Text style={styles.greetingText}>Administradores Cadastrados</Text>
-                <Text style={styles.subtitle}>Gerencie os administradores do sistema</Text>
-            </View>
-
-            <View style={styles.containerButton}>
-                <Button
-                    icon={require('../../../assets/images/add.png')}
-                    text="CADASTRAR"
-                    color="#256489"
-                    action={() => navigate('CreateProduct')}
-                />
-
-                <Button
-                    icon={require('../../../assets/images/perfil.png')}
-                    text="DESATIVADAS"
-                    color="#256489"
-                    action={() => navigate('SearchDeactivatedAdministrator')}
-                />
+                <Text style={styles.greetingText}>Administradores Desativados</Text>
             </View>
 
             <View style={styles.listContainer}>
                 {administrators.map((admin) => (
-                    <ItemAdministrator
-                        key={admin.id}
-                        administrator={admin}
-                        handleDeactivate={handleDeactivate}
+                    <ItemAdministrator 
+                        key={admin.id} 
+                        administrator={admin} 
+                        handleDeactivate={handleDeactivate} 
                         admName={admin.name}
                         admId={admin.id}
                     />
@@ -121,10 +105,7 @@ export const ItemAdministrator = ({ administrator, handleDeactivate, admName, ad
             <View style={styles.adminActions}>
                 <TouchableOpacity
                     style={styles.actionButton}
-                    onPress={() => {
-                        handleDeactivate(admId, admName)
-
-                    }}
+                    onPress={() => {handleDeactivate(admId, admName)}}
                 >
                     <Image
                         source={require('../../../assets/images/desabilitar.png')}

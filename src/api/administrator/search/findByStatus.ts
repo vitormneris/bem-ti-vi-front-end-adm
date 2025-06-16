@@ -1,11 +1,11 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
 import { Administrator } from "../create/create";
 
-export async function findAll(): Promise<Administrator[] | undefined>{
+export async function findByStatus(value: boolean): Promise<Administrator[] | undefined>{
 
     try {
 
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/buscartodos`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/${value}/buscarporstatus`,{
             headers: {
                 Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
             },

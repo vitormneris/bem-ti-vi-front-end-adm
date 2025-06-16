@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     },
 
     navLabel: {
-        fontSize: 12,
+        fontSize: 11,
         color: '#333',
         fontFamily: 'Montserrat-Medium',
         marginTop: 2

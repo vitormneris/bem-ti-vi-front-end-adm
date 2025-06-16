@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#D3EFFF',
@@ -114,7 +114,11 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 
+  error: {
+    textAlign: 'center',
+    fontSize: 20,
+    color: '#FF0000',
+    marginVertical: 10
+  }
   
 });
-
-export default styles;

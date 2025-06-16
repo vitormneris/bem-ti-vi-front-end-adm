@@ -103,8 +103,7 @@ export const ItemCategory = ({ category }: ItemCategoryProps) => {
             </View>
 
             <View style={stylesItem.actions}>
-                <ItemButton source={require('../../../assets/images/olhos.png')} />
-                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageCategory', { categoryId: categoryId })} />
+                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageCategory', { id: categoryId })} />
             </View>
         </View>
     )

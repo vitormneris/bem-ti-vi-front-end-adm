@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 
@@ -30,6 +30,9 @@ export default function ManageCategory() {
     const [corCard, setCorCard] = useState<string>('#8b5cf6');
     const [colorModalVisible, setColorModalVisible] = useState(false);
     const [imagem, setImagem] = useState<string>('');
+
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
 
@@ -74,28 +77,32 @@ export default function ManageCategory() {
         };
 
         try {
-            const success = await update(categoria, imagem, categoryId);
+            const result = await update(categoria, imagem, categoryId);
 
-            if (success) {
-                Alert.alert("Sucesso!", "A categoria foi atualizada.");
-                navigate('SearchCategory')
+            if (typeof result === "boolean") {
+                if (result) {
+                    Alert.alert("Sucesso!", "O serviço foi atualizado.");
+                    navigate('SearchService');
+                }
+            } else {
+                setError(result.message || "Erro desconhecido.");
+                setFields(result.errorFields?.map(field => field.description) || []);
             }
 
         } catch (error) {
-            console.error('UPDATE request failed:', error);
-            Alert.alert("Erro!", "Falha ao atualizar a categoria.");
+            setError('Não foi possível atualizar o produto. Verifique sua conexão.');
         }
     };
 
     const handleDelete = async () => {
         Alert.alert(
-            'Confirmação',
-            'Tem certeza que deseja excluir esta categoria?',
+            'Atenção!',
+            'Tem certeza que deseja excluir esta categoria?\n\nA deleção desta categoria provacará a exclusão de todos os produtos assossiados a ela.',
             [
-                { text: 'Cancelar', style: 'cancel' }, 
-                { 
+                { text: 'Cancelar', style: 'cancel' },
+                {
                     text: 'Excluir',
-                    style: 'destructive', 
+                    style: 'destructive',
                     onPress: () => confirmDelete(categoryId),
                 },
             ]
@@ -103,19 +110,18 @@ export default function ManageCategory() {
     };
 
     const confirmDelete = async (categoryId: string) => {
-    try {
-        const success = await deleteById(categoryId);
-        
-        if (success) {
-            Alert.alert('Sucesso!', 'A categoria foi excluída.');
-            navigate('SearchCategory')
-        }
+        try {
+            const success = await deleteById(categoryId);
 
-    } catch (error) {
-        console.error('Erro ao excluir:', error);
-        Alert.alert('Erro', 'Não foi possível excluir a categoria.');
-    }
-};
+            if (success) {
+                Alert.alert('Sucesso!', 'A categoria foi excluída.');
+                navigate('SearchCategory')
+            }
+
+        } catch (error) {
+            Alert.alert('Erro', 'Não foi possível excluir a categoria.');
+        }
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -150,6 +156,15 @@ export default function ManageCategory() {
                     <Button icon={require('../../../assets/icons/delete.png')} text="DELETAR" color="#B40000" action={handleDelete} />
                     <Button icon={require('../../../assets/icons/edit.png')} text="ATUALIZAR" color="#006516" action={handleUpdate} />
                 </View>
+
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
             </ScrollView>
 
             <ColorPickerModal
@@ -162,7 +177,7 @@ export default function ManageCategory() {
                 }}
             />
 
-            <NavigationBar initialTab='categorias'/>
+            <NavigationBar initialTab='categorias' />
         </SafeAreaView>
     );
 };

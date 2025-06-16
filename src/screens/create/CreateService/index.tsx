@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, Pressable } from 'react-native';
 
 import { Title } from '../../../components/Title';
 import { NavigationBar } from '../../../components/NavigationBar';
@@ -15,6 +15,8 @@ import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/sele
 
 import { styles } from './style';
 
+import { InputTime } from '../../../components/Inputs/InputTime';
+
 export const CreateService = () => {
     const [nomeServico, setNomeServico] = useState<string>('');
     const [descricaoServico, setDescricaoServico] = useState<string>('');
@@ -22,12 +24,28 @@ export const CreateService = () => {
     const [duracaoEstimada, setDuracaoEstimada] = useState<string>('');
     const [imagem, setImagem] = useState<string>('');
 
+    const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+
     useValidateToken();
 
     const selecionarImagem = async () => {
         const imageSelected = await selectImageFromGalery();
         if (imageSelected) {
             setImagem(imageSelected);
+        }
+    };
+
+    const handleTimeChange = (event: any, selectedDate?: Date) => {
+        setShowTimePicker(false);
+        if (event.type === "dismissed") return;
+
+        if (selectedDate) {
+            const hours = selectedDate.getHours().toString().padStart(2, '0');
+            const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
+            const seconds = selectedDate.getSeconds().toString().padStart(2, '0');
+            setDuracaoEstimada(`${hours}:${minutes}:${seconds}`);
         }
     };
 
@@ -43,17 +61,23 @@ export const CreateService = () => {
 
         try {
             const success = await create(servico, imagem);
-            if (success) {
-                setNomeServico('')
-                setPrecoServico('')
-                setDuracaoEstimada('')
-                setDescricaoServico('')
-                setImagem('')
-                Alert.alert('Sucesso!', 'O serviço foi cadastrado.')
+            if (typeof success === "boolean") {
+                if (success) {
+                    setNomeServico('');
+                    setPrecoServico('');
+                    setDuracaoEstimada('');
+                    setDescricaoServico('');
+                    setImagem('');
+                    setError('');
+                    setFields([]);
+                    Alert.alert('Sucesso!', 'O serviço foi cadastrado.');
+                }
+            } else {
+                setError(success.message || "Erro desconhecido.");
+                setFields(success.errorFields?.map(field => field.description) || []);
             }
         } catch (error) {
-            console.error('POST request failed:', error);
-            Alert.alert('Erro', 'Não foi possível cadastrar o serviço.');
+            setError('Não foi possível atualizar. Verifique sua conexão.');
         }
     };
 
@@ -79,12 +103,12 @@ export const CreateService = () => {
                     onChangeText={setPrecoServico}
                 />
 
-                <Input
+                <InputTime
                     label="Duração Estimada"
-                    placeholder="Ex: 03:30:00"
-                    keyboardType="default"
-                    value={duracaoEstimada}
-                    onChangeText={setDuracaoEstimada}
+                    durationEstimated={duracaoEstimada}
+                    setShowTimePicker={setShowTimePicker}
+                    showTimePicker={showTimePicker}
+                    handleTimeChange={handleTimeChange}
                 />
 
                 <InputImage
@@ -101,15 +125,23 @@ export const CreateService = () => {
                     onChangeText={setDescricaoServico}
                 />
 
-
                 <View style={styles.buttonsContainer}>
-                    <Button 
-                        icon={require('../../../assets/icons/add.png')} 
-                        text="CADASTRAR SERVIÇO" 
-                        color="#006316" 
+                    <Button
+                        icon={require('../../../assets/icons/add.png')}
+                        text="CADASTRAR SERVIÇO"
+                        color="#006316"
                         action={sendRequestCreate}
                     />
                 </View>
+
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
             </ScrollView>
 
             <NavigationBar initialTab='servicos' />

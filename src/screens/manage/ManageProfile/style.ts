@@ -14,11 +14,32 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 16
     },
     buttonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'center',
+        justifyContent: 'center',
         marginHorizontal: 15,
         marginVertical: 32,
         gap: 16
+    },
+    profileImage: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: '#fff',
+        backgroundColor: '#fff'
+    },
+        profileSection: {
+        alignItems: 'center',
+        marginTop: 30,
+        marginBottom: 10
+    },
+
+    profileLabel: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 18,
+        color: '#333',
+        marginTop: 10,
+        textAlign: 'center'
     },
     formContainer: {
         marginTop: 20,

@@ -16,9 +16,11 @@ import { NavigationProps } from '../../../routes/AppRoute';
 import { Service } from '../../../api/service/create/create';
 import { search, ServicePages } from '../../../api/service/search/search';
 
+
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
+
 import { styles } from './style';
 import { stylesItem } from '../style';
-import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 export const SearchService = () => {
     const { navigate } = useNavigation<NavigationProps>()
@@ -108,8 +110,7 @@ export const ItemService = ({ service }: ItemServiceProps) => {
             </View>
 
             <View style={stylesItem.actions}>
-                <ItemButton source={require('../../../assets/images/olhos.png')} />
-                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageService', { serviceId: serviceId })} />
+                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageService', { id: serviceId })} />
             </View>
         </View>
     )

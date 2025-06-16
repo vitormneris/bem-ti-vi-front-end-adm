@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, Alert } from 'react-native';
-
 import { useNavigation } from '@react-navigation/native';
 
-import { login, Token, UserAuth } from '../../api/auth/login/login';
+import { GLOBAL_VAR } from '../../api/config/globalVar';
+import { login, UserAuth } from '../../api/auth/login/login';
+
 import { NavigationProps } from '../../routes/AppRoute';
 
-import styles from './style';
-
-import { GLOBAL_VAR } from '../../api/config/globalVar';
+import { styles } from './style';
 
 export const Login = () => {
     const { navigate } = useNavigation<NavigationProps>();
-    
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+
+    const [error, setError] = useState('');
 
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -28,23 +29,25 @@ export const Login = () => {
         };
 
         try {
-            const token: Token = await login(userAuth);
-            if (token) {
+            const response = await login(userAuth);
+
+            if ('token' in response) {
                 setEmail('');
                 setPassword('');
-                GLOBAL_VAR.TOKEN_JWT = token.token;
-                Alert.alert('Sucesso!', 'O login foi feito com sucesso!');
-                navigate("Home")
+                setError('');
+                GLOBAL_VAR.TOKEN_JWT = response.token;
+                navigate('Home');
+            } else {
+                setError(response.message);
             }
+
         } catch (error) {
-            console.error('POST request failed:', error);
-            Alert.alert('Erro', 'Não foi possível fazer o login.');
+            setError('Não foi possível fazer o login. Verifique sua conexão.');
         }
     };
 
     return (
         <View style={styles.container}>
-            {/* Logo */}
             <View style={styles.logoContainer}>
                 <Image
                     source={require('../../assets/images/logo.png')}
@@ -54,7 +57,6 @@ export const Login = () => {
                 <Text style={styles.logoSubText}>LOGIN</Text>
             </View>
 
-            {/* Email Input */}
             <View style={styles.inputContainer}>
                 <Image
                     source={require('../../assets/images/e-mail.png')}
@@ -71,7 +73,6 @@ export const Login = () => {
                 />
             </View>
 
-            {/* Password Input */}
             <View style={styles.inputContainer}>
                 <TouchableOpacity onPress={toggleShowPassword}>
                     <Image
@@ -91,23 +92,11 @@ export const Login = () => {
                 />
             </View>
 
-            {/* Forgot Password */}
-            <TouchableOpacity style={styles.forgotPasswordButton}>
-                <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
-            </TouchableOpacity>
-
-            {/* Login Button */}
             <TouchableOpacity style={styles.loginButton} onPress={sendRequestLogin}>
                 <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
 
-            {/* Register Link */}
-            <View style={styles.registerContainer}>
-                <Text style={styles.registerText}>Não possui conta?</Text>
-                <TouchableOpacity>
-                    <Text style={styles.registerLink}> Cadastre-se</Text>
-                </TouchableOpacity>
-            </View>
+            <Text style={styles.error}>{error}</Text>
         </View>
     );
 };

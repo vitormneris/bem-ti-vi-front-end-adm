@@ -18,7 +18,7 @@ export async function findById(productId: string ): Promise<Product | undefined>
 
         const data: Product = await response.json()
 
-        return data
+        return data;
 
     } catch (error) {
         console.error('Erro na requisição: ', error)

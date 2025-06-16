@@ -1,7 +1,7 @@
-import React from "react"
-import { Text, View } from "react-native"
+import React from "react";
+import { Text, View } from "react-native";
 
-import { styles } from "./style"
+import { styles } from "./style";
 
 type TitleProps = {
     text: string
@@ -10,8 +10,8 @@ type TitleProps = {
 export const Title = ({ text }: TitleProps) => {
     return (
         <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}> {text} </Text>
+            <Text style={styles.sectionTitle}>{ text }</Text>
             <View style={styles.divider} />
         </View>
     )
-} 
+}

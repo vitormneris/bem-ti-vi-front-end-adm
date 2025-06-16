@@ -22,6 +22,8 @@ import { Service } from '../../../api/service/create/create';
 import { styles } from './style';
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
+import { InputTime } from '../../../components/Inputs/InputTime';
+import { Text } from 'react-native';
 
 export default function ManageService() {
     const route = useRoute();
@@ -33,6 +35,10 @@ export default function ManageService() {
     const [precoServico, setPrecoServico] = useState<string>('');
     const [duracaoEstimada, setDuracaoEstimada] = useState<string>('');
     const [imagem, setImagem] = useState<string>('');
+
+    const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
 
@@ -81,18 +87,34 @@ export default function ManageService() {
         };
 
         try {
-            const success = await update(serviceId, servico, imagem);
+            const result = await update(serviceId, servico, imagem);
 
-            if (success) {
-                Alert.alert('Sucesso!', 'O serviço foi atualizado.');
-                navigate('SearchService')
+            if (typeof result === "boolean") {
+                if (result) {
+                    Alert.alert("Sucesso!", "O serviço foi atualizado.");
+                    navigate('SearchService');
+                }
+            } else {
+                setError(result.message || "Erro desconhecido.");
+                setFields(result.errorFields?.map(field => field.description) || []);
             }
 
         } catch (error) {
-            console.error('UPDATE request failed:', error);
-            Alert.alert('Erro', 'Falha ao atualizar o serviço.');
+            setError('Não foi possível atualizar o produto. Verifique sua conexão.');
         }
-    }
+    };
+
+    const handleTimeChange = (event: any, selectedDate?: Date) => {
+        setShowTimePicker(false);
+        if (event.type === "dismissed") return;
+
+        if (selectedDate) {
+            const hours = selectedDate.getHours().toString().padStart(2, '0');
+            const minutes = selectedDate.getMinutes().toString().padStart(2, '0');
+            const seconds = selectedDate.getSeconds().toString().padStart(2, '0');
+            setDuracaoEstimada(`${hours}:${minutes}:${seconds}`);
+        }
+    };
 
     const handleDelete = async () => {
         Alert.alert(
@@ -119,7 +141,6 @@ export default function ManageService() {
             }
 
         } catch (error) {
-            console.error('Erro ao excluir:', error);
             Alert.alert('Erro', 'Não foi possível excluir o serviço.');
         }
     };
@@ -146,12 +167,12 @@ export default function ManageService() {
                     onChangeText={setPrecoServico}
                 />
 
-                <Input
+                <InputTime
                     label="Duração Estimada"
-                    placeholder="Ex: 03:30:00"
-                    keyboardType="default"
-                    value={duracaoEstimada}
-                    onChangeText={setDuracaoEstimada}
+                    durationEstimated={duracaoEstimada}
+                    setShowTimePicker={setShowTimePicker}
+                    showTimePicker={showTimePicker}
+                    handleTimeChange={handleTimeChange}
                 />
 
                 <InputImage
@@ -172,6 +193,14 @@ export default function ManageService() {
                     <Button icon={require('../../../assets/icons/delete.png')} text="DELETAR" color="#B40000" action={handleDelete} />
                     <Button icon={require('../../../assets/icons/edit.png')} text="ATUALIZAR" color="#006516" action={handleUpdate} />
                 </View>
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
             </ScrollView>
 
             <NavigationBar initialTab='servicos' />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
 
 import { Title } from '../../../components/Title';
 import { Button } from '../../../components/Button';
@@ -21,6 +21,9 @@ export default function CreateAdministrator() {
     const [senha, setSenha] = useState<string>('');
     const [fotoPerfil, setFotoPerfil] = useState<string>('');
 
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+
     useValidateToken();
 
     const selecionarImagem = async () => {
@@ -41,16 +44,23 @@ export default function CreateAdministrator() {
 
         try {
             const success = await create(administrator, fotoPerfil);
-            if (success) {
-                setNome('');
-                setEmail('');
-                setSenha('');
-                setFotoPerfil('');
-                Alert.alert('Sucesso!', 'O administrador foi cadastrada.');
+            if (typeof success === "boolean") {
+                if (success) {
+                    setNome('');
+                    setEmail('');
+                    setSenha('');
+                    setFotoPerfil('');
+                    setError('');
+                    setFields([]);
+                    Alert.alert('Sucesso!', 'O administrador foi cadastrada.');
+                }
+            } else {
+                setError(success.message || "Erro desconhecido.");
+
+                setFields(success.errorFields?.map(field => field.description) || []);
             }
         } catch (error) {
-            console.error('POST request failed:', error);
-            Alert.alert('Erro', 'Não foi possível cadastrar o administrador.');
+            setError('Não foi possível atualizar. Verifique sua conexão.');
         }
     };
 
@@ -104,6 +114,14 @@ export default function CreateAdministrator() {
                         action={sendRequestCreate}
                     />
                 </View>
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
             </ScrollView>
 
             <NavigationBar />

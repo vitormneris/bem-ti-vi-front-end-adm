@@ -108,10 +108,9 @@ export const ItemProduct = ({ product }: ItemProductProps) => {
             </View>
 
             <View style={stylesItem.actions}>
-                <ItemButton source={require('../../../assets/images/olhos.png')} />
                 <ItemButton
                     source={require('../../../assets/images/configuracao.png')}
-                    onPress={() => navigate('ManageProduct', { productId: productId })}
+                    onPress={() => navigate('ManageProduct', { id: productId })}
                 />
             </View>
         </View>

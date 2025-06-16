@@ -14,7 +14,7 @@ export const styles = StyleSheet.create({
     scrollContent: {
         paddingBottom: 40
     },
-    
+
     buttonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -22,5 +22,19 @@ export const styles = StyleSheet.create({
         marginTop: 32,
         marginBottom: 30,
     },
+
+    error: {
+        textAlign: 'center',
+        fontSize: 20,
+        color: '#FF0000',
+        marginVertical: 10
+    },
+
+    field: {
+        textAlign: 'center',
+        fontSize: 18,
+        color: '#FF0000',
+        marginVertical: 10
+    }
 
 });

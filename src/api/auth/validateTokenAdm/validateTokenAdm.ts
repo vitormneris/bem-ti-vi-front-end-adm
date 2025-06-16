@@ -1,7 +1,4 @@
-import { Alert } from "react-native"
 import { GLOBAL_VAR } from "../../config/globalVar"
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProps } from "../../../routes/AppRoute";
 
 export type AdministratorId = {
     id: string
@@ -17,7 +14,7 @@ export async function validateTokenAdm(): Promise<AdministratorId | undefined> {
             method: 'GET',
         })
 
-        if (!response.ok){
+        if (!response.ok) {
             return undefined;
         }
 

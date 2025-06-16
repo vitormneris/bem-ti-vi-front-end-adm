@@ -1,5 +1,6 @@
 import { Alert } from 'react-native';
 import { GLOBAL_VAR } from '../../config/globalVar';
+import { Error } from '../../product/update/update';
 
 export type Administrator = {
     id: string;
@@ -9,7 +10,7 @@ export type Administrator = {
     pathImage: string;
 };
 
-export async function create(administrator: Administrator, image: string) {
+export async function create(administrator: Administrator, image: string): Promise<boolean | Error> {
     if (!image) {
         Alert.alert("Atenção!", "Você precisa enviar uma imagem.");
         return false;
@@ -37,17 +38,28 @@ export async function create(administrator: Administrator, image: string) {
             body: formData
         });
 
-        const text = await response.text();
-
         if (response.status === 201) {
             return true;
         } else {
-            console.error(`Erro ao cadastrar: código ${response.status}`);
-            console.log('Resposta do servidor:', text);
-            return false;
+            const data = await response.json();
+
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? `/administradores/inserir`,
+                errorFields: data.errorFields ?? null
+            };
         }
     } catch (error) {
-        console.error('Erro na requisição POST: ', error);
-        return false;
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: `/administradores/inserir`,
+            errorFields: null
+        };
     }
 }

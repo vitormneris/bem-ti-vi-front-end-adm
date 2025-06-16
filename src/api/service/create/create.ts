@@ -1,4 +1,6 @@
+import { Alert } from "react-native";
 import { GLOBAL_VAR } from "../../config/globalVar";
+import { Error } from "../../product/update/update";
 
 export type Service = {
     id: string | null,
@@ -9,21 +11,26 @@ export type Service = {
     description: string
 };
 
-export async function create(service: Service, image: string) {
+export async function create(service: Service, image: string): Promise<boolean | Error> {
+    if (!image) {
+        Alert.alert("Atenção!", "Você precisa enviar uma imagem.");
+        return false;
+    }
+
+    const formData = new FormData();
+    
+    formData.append('service', {
+        string: JSON.stringify(service),
+        type: 'application/json',
+    } as any);
+
+    formData.append('file', {
+        uri: image,
+        name: 'imagem.jpg',
+        type: 'image/jpeg',
+    } as any);
 
     try {
-
-        const formData = new FormData();
-        formData.append('service', {
-            string: JSON.stringify(service),
-            type: 'application/json',
-        } as any);
-
-        formData.append('file', {
-            uri: image,
-            name: 'imagem.jpg',
-            type: 'image/jpeg',
-        } as any);
 
         const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/inserir`, {
             headers: {
@@ -36,11 +43,25 @@ export async function create(service: Service, image: string) {
         if (response.status === 201) {
             return true;
         } else {
-            console.error(`Erro ao cadastrar: código ${response.status}`);
-            return false;
+            const data = await response.json();
+
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? `/servicos/inserir`,
+                errorFields: data.errorFields ?? null
+            };
         }
     } catch (error) {
-        console.error('Erro na requisição POST: ', error);
-        throw error;
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: `/servicos/inserir`,
+            errorFields: null
+        };
     }
 } 
