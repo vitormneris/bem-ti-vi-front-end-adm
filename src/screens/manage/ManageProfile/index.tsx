@@ -58,6 +58,10 @@ export default function ManageProfile() {
                     throw new Error('Erro ao buscar administrador');
                 }
 
+                if (administrator.activationStatus != null && !administrator.activationStatus.isActive) {
+                    navigate("AdministratorDeactivated");
+                }
+
                 setNome(administrator.name);
                 setFotoPerfil(administrator.pathImage);
 

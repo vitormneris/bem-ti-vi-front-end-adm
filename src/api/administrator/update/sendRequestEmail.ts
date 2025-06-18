@@ -1,16 +1,24 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
+import { Error } from "../../product/update/update";
+import { Administrator } from "../create/create";
 
-export async function deleteById(serviceId: string) {
+export async function sendRequestEmail(administratorId: string, newEmail: string): Promise<boolean | Error> {
+
+    const objEmail = {
+        email: newEmail
+    } as Administrator;
 
     try {
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/${serviceId}/deletar`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/${administratorId}/solicitartrocaemail`, {
             headers: {
+                "Content-Type": "application/json",
                 Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
             },
-            method: 'DELETE',
-        })
+            method: 'PATCH',
+            body: JSON.stringify(objEmail),
+        });
 
-        if (response.status === 204) {
+        if (response.ok) {
             return true;
         } else {
             const data = await response.json();
@@ -20,7 +28,7 @@ export async function deleteById(serviceId: string) {
                 status: data.status ?? response.status.toString(),
                 message: data.message ?? 'Erro inesperado',
                 timestamp: data.timestamp ?? new Date().toISOString(),
-                path: data.path ?? `/servicos/${serviceId}/deletar`,
+                path: data.path ?? `/administradores/${administratorId}/solicitartrocaemail`,
                 errorFields: data.errorFields ?? null
             };
         }
@@ -31,8 +39,8 @@ export async function deleteById(serviceId: string) {
             status: '0',
             message: 'Erro de conexão. Verifique sua internet.',
             timestamp: new Date().toISOString(),
-            path: `/servicos/${serviceId}/deletar`,
+            path: `/administradores/${administratorId}/solicitartrocaemail`,
             errorFields: null
         };
     }
-}
+};

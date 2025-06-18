@@ -51,7 +51,7 @@ export const styles = StyleSheet.create({
         elevation: 3,
         marginBottom: 20
     },
-    
+
     menuContainer: {
         marginBottom: 10
     },
@@ -104,5 +104,28 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         color: '#FFF',
         letterSpacing: 0.5
-    }
+    },
+    profileImagePlaceholder: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: '#ccc',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+
+    warningText: {
+        color: 'red',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 8,
+    },
+
+    confirmText: {
+        color: 'green',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 8,
+    },
 });

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Image, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { GLOBAL_VAR } from '../../api/config/globalVar';
@@ -10,7 +10,7 @@ import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
 
 export const Login = () => {
-    const { navigate } = useNavigation<NavigationProps>();
+    const { replace } = useNavigation<NavigationProps>();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -36,7 +36,7 @@ export const Login = () => {
                 setPassword('');
                 setError('');
                 GLOBAL_VAR.TOKEN_JWT = response.token;
-                navigate('Home');
+                replace('Home');
             } else {
                 setError(response.message);
             }
@@ -45,6 +45,15 @@ export const Login = () => {
             setError('Não foi possível fazer o login. Verifique sua conexão.');
         }
     };
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            BackHandler.exitApp(); 
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, []);
 
     return (
         <View style={styles.container}>

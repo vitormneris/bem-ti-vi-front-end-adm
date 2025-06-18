@@ -7,6 +7,7 @@ import { Button } from '../../../components/Button';
 import { Input } from '../../../components/Inputs/Input';
 import { InputImage } from '../../../components/Inputs/InputImage';
 import { InputDescription } from '../../../components/Inputs/InputDescription';
+import { InputTime } from '../../../components/Inputs/InputTime';
 
 import { create, Service } from '../../../api/service/create/create';
 
@@ -14,8 +15,6 @@ import { useValidateToken } from '../../../utils/UseValidateToken/useValidateTok
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
 import { styles } from './style';
-
-import { InputTime } from '../../../components/Inputs/InputTime';
 
 export const CreateService = () => {
     const [nomeServico, setNomeServico] = useState<string>('');

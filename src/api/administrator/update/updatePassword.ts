@@ -1,16 +1,23 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
+import { Error } from "../../product/update/update";
 
-export async function deleteById(serviceId: string) {
+export type Passwords = {
+    passwordOld: string,
+    passwordNew: string
+};
 
+export async function updatePassword(administratorId: string, passwords: Passwords): Promise<boolean | Error> {
     try {
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/${serviceId}/deletar`, {
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/${administratorId}/atualizarsenha`, {
             headers: {
+                "Content-Type": "application/json",
                 Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
             },
-            method: 'DELETE',
-        })
+            method: 'PATCH',
+            body: JSON.stringify(passwords),
+        });
 
-        if (response.status === 204) {
+        if (response.ok) {
             return true;
         } else {
             const data = await response.json();
@@ -20,7 +27,7 @@ export async function deleteById(serviceId: string) {
                 status: data.status ?? response.status.toString(),
                 message: data.message ?? 'Erro inesperado',
                 timestamp: data.timestamp ?? new Date().toISOString(),
-                path: data.path ?? `/servicos/${serviceId}/deletar`,
+                path: data.path ?? `/administradores/${administratorId}/atualizarsenha`,
                 errorFields: data.errorFields ?? null
             };
         }
@@ -31,8 +38,8 @@ export async function deleteById(serviceId: string) {
             status: '0',
             message: 'Erro de conexão. Verifique sua internet.',
             timestamp: new Date().toISOString(),
-            path: `/servicos/${serviceId}/deletar`,
+            path: `/administradores/${administratorId}/atualizarsenha`,
             errorFields: null
         };
     }
-}
+};

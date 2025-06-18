@@ -38,8 +38,10 @@ export default function CreateAdministrator() {
             id: '',
             name: nome,
             email: email,
+            isEmailActive: false,
             password: senha,
             pathImage: '',
+            activationStatus: null
         };
 
         try {

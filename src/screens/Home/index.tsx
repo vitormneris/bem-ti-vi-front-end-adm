@@ -21,13 +21,8 @@ export const Home = () => {
 
             <Title text={"Seja bem vindo!"} />
 
-            <Button text="Pesquisar produto" onPress={() => navigate("SearchProduct")} />
-
-            <Button text="Pesquisar serviço" onPress={() => navigate("SearchService")} />
-
-            <Button text="Pesquisar categoria" onPress={() => navigate("SearchCategory")} />
-
-            <Button text="Mostrar perfil" onPress={() => navigate("ShowProfile")} />
+            <Button text="Agendamento" onPress={() => navigate("SearchAppointment")} />
+            <Button text="Pedidos" onPress={() => navigate("SearchOrder")} />
 
             <NavigationBar />
         </View>
