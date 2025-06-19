@@ -12,16 +12,18 @@ import { Input } from '../../../components/Inputs/Input';
 
 import { findById } from '../../../api/product/search/findById';
 import { deleteById } from '../../../api/product/delete/deleteById';
-import { update } from '../../../api/product/update/update';
+import { Error, update } from '../../../api/product/update/update';
 import { CategoryFormated, findAll } from '../../../api/category/search/findAll';
 import { Category } from '../../../api/category/create/create';
 import { Product } from '../../../api/product/create/create';
 
 import { NavigationProps } from "../../../routes/AppRoute";
 
-import { styles } from './style';
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
+
+import { styles } from './style';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function ManageProduct() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -39,6 +41,7 @@ export default function ManageProduct() {
     const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
+    hardwareBackPress(navigate, "SearchProduct");
 
     const selecionarImagem = async () => {
         try {
@@ -61,8 +64,12 @@ export default function ManageProduct() {
                     return;
                 }
 
-                const categorias: CategoryFormated[] | undefined = await findAll();
-                setCategoriesToSelect(categorias || []);
+                const categoriesForInput: CategoryFormated[] | Error = await findAll();
+                if (Array.isArray(categoriesForInput)) {
+                    setCategoriesToSelect(categoriesForInput);
+                } else {
+                    setError(categoriesForInput.message);
+                }
 
                 setNomeProduto(produto.name);
                 setValorProduto(String(produto.price));
@@ -73,8 +80,7 @@ export default function ManageProduct() {
                 setCategoriesId(selectedCategoryId);
 
             } catch (error) {
-                console.error('Erro ao carregar produto:', error);
-                Alert.alert('Erro', 'Não foi possível carregar o produto.');
+                setError('Não foi possível atualizar. Verifique sua conexão.');
             }
         };
 
@@ -158,41 +164,41 @@ export default function ManageProduct() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-
-                <Title text="Informações do Produto" />
+            <ScrollView>
+                <Title text="Atualize este produto" />
 
                 <Input
-                    label="Nome do Produto"
-                    placeholder="Digite o nome do produto"
+                    label="Nome"
+                    placeholder="Digite o nome aqui"
                     keyboardType="default"
                     value={nomeProduto}
                     onChangeText={setNomeProduto}
                 />
 
+
                 <Input
-                    label="Valor do Produto"
-                    placeholder="Digite o valor do produto"
+                    label="Valor"
+                    placeholder="Digite o valor aqui"
                     keyboardType="numeric"
                     value={valorProduto}
                     onChangeText={setValorProduto}
                 />
 
+                <InputImage
+                    label="Imagem"
+                    image={imagem}
+                    selectImage={selecionarImagem}
+                />
+
                 <InputCategory
-                    label="Categoria do Produto"
+                    label="Categoria"
                     category={categoriesId}
                     setCategory={setCategoriesId}
                     categoriesToSelect={categoriesToSelect}
                 />
 
-                <InputImage
-                    label="Imagem do Produto"
-                    image={imagem}
-                    selectImage={selecionarImagem}
-                />
-
                 <InputDescription
-                    label="Descrição do Produto"
+                    label="Descrição"
                     placeholder="Descreva o produto em detalhes"
                     keyboardType="default"
                     value={descricao}
@@ -225,7 +231,6 @@ export default function ManageProduct() {
 
             </ScrollView>
 
-            <NavigationBar initialTab='loja' />
         </SafeAreaView>
     );
 }

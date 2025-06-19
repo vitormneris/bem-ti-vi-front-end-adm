@@ -21,7 +21,7 @@ export type OrderItem = {
 
 export type Order = {
     id: string | null;
-    dateTime: Date;
+    moment: Date;
     customer: Customer;
     totalPrice: number;
     paymentStatus: string;
@@ -50,7 +50,7 @@ export async function search(momentStart: string, momentEnd: string, pageIndex: 
 
             const orders: Order[] = data.content.map((item: Order) => ({
                 id: item.id,
-                dateTime: item.dateTime,
+                moment: item.moment,
                 customer: item.customer,
                 totalPrice: item.totalPrice,
                 paymentStatus: item.paymentStatus,

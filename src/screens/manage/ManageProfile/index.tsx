@@ -18,6 +18,8 @@ import { AdministratorId, validateTokenAdm } from '../../../api/auth/validateTok
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
 import { styles } from './style';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function ManageProfile() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -28,6 +30,8 @@ export default function ManageProfile() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+
+    hardwareBackPress(navigate, "ShowProfile");
 
     const selecionarImagem = async () => {
         try {
@@ -104,12 +108,8 @@ export default function ManageProfile() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                keyboardShouldPersistTaps="handled"
-            >
-                <Title text="Gerenciar Perfil" />
+            <ScrollView keyboardShouldPersistTaps="handled">
+                <Title text="Atualize o seu Perfil" />
 
                 <View style={styles.formContainer}>
                     <View style={styles.profileSection}>
@@ -124,7 +124,7 @@ export default function ManageProfile() {
                     </View>
 
                     <Input
-                        label="Nome do Administrador"
+                        label="Nome"
                         placeholder="Insira o nome completo"
                         keyboardType="default"
                         value={nome}
@@ -132,16 +132,16 @@ export default function ManageProfile() {
                     />
 
                     <InputImage
-                        label="Imagem do Perfil"
+                        label="Imagem"
                         image={fotoPerfil}
                         selectImage={selecionarImagem}
                     />
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
+                    <ButtonLarge
                         icon={require('../../../assets/icons/edit.png')}
-                        text="ATUALIZAR"
+                        text="ATUALIZAR PERFIL"
                         color="#006516"
                         action={updateSend}
                     />
@@ -156,7 +156,6 @@ export default function ManageProfile() {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar />
         </SafeAreaView>
     );
 }

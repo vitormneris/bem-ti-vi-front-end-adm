@@ -5,14 +5,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff'
     },
-    scrollView: {
-        flex: 1,
-        marginBottom: 70
-    },
-    scrollContent: {
-        paddingBottom: 40,
-        paddingHorizontal: 16
-    },
+    
     buttonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, SafeAreaView, View } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -11,15 +11,18 @@ import { ItemText } from '../../../components/Items/ItemText/ItemText';
 import { ItemImage } from '../../../components/Items/ItemImage/ItemImage';
 import { ItemButton } from '../../../components/Items/ItemButton/ItemButton';
 
-import { NavigationProps } from "../../../routes/AppRoute";
+import { NavigationProps } from '../../../routes/AppRoute';
 
 import { ProductPages, search } from '../../../api/product/search/search';
 import { Product } from '../../../api/product/create/create';
 import { Category } from '../../../api/category/create/create';
 
+import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
+
 import { stylesItem } from '../style';
 import { styles } from './style';
-import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export const SearchProduct = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -27,35 +30,67 @@ export const SearchProduct = () => {
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [produtos, setProdutos] = useState<Product[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
 
     useValidateToken();
 
-    const filteredProdutos: Product[] = produtos.filter(produto =>
-        produto.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        produto.categories.some((c: Category) => c.name.toLowerCase() == searchText.toLowerCase())
-    );
+    hardwareBackPress(navigate, "Home");
+
+    const carregarProdutos = useCallback(async (textoBusca: string, pagina: number) => {
+        setLoading(true);
+        setError('');
+        try {
+            const dados: ProductPages | undefined = await search(textoBusca, pagina);
+            if (dados) {
+                setProdutos(dados.product);
+                setTotalPages(dados.totalPages);
+            } else {
+                setProdutos([]);
+                setTotalPages(1);
+                setError('Nenhum produto encontrado.');
+            }
+        } catch {
+            setProdutos([]);
+            setTotalPages(1);
+            setError('Erro ao carregar produtos. Verifique sua conexão.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
-            async function carregarProdutos() {
-                const data: ProductPages | undefined = await search(searchText, pageIndex);
-                if (data != undefined) {
-                    setProdutos(data.product);
-                    setTotalPages(data.totalPages);
-                }
-            }
-
-            carregarProdutos();
-        }, 750);
+            setPageIndex(0);
+            carregarProdutos(searchText, 0);
+        }, 600);
 
         return () => clearTimeout(delayDebounce);
-    }, [searchText, pageIndex]);
+    }, [searchText, carregarProdutos]);
+
+    useEffect(() => {
+        carregarProdutos(searchText, pageIndex);
+    }, [pageIndex, searchText, carregarProdutos]);
+
+    const produtosFiltrados = produtos.filter(produto =>
+        produto.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        produto.categories.some((c: Category) =>
+            c.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+    );
+
+    const handleNextPage = () => {
+        if (pageIndex + 1 < totalPages) setPageIndex(prev => prev + 1);
+    };
+
+    const handlePrevPage = () => {
+        if (pageIndex > 0) setPageIndex(prev => prev - 1);
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-
-                <Button
+            <ScrollView>
+                <ButtonLarge
                     icon={require('../../../assets/images/add.png')}
                     text="CADASTRAR"
                     color="#256489"
@@ -68,43 +103,56 @@ export const SearchProduct = () => {
                     setSearchText={setSearchText}
                 />
 
+                {error ? (
+                    <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>{error}</Text>
+                ) : null}
 
                 <View style={stylesItem.itemContainer}>
-                    {filteredProdutos.map((item: Product) => (
-                        <ItemProduct key={item.id} product={item} />
-                    ))}
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                    ) : produtosFiltrados.length > 0 ? (
+                        produtosFiltrados.map((item: Product) => (
+                            <ItemProduct key={item.id} product={item} />
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum produto encontrado.</Text>
+                    )}
                 </View>
-
-                <PaginationControls
-                    pageIndex={pageIndex}
-                    totalPages={totalPages}
-                    onNext={() => setPageIndex(prev => prev + 1)}
-                    onPrev={() => setPageIndex(prev => prev - 1)}
-                />
-
             </ScrollView>
 
-            <NavigationBar initialTab='loja' />
+            <PaginationControls
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onNext={handleNextPage}
+                onPrev={handlePrevPage}
+            />
+
+            <NavigationBar initialTab="loja" />
         </SafeAreaView>
     );
 };
 
 type ItemProductProps = {
-    product: Product
-}
+    product: Product;
+};
 
 export const ItemProduct = ({ product }: ItemProductProps) => {
     const { navigate } = useNavigation<NavigationProps>();
 
-    const productId = (product.id == null) ? "" : product.id;
+    const productId = product.id ?? "";
+
+    const precoFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price);
 
     return (
         <View style={stylesItem.card}>
             <View style={stylesItem.info}>
-                <ItemText label="Nome" value={product.name} />
-                <ItemText label="Categoria" value={product.categories[0].name} />
-                <ItemText label="Valor" value={product.price} />
-                <ItemImage label="Imagem do produto" imagem={product.pathImage} />
+                <ItemText label="Nome do produto" value={product.name} />
+                <ItemText
+                    label="Categoria"
+                    value={product.categories.length > 0 ? product.categories[0].name : "Sem categoria"}
+                />
+                <ItemText label="Valor" value={precoFormatado} />
+                <ItemImage label="Imagem" imagem={product.pathImage} />
             </View>
 
             <View style={stylesItem.actions}>
@@ -114,5 +162,5 @@ export const ItemProduct = ({ product }: ItemProductProps) => {
                 />
             </View>
         </View>
-    )
-}
+    );
+};

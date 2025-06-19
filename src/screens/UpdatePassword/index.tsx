@@ -1,16 +1,17 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, Image, TouchableOpacity, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import { Title } from '../../../components/Title';
-import { Button } from '../../../components/Button';
-import { NavigationBar } from '../../../components/NavigationBar';
+import { Title } from '../../components/Title';
 
-import { Passwords, updatePassword } from '../../../api/administrator/update/updatePassword';
-import { AdministratorId, validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
-import { NavigationProps } from '../../../routes/AppRoute';
+import { Passwords, updatePassword } from '../../api/administrator/update/updatePassword';
+import { AdministratorId, validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
+import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
+import { InputPassword } from '../../components/Inputs/InputPassword';
+import { ButtonLarge } from '../../components/ButtonLarge';
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function UpdatePassword() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -22,6 +23,8 @@ export default function UpdatePassword() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
+
+    hardwareBackPress(navigate, "ShowProfile");
 
     useEffect(() => {
         async function loadAdministratorId() {
@@ -77,16 +80,13 @@ export default function UpdatePassword() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                keyboardShouldPersistTaps="handled"
-            >
+            <ScrollView>
                 <Title text="Atualizar senha" />
 
                 <View style={styles.formContainer}>
                     <InputPassword
-                        label="Digite sua senha atual"
+                        label="Senha atual"
+                        placeholder="Digite sua senha atual"
                         toggleShowPassword={toggleShowPasswordOld}
                         showPassword={showPasswordOld}
                         password={passwordOld}
@@ -94,7 +94,8 @@ export default function UpdatePassword() {
                     />
 
                     <InputPassword
-                        label="Digite sua nova senha"
+                        label="Nova senha"
+                        placeholder="Digite sua nova senha"
                         toggleShowPassword={toggleShowPasswordNew}
                         showPassword={showPasswordNew}
                         password={passwordNew}
@@ -103,12 +104,13 @@ export default function UpdatePassword() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
-                        icon={require('../../../assets/icons/add.png')}
+                    <ButtonLarge
+                        icon={require('../../assets/icons/edit.png')}
                         text="ATUALIZAR SENHA"
-                        color="#006316"
+                        color="#256489"
+                        width='65%'
                         action={sendRequestCreate}
-                        disabled={!administratorId} // Impede clique antes de carregar o ID
+                        disabled={!administratorId}
                     />
                 </View>
 
@@ -122,38 +124,8 @@ export default function UpdatePassword() {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar />
         </SafeAreaView>
     );
 }
 
-type InputPasswordProps = {
-    label: string,
-    toggleShowPassword: () => void,
-    showPassword: boolean,
-    password: string,
-    setPassword: Dispatch<SetStateAction<string>>
-};
 
-const InputPassword = ({ label, toggleShowPassword, showPassword, password, setPassword }: InputPasswordProps) => {
-    return (
-        <View style={styles.inputContainer}>
-            <TouchableOpacity onPress={toggleShowPassword}>
-                <Image
-                    source={showPassword
-                        ? require('../../../assets/images/olhando.png')
-                        : require('../../../assets/images/senha.png')}
-                    style={styles.inputIcon}
-                />
-            </TouchableOpacity>
-            <TextInput
-                style={styles.input}
-                placeholder={label}
-                placeholderTextColor="#256489"
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={setPassword}
-            />
-        </View>
-    );
-};

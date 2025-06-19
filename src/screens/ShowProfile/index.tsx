@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, SafeAreaView, ScrollView, ImageSourcePropType, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Alert, Image, BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { NavigationBar } from '../../components/NavigationBar';
 import { findById } from '../../api/administrator/search/findById';
-import { AdministratorId, validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
+import { validateTokenAdm, AdministratorId } from '../../api/auth/validateTokenAdm/validateTokenAdm';
 import { Administrator } from '../../api/administrator/create/create';
 import { NavigationProps } from '../../routes/AppRoute';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
 
 import { styles } from './style';
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 
 const logoutRequest = (navigate: any) => {
     Alert.alert(
@@ -36,10 +38,10 @@ export const ShowProfile = () => {
     const [photoProfile, setPhotoProfile] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [emailIsActive, setEmailIsActive] = useState<boolean>(false);
-
     const [error, setError] = useState<string>('');
 
-    const [administratorId, setAdministratorId] = useState<string>('');
+    hardwareBackPress(navigate, "Home");
+
     useEffect(() => {
         const loadAdministratorData = async () => {
             try {
@@ -51,10 +53,7 @@ export const ShowProfile = () => {
                     return;
                 }
 
-                const id = administratorIdResult.id;
-                setAdministratorId(id);
-
-                const administrator: Administrator | undefined = await findById(id);
+                const administrator: Administrator | undefined = await findById(administratorIdResult.id);
 
                 if (!administrator) {
                     throw new Error('Administrador não encontrado');
@@ -69,20 +68,17 @@ export const ShowProfile = () => {
                 setEmail(administrator.email);
                 setEmailIsActive(administrator.isEmailActive);
 
-            } catch (error) {
+            } catch {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
             }
         };
 
         loadAdministratorData();
-    }, [navigate]);
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-            >
+            <ScrollView>
                 <View style={styles.profileSection}>
                     {photoProfile ? (
                         <Image
@@ -98,45 +94,51 @@ export const ShowProfile = () => {
                     {emailIsActive && (
                         <Text style={styles.confirmText}>Seu e-mail está confirmado!</Text>
                     )}
+                    {!emailIsActive && (
+                        <Text style={styles.warningText}>Você ainda não confirmou o e-mail!</Text>
+                    )}
                 </View>
 
                 <View style={styles.profileCard}>
                     <View style={styles.menuContainer}>
                         <ItemProfile
                             label="Ver Meus Dados"
-                            image={require('../../assets/images/ver.png')}
+                            icon="account-outline"
                             onPress={() => navigate("Home")}
                         />
                         <ItemProfile
                             label="Editar Perfil"
-                            image={require('../../assets/images/editar.png')}
+                            icon="account-edit-outline"
                             onPress={() => navigate("ManageProfile")}
                         />
                         <ItemProfile
                             label="Alterar senha"
-                            image={require('../../assets/images/password.png')}
+                            icon="lock-reset"
                             onPress={() => navigate("UpdatePassword")}
                         />
                         <ItemProfile
                             label="Alterar e-mail"
-                            image={require('../../assets/images/password.png')}
-                            onPress={() => navigate("SendRequestEmail")}
+                            icon="email-edit-outline"
+                            onPress={() => navigate("SendRequestChangeEmail", { email })}
                         />
                         <ItemProfile
                             label="Gerenciar Adm's"
-                            image={require('../../assets/images/ver.png')}
+                            icon="account-group-outline"
                             onPress={() => navigate("SearchAdministrator")}
                         />
 
+                        <ItemProfile
+                            label="Excluir conta"
+                            icon="account-remove-outline"
+                            onPress={() => navigate("DeleteProfile")}
+                        />
+
                         {!emailIsActive && (
-                            <>
-                                <Text style={styles.warningText}>Você ainda não confirmou o e-mail!</Text>
-                                <ItemProfile
-                                    label="Confirmar e-mail"
-                                    image={require('../../assets/images/ver.png')}
-                                    onPress={() => navigate("SendRequestConfirmationEmail", { email: email })}
-                                />
-                            </>
+                            <ItemProfile
+                                label="Confirmar e-mail"
+                                icon="email-check-outline"
+                                onPress={() => navigate("SendRequestConfirmationEmail", { email })}
+                            />
                         )}
                     </View>
 
@@ -144,13 +146,14 @@ export const ShowProfile = () => {
                         style={styles.logoutButton}
                         onPress={() => logoutRequest(navigate)}
                     >
-                        <Image
-                            source={require('../../assets/images/logout.png')}
-                            style={styles.logoutIcon}
-                        />
+                        <Icon name="logout" size={24} color="#fff" style={styles.logoutIcon} />
                         <Text style={styles.logoutText}>Deslogar Perfil</Text>
                     </TouchableOpacity>
                 </View>
+
+                {error ? (
+                    <Text style={{ color: 'red', textAlign: 'center', marginTop: 10 }}>{error}</Text>
+                ) : null}
             </ScrollView>
 
             <NavigationBar initialTab='perfil' />
@@ -159,19 +162,19 @@ export const ShowProfile = () => {
 };
 
 type ItemProfileProps = {
-    image: ImageSourcePropType;
+    icon: string;
     label: string;
     onPress: () => void;
 };
 
-const ItemProfile = ({ label, image, onPress }: ItemProfileProps) => {
+const ItemProfile = ({ label, icon, onPress }: ItemProfileProps) => {
     return (
         <TouchableOpacity
             style={styles.menuItem}
             activeOpacity={0.7}
             onPress={onPress}
         >
-            <Image source={image} style={styles.menuItemIcon} />
+            <Icon name={icon} size={24} color="#256489" style={styles.menuItemIcon} />
             <Text style={styles.menuItemText}>{label}</Text>
         </TouchableOpacity>
     );

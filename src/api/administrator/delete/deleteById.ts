@@ -1,21 +1,21 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
 import { Error } from "../../product/update/update";
 
-export async function deleteById( administratorId: string ): Promise<boolean | Error> {
+export async function deleteById(administratorId: string, password: string): Promise<boolean | Error> {
     try {
-
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/${administratorId}/deletar`,{
-            headers: {
-                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
-            },
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/administradores/${administratorId}/deletar`, {
             method: 'DELETE',
-        })
+            headers: {
+                Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password })
+        });
 
         if (response.status === 204) {
             return true;
         } else {
             const data = await response.json();
-
             return {
                 code: data.code ?? 'UNKNOWN_ERROR',
                 status: data.status ?? response.status.toString(),
@@ -25,7 +25,6 @@ export async function deleteById( administratorId: string ): Promise<boolean | E
                 errorFields: data.errorFields ?? null
             };
         }
-
     } catch (error) {
         return {
             code: 'NETWORK_ERROR',

@@ -15,6 +15,8 @@ import { sendRequestConfirmationEmail } from '../../../api/administrator/update/
 import { NavigationProps } from '../../../routes/AppRoute';
 
 import { styles } from './style';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function SendRequestConfirmationEmail() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -26,6 +28,8 @@ export default function SendRequestConfirmationEmail() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
+
+    hardwareBackPress(navigate, "ShowProfile");
 
     useEffect(() => {
         async function loadAdministratorId() {
@@ -54,7 +58,7 @@ export default function SendRequestConfirmationEmail() {
                     setNewEmail(emailUser);
                     setError('');
                     setFields([]);
-                    navigate("ConfirmationEmail");
+                    navigate("ConfirmationEmail", {email: emailUser});
                 }
             } else {
                 setError(success.message || "Erro desconhecido.");
@@ -88,7 +92,7 @@ export default function SendRequestConfirmationEmail() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
+                    <ButtonLarge
                         icon={require('../../../assets/icons/add.png')}
                         text="ENVIAR SOLICITAÇÂO"
                         color="#006316"
@@ -104,8 +108,6 @@ export default function SendRequestConfirmationEmail() {
                     </View>
                 ) : null}
             </ScrollView>
-
-            <NavigationBar />
         </SafeAreaView>
     );
 }

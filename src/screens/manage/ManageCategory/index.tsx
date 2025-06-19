@@ -20,6 +20,7 @@ import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/sele
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 import { styles } from './style';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function ManageCategory() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -35,6 +36,7 @@ export default function ManageCategory() {
     const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
+    hardwareBackPress(navigate, "SearchCategory");
 
     const selecionarImagem = async () => {
         const imageSelected = await selectImageFromGalery();
@@ -56,7 +58,7 @@ export default function ManageCategory() {
                 setCorCard(data.cardColor);
             } catch (erro) {
                 console.error('Erro ao buscar categoria:', erro);
-                Alert.alert('Erro', 'Não foi possível carregar os dados da categoria.');
+                Alert.alert('Erro', 'Não foi possível carregar os dados.');
             }
         };
 
@@ -125,20 +127,19 @@ export default function ManageCategory() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-
-                <Title text="Informações da Categoria" />
+            <ScrollView>
+                <Title text="Atualize esta categoria" />
 
                 <Input
-                    label="Nome da Categoria"
-                    placeholder="Insira o nome da categoria"
+                    label="Nome"
+                    placeholder="Insira o nome"
                     keyboardType="default"
                     value={nomeCategoria}
                     onChangeText={setNomeCategoria}
                 />
 
                 <InputImage
-                    label="Imagem da Categoria"
+                    label="Imagem"
                     image={imagem}
                     selectImage={selecionarImagem}
                 />
@@ -153,8 +154,18 @@ export default function ManageCategory() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button icon={require('../../../assets/icons/delete.png')} text="DELETAR" color="#B40000" action={handleDelete} />
-                    <Button icon={require('../../../assets/icons/edit.png')} text="ATUALIZAR" color="#006516" action={handleUpdate} />
+                    <Button
+                        icon={require('../../../assets/icons/delete.png')}
+                        text="DELETAR"
+                        color="#B40000"
+                        action={handleDelete}
+                    />
+                    <Button
+                        icon={require('../../../assets/icons/edit.png')}
+                        text="ATUALIZAR"
+                        color="#006516"
+                        action={handleUpdate}
+                    />
                 </View>
 
                 {error ? (
@@ -177,7 +188,6 @@ export default function ManageCategory() {
                 }}
             />
 
-            <NavigationBar initialTab='categorias' />
         </SafeAreaView>
     );
 };

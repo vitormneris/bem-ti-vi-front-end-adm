@@ -5,22 +5,17 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff'
     },
-
-    scrollView: {
-        flex: 1,
-        marginBottom: 70
-    },
-
-    scrollContent: {
-        paddingBottom: 40
-    },
     
     buttonsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        marginTop: 32,
-        marginBottom: 30,
+        justifyContent: 'space-around',
     },
+
+    subcontainer: {
+        flexDirection: 'row',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+    }
 
 });

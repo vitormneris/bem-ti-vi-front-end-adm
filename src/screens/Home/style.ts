@@ -4,7 +4,8 @@ export const styles = StyleSheet.create({
     screen: {
         flex: 1,
         paddingTop: 20,
-        backgroundColor: '#F5F5F5'
+        backgroundColor: '#F5F5F5',
+        justifyContent: 'space-between',
     },
 
     button: {

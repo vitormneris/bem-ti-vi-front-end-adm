@@ -5,21 +5,18 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff'
     },
-
-    scrollView: {
-        flex: 1,
-        marginBottom: 70
-    },
-
-    scrollContent: {
-        paddingBottom: 40
-    },
     
     buttonsContainer: {
         justifyContent: 'center',
         paddingHorizontal: 16,
-        marginTop: 32,
-        marginBottom: 30,
+        marginVertical: 20,
     },
 
+    warningText: {
+        color: 'red',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 8,
+    },
+    
 });

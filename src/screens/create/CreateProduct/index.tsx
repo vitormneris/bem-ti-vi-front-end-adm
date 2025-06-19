@@ -12,24 +12,32 @@ import { Input } from '../../../components/Inputs/Input';
 import { create, Product } from '../../../api/product/create/create';
 import { CategoryFormated, findAll } from '../../../api/category/search/findAll';
 import { Category } from '../../../api/category/create/create';
+import { Error } from '../../../api/product/update/update';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
 import { styles } from './style';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from '../../../routes/AppRoute';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export const CreateProduct = () => {
+	const { navigate } = useNavigation<NavigationProps>();
+
 	const [nomeProduto, setNomeProduto] = useState<string>('');
 	const [valorProduto, setValorProduto] = useState<string>('');
 	const [descricaoProduto, setDescricaoProduto] = useState<string>('');
 	const [imagem, setImagem] = useState<string>('');
 	const [categoriesId, setCategoriesId] = useState<string>('');
-	const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[] | undefined>([]);
+	const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[]>([]);
 
 	const [error, setError] = useState<string>('');
 	const [fields, setFields] = useState<string[]>([]);
 
 	useValidateToken();
+	hardwareBackPress(navigate, "SearchProduct");
 
 	const selecionarImagem = async () => {
 		const imageSelected = await selectImageFromGalery();
@@ -41,9 +49,14 @@ export const CreateProduct = () => {
 	useEffect(() => {
 		async function carregarCategorias() {
 			try {
-				const categoriesForInput: CategoryFormated[] | undefined = await findAll();
-				setCategoriesToSelect(categoriesForInput);
-			} catch (error) {
+				const categoriesForInput: CategoryFormated[] | Error = await findAll();
+
+				if (Array.isArray(categoriesForInput)) {
+					setCategoriesToSelect(categoriesForInput);
+				} else {
+					setError(categoriesForInput.message);
+				}
+			} catch {
 				setError('Não foi possível atualizar. Verifique sua conexão.');
 			}
 		}
@@ -92,56 +105,61 @@ export const CreateProduct = () => {
 	};
 
 	return (
-		<SafeAreaView style={styles.safeArea}>
-			<ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+		<View style={styles.safeArea}>
+			<ScrollView>
 
-				<Title text="Informações do Produto" />
+				<Title text="Cadastre um novo produto" />
 
 				<Input
-					label="Nome do Produto"
-					placeholder="Digite o nome do produto"
+					label="Nome"
+					placeholder="Digite o nome aqui"
 					keyboardType="default"
 					value={nomeProduto}
 					onChangeText={setNomeProduto}
 				/>
 
 				<Input
-					label="Valor do Produto"
-					placeholder="Digite o valor do produto"
+					label="Valor"
+					placeholder="Digite o valor aqui"
 					keyboardType="numeric"
 					value={valorProduto}
 					onChangeText={setValorProduto}
 				/>
 
 				<InputCategory
-					label="Categoria do Produto"
+					label="Categoria"
 					category={categoriesId}
 					setCategory={setCategoriesId}
 					categoriesToSelect={categoriesToSelect}
 				/>
 
 				<InputImage
-					label="Imagem do Produto"
+					label="Imagem"
 					image={imagem}
 					selectImage={selecionarImagem}
 				/>
 
 				<InputDescription
-					label="Descrição do Produto"
+					label="Descrição"
 					placeholder="Descreva o produto em detalhes"
 					keyboardType="default"
 					value={descricaoProduto}
 					onChangeText={setDescricaoProduto}
 				/>
 
-				<View style={styles.buttonsContainer}>
-					<Button
-						icon={require('../../../assets/icons/add.png')}
-						text="CADASTRAR PRODUTO"
-						color="#006316"
-						action={sendRequestCreate}
-					/>
-				</View>
+				{categoriesToSelect.length >= 1 ? (
+					<View style={styles.buttonsContainer}>
+						<ButtonLarge
+							icon={require('../../../assets/icons/add.png')}
+							text="CADASTRAR PRODUTO"
+							color="#006316"
+							action={sendRequestCreate}
+						/>
+					</View>
+				): (
+					<Text style={styles.warningText}>Para criar um produto você deverá ter ao menos uma categoria criada!</Text>
+				)}
+
 				{error ? (
 					<View style={{ marginVertical: 10, alignSelf: 'center' }}>
 						<Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
@@ -152,7 +170,6 @@ export const CreateProduct = () => {
 				) : null}
 			</ScrollView>
 
-			<NavigationBar initialTab='loja' />
-		</SafeAreaView>
+		</View>
 	);
 };

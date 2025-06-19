@@ -20,7 +20,7 @@ export const InputTime = ({ label, showTimePicker, durationEstimated, handleTime
                 onPress={() => setShowTimePicker(true)}
                 style={styles.inputField}
             >
-                <Text>{durationEstimated ? durationEstimated : "Selecionar Duração"}</Text>
+                <Text style={styles.text}>{durationEstimated ? durationEstimated : "Selecionar Duração"}</Text>
             </Pressable>
             {showTimePicker && (
                 <DateTimePickerAndroid

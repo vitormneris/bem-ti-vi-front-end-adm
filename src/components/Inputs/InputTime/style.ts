@@ -15,6 +15,11 @@ export const styles = StyleSheet.create({
         marginLeft: 4
     },
 
+    text: {
+        color: 'rgba(0, 0, 0, 1)',
+        fontFamily: 'Montserrat-Medium',
+    },
+
     inputField: {
         borderWidth: 1,
         borderColor: '#DDD',

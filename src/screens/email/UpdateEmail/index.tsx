@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, Touchable, TouchableOpacity } from 'react-native';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -14,9 +14,13 @@ import { updateEmail } from '../../../api/administrator/update/updateEmail';
 import { NavigationProps } from '../../../routes/AppRoute';
 
 import { styles } from './style';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function UpdateEmail() {
     const { navigate } = useNavigation<NavigationProps>();
+    const route = useRoute();
+    const { email: emailUser } = route.params as { email: string };
 
     const [code, setCode] = useState<string>('');
 
@@ -24,6 +28,8 @@ export default function UpdateEmail() {
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
 
+    hardwareBackPress(navigate, "SendRequestChangeEmail");
+    
     useEffect(() => {
         async function loadAdministratorId() {
             try {
@@ -74,7 +80,7 @@ export default function UpdateEmail() {
                 <View style={styles.formContainer}>
 
                     <Input
-                        label="Insira o código"
+                        label="Insira o código de cofirmação"
                         placeholder="Ex: 123456"
                         keyboardType="numeric"
                         value={code}
@@ -84,13 +90,16 @@ export default function UpdateEmail() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
-                        icon={require('../../../assets/icons/add.png')}
+                    <ButtonLarge
+                        icon={require('../../../assets/icons/edit.png')}
                         text="ATUALIZAR E-MAIL"
                         color="#006316"
                         action={sendRequestEmail}
                     />
                 </View>
+                <TouchableOpacity onPress={() => navigate("SendRequestChangeEmail", { email: emailUser })}>
+                    <Text style={styles.confirmText}>Não recebi o código</Text>
+                </TouchableOpacity>
                 {error ? (
                     <View style={{ marginVertical: 10, alignSelf: 'center' }}>
                         <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
@@ -101,7 +110,6 @@ export default function UpdateEmail() {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar />
         </SafeAreaView>
     );
 }

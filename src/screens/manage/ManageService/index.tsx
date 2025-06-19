@@ -24,6 +24,8 @@ import { useValidateToken } from '../../../utils/UseValidateToken/useValidateTok
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 import { InputTime } from '../../../components/Inputs/InputTime';
 import { Text } from 'react-native';
+import { InputSmall } from '../../../components/Inputs/InputSmall';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function ManageService() {
     const route = useRoute();
@@ -41,6 +43,7 @@ export default function ManageService() {
     const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
+    hardwareBackPress(navigate, "SearchService");
 
     const selecionarImagem = async () => {
         const imageSelected = await selectImageFromGalery();
@@ -147,42 +150,43 @@ export default function ManageService() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-
-                <Title text="Informações do Serviço" />
+            <ScrollView>
+                <Title text="Atualize este serviço" />
 
                 <Input
-                    label="Nome do Serviço"
-                    placeholder="Digite o nome do serviço"
+                    label="Nome"
+                    placeholder="Digite o nome"
                     keyboardType="default"
                     value={nomeServico}
                     onChangeText={setNomeServico}
                 />
 
-                <Input
-                    label="Preço do Serviço"
-                    placeholder="Digite o valor do serviço"
-                    keyboardType="numeric"
-                    value={precoServico}
-                    onChangeText={setPrecoServico}
-                />
+                <View style={styles.subcontainer}>
+                    <InputTime
+                        label="Duração estimada"
+                        durationEstimated={duracaoEstimada}
+                        setShowTimePicker={setShowTimePicker}
+                        showTimePicker={showTimePicker}
+                        handleTimeChange={handleTimeChange}
+                    />
 
-                <InputTime
-                    label="Duração Estimada"
-                    durationEstimated={duracaoEstimada}
-                    setShowTimePicker={setShowTimePicker}
-                    showTimePicker={showTimePicker}
-                    handleTimeChange={handleTimeChange}
-                />
+                    <InputSmall
+                        label="Valor"
+                        placeholder="Digite o valor"
+                        keyboardType="numeric"
+                        value={precoServico}
+                        onChangeText={setPrecoServico}
+                    />
+                </View>
 
                 <InputImage
-                    label="Imagem do Serviço"
+                    label="Imagem"
                     image={imagem}
                     selectImage={selecionarImagem}
                 />
 
                 <InputDescription
-                    label="Descrição do Serviço"
+                    label="Descrição"
                     placeholder="Descreva o serviço em detalhes"
                     keyboardType="default"
                     value={descricaoServico}
@@ -190,8 +194,18 @@ export default function ManageService() {
                 />
 
                 <View style={styles.buttonsContainer}>
-                    <Button icon={require('../../../assets/icons/delete.png')} text="DELETAR" color="#B40000" action={handleDelete} />
-                    <Button icon={require('../../../assets/icons/edit.png')} text="ATUALIZAR" color="#006516" action={handleUpdate} />
+                    <Button
+                        icon={require('../../../assets/icons/delete.png')}
+                        text="DELETAR"
+                        color="#B40000"
+                        action={handleDelete}
+                    />
+                    <Button
+                        icon={require('../../../assets/icons/edit.png')}
+                        text="ATUALIZAR"
+                        color="#006516"
+                        action={handleUpdate}
+                    />
                 </View>
                 {error ? (
                     <View style={{ marginVertical: 10, alignSelf: 'center' }}>
@@ -203,7 +217,6 @@ export default function ManageService() {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar initialTab='servicos' />
         </SafeAreaView>
     );
 };

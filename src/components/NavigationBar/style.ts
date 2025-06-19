@@ -1,18 +1,15 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+    
     bottomNavigation: {
+        marginTop: 5,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        alignItems: 'center',
         backgroundColor: '#f8f8f8',
         paddingVertical: 14,
         borderTopWidth: 1,
         borderTopColor: '#e0e0e0',
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
         height: 70
     },
 

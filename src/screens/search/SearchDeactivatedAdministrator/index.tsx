@@ -1,118 +1,135 @@
 import React, { useEffect, useState } from "react";
 import { View, ScrollView, Text, TouchableOpacity, Image, Alert } from "react-native";
-
 import { useNavigation } from "@react-navigation/native";
 
 import { Administrator } from "../../../api/administrator/create/create";
 import { findByStatus } from "../../../api/administrator/search/findByStatus";
-import { deactivationById } from "../../../api/administrator/delete/deactivationById";
+import { activationById } from "../../../api/administrator/delete/activationById";
 
 import { NavigationProps } from "../../../routes/AppRoute";
-
-import { SearchInput } from "../../../components/SearchInput";
-import { Button } from "../../../components/Button";
-
 import { useValidateToken } from "../../../utils/UseValidateToken/useValidateToken";
-
 import { styles } from "./style";
-import { activationById } from "../../../api/administrator/delete/activationById";
+import { Error } from "../../../api/product/update/update";
+import { NavigationBar } from "../../../components/NavigationBar";
+import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
 
 export const SearchDeactivatedAdministrator = () => {
     const { navigate } = useNavigation<NavigationProps>();
-    const [searchText, setSearchText] = useState<string>('');
     const [administrators, setAdministrators] = useState<Administrator[]>([]);
+    const [error, setError] = useState<string>('');
 
     useValidateToken();
 
+    hardwareBackPress(navigate, "SearchAdministrator");
+
     useEffect(() => {
-        async function loadAdministrators() {
-            try {
-                const administrators: Administrator[] | undefined = await findByStatus(false);
-                if (administrators != undefined) {
-                    setAdministrators(administrators);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar administradores:', error);
-            }
-        }
         loadAdministrators();
     }, []);
 
-    const handleDeactivate = async (id: string, name: string) => {
+    const loadAdministrators = async () => {
+        try {
+            const result: Administrator[] | Error = await findByStatus(false);
+
+            if (Array.isArray(result)) {
+                setAdministrators(result);
+            } else {
+                setError('Erro ao carregar administradores: ' + result.message);
+            }
+        } catch {
+            setError('Erro de conexão. Tente novamente mais tarde.');
+        }
+    };
+
+    const handleActivate = (id: string, name: string) => {
         Alert.alert(
             'Atenção!',
-            'Tem certeza que deseja ativar a conta de ' + name + '?',
+            `Tem certeza que deseja ativar a conta de ${name}?`,
             [
                 { text: 'Cancelar', style: 'cancel' },
                 {
                     text: 'Ativar',
-                    style: 'destructive',
-                    onPress: () => confirmDeactivate(id),
+                    style: 'default',
+                    onPress: () => confirmActivate(id),
                 },
             ]
         );
     };
 
-    const confirmDeactivate = async (admId: string) => {
+    const confirmActivate = async (admId: string) => {
         try {
             const success = await activationById(admId);
 
             if (success) {
-                Alert.alert('Sucesso!', 'A conta do administrador foi sativada.');
-                navigate('SearchAdministrator')
+                Alert.alert('Sucesso', 'A conta do administrador foi ativada.');
+                navigate('SearchAdministrator');
+            } else {
+                setError('Falha ao ativar a conta.');
             }
-
-        } catch (error) {
-            Alert.alert('Erro', 'Não foi possível ativar a conta do administrador.');
+        } catch {
+            setError('Erro ao processar a ativação.');
         }
     };
 
     return (
-        <ScrollView style={styles.safeArea} contentContainerStyle={styles.scrollContent}>
+        <>
+            <ScrollView style={styles.safeArea}>
+                <View style={[styles.greetingContainer, { marginTop: 30 }]}>
+                    <Text style={styles.greetingText}>Administradores Desativados</Text>
+                    <Text style={styles.subtitle}>Reative contas de administradores</Text>
+                </View>
 
-            <View style={[styles.greetingContainer, { marginTop: 30 }]}>
-                <Text style={styles.greetingText}>Administradores Desativados</Text>
-            </View>
+                {error.length > 0 && (
+                    <Text style={[styles.subtitle, { color: 'red', textAlign: 'center', marginVertical: 10 }]}>
+                        {error}
+                    </Text>
+                )}
 
-            <View style={styles.listContainer}>
-                {administrators.map((admin) => (
-                    <ItemAdministrator 
-                        key={admin.id} 
-                        administrator={admin} 
-                        handleDeactivate={handleDeactivate} 
-                        admName={admin.name}
-                        admId={admin.id}
-                    />
-                ))}
-            </View>
-        </ScrollView>
+                <View style={styles.listContainer}>
+                    {administrators.length > 0 ? (
+                        administrators.map((admin) => (
+                            <ItemAdministrator
+                                key={admin.id}
+                                administrator={admin}
+                                handleActivate={handleActivate}
+                            />
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum administrador desativado encontrado.</Text>
+                    )}
+                </View>
+            </ScrollView>
+        </>
     );
 };
 
 type ItemAdministratorProps = {
-    administrator: Administrator,
-    handleDeactivate: any,
-    admName: string,
-    admId: string
-}
+    administrator: Administrator;
+    handleActivate: (id: string, name: string) => void;
+};
 
-export const ItemAdministrator = ({ administrator, handleDeactivate, admName, admId }: ItemAdministratorProps) => {
-
+const ItemAdministrator = ({ administrator, handleActivate }: ItemAdministratorProps) => {
     return (
-        <View key={administrator.id} style={styles.adminCard}>
-            <Image source={{ uri: administrator.pathImage || '' }} style={styles.adminImage} />
+        <View style={styles.adminCard}>
+            <Image
+                source={
+                    administrator.pathImage
+                        ? { uri: administrator.pathImage }
+                        : require('../../../assets/images/default_user.png')
+                }
+                style={styles.adminImage}
+            />
             <Text style={styles.adminName}>{administrator.name}</Text>
             <View style={styles.adminActions}>
                 <TouchableOpacity
                     style={styles.actionButton}
-                    onPress={() => {handleDeactivate(admId, admName)}}
+                    onPress={() => handleActivate(administrator.id, administrator.name)}
                 >
                     <Image
-                        source={require('../../../assets/images/desabilitar.png')}
+                        source={require('../../../assets/icons/activate.png')}
                         style={[styles.actionIcon, { width: 40, height: 40, marginLeft: 30 }]}
                     />
                 </TouchableOpacity>
             </View>
         </View>
-    )
-}
+    );
+};

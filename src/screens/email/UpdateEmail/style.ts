@@ -59,5 +59,11 @@ export const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         borderRadius: 8
-    }
+    },
+    confirmText: {
+        color: 'blue',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 8,
+    },
 });

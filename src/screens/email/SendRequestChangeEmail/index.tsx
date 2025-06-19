@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
-import { Button } from '../../../components/Button';
-import { NavigationBar } from '../../../components/NavigationBar';
 import { Input } from '../../../components/Inputs/Input';
 
 import { AdministratorId, validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
@@ -13,16 +11,24 @@ import { sendRequestEmail } from '../../../api/administrator/update/sendRequestE
 
 import { NavigationProps } from '../../../routes/AppRoute';
 
+import { ButtonLarge } from '../../../components/ButtonLarge';
+
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+
 import { styles } from './style';
 
-export default function SendRequestEmail() {
+export default function SendRequestChangeEmail() {
     const { navigate } = useNavigation<NavigationProps>();
+    const route = useRoute();
+    const { email: emailUser } = route.params as { email: string };
 
     const [newEmail, setNewEmail] = useState<string>('');
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
+
+    hardwareBackPress(navigate, "ShowProfile");
 
     useEffect(() => {
         async function loadAdministratorId() {
@@ -32,6 +38,7 @@ export default function SendRequestEmail() {
                     navigate("Login");
                     Alert.alert("Atenção!", "Você foi deslogado!");
                 } else {
+                    setNewEmail(emailUser);
                     setAdministratorId(administradorId.id);
                 }
             } catch (error) {
@@ -40,16 +47,16 @@ export default function SendRequestEmail() {
         }
         loadAdministratorId();
     }, []);
-    
+
     const sendRequestCreate = async () => {
         try {
             const success = await sendRequestEmail(administratorId, newEmail);
             if (typeof success === "boolean") {
                 if (success) {
-                    setNewEmail('');
+                    setNewEmail(emailUser);
                     setError('');
                     setFields([]);
-                    navigate("UpdateEmail");
+                    navigate("UpdateEmail", { email: newEmail });
                 }
             } else {
                 setError(success.message || "Erro desconhecido.");
@@ -83,10 +90,11 @@ export default function SendRequestEmail() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
-                        icon={require('../../../assets/icons/add.png')}
+                    <ButtonLarge
+                        icon={require('../../../assets/icons/send.png')}
                         text="ENVIAR SOLICITAÇÂO"
-                        color="#006316"
+                        color="#256489"
+                        width='85%'
                         action={sendRequestCreate}
                     />
                 </View>
@@ -100,7 +108,6 @@ export default function SendRequestEmail() {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar />
         </SafeAreaView>
     );
 }

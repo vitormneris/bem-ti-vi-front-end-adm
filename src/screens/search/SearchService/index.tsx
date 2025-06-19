@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, SafeAreaView, View, } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, BackHandler } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -16,46 +16,79 @@ import { NavigationProps } from '../../../routes/AppRoute';
 import { Service } from '../../../api/service/create/create';
 import { search, ServicePages } from '../../../api/service/search/search';
 
-
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 import { styles } from './style';
 import { stylesItem } from '../style';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export const SearchService = () => {
-    const { navigate } = useNavigation<NavigationProps>()
+    const { navigate } = useNavigation<NavigationProps>();
     const [searchText, setSearchText] = useState<string>('');
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [servicos, setServicos] = useState<Service[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
 
     useValidateToken();
 
-    const filteredServicos: Service[] = servicos.filter(servico =>
+    hardwareBackPress(navigate, "Home");
+
+    const carregarServicos = useCallback(async (textoBusca: string, pagina: number) => {
+        setLoading(true);
+        setError('');
+        try {
+            const dados: ServicePages | undefined = await search(textoBusca, pagina);
+            if (dados) {
+                setServicos(dados.services);
+                setTotalPages(dados.totalPages);
+            } else {
+                setServicos([]);
+                setTotalPages(1);
+                setError('Nenhum serviço encontrado.');
+            }
+        } catch {
+            setServicos([]);
+            setTotalPages(1);
+            setError('Erro ao carregar serviços. Verifique sua conexão.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Resetar página para 0 ao mudar o texto de busca
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            setPageIndex(0);
+            carregarServicos(searchText, 0);
+        }, 600);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchText, carregarServicos]);
+
+    // Carregar a página atual sempre que o pageIndex mudar
+    useEffect(() => {
+        carregarServicos(searchText, pageIndex);
+    }, [pageIndex, searchText, carregarServicos]);
+
+    const filteredServicos = servicos.filter(servico =>
         servico.name.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    useEffect(() => {
-        const delayDebounce = setTimeout(() => {
-            async function carregarServicos() {
-                const data: ServicePages | undefined = await search(searchText, pageIndex);
-                if (data != undefined) {
-                    setServicos(data.services);
-                    setTotalPages(data.totalPages);
-                }
-            }
+    const handleNextPage = () => {
+        if (pageIndex + 1 < totalPages) setPageIndex(prev => prev + 1);
+    };
 
-            carregarServicos();
-        }, 750);
-
-        return () => clearTimeout(delayDebounce);
-    }, [searchText, pageIndex]);
+    const handlePrevPage = () => {
+        if (pageIndex > 0) setPageIndex(prev => prev - 1);
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-
-                <Button
+            <ScrollView>
+                <ButtonLarge
                     icon={require('../../../assets/images/add.png')}
                     text="CADASTRAR"
                     color="#256489"
@@ -68,20 +101,31 @@ export const SearchService = () => {
                     setSearchText={setSearchText}
                 />
 
+                {error ? (
+                    <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>
+                        {error}
+                    </Text>
+                ) : null}
+
                 <View style={stylesItem.itemContainer}>
-                    {filteredServicos.map((item: Service) => (
-                        <ItemService key={item.id} service={item} />
-                    ))}
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                    ) : filteredServicos.length > 0 ? (
+                        filteredServicos.map((item: Service) => (
+                            <ItemService key={item.id} service={item} />
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum serviço encontrado.</Text>
+                    )}
                 </View>
-
-                <PaginationControls
-                    pageIndex={pageIndex}
-                    totalPages={totalPages}
-                    onNext={() => setPageIndex(prev => prev + 1)}
-                    onPrev={() => setPageIndex(prev => prev - 1)}
-                />
-
             </ScrollView>
+
+            <PaginationControls
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onNext={handleNextPage}
+                onPrev={handlePrevPage}
+            />
 
             <NavigationBar initialTab='servicos' />
         </SafeAreaView>
@@ -89,29 +133,34 @@ export const SearchService = () => {
 };
 
 type ItemServiceProps = {
-    service: Service
-}
+    service: Service;
+};
 
 export const ItemService = ({ service }: ItemServiceProps) => {
     const { navigate } = useNavigation<NavigationProps>();
 
-    const serviceId: string = (service.id == null) ? '' : service.id;
+    const serviceId: string = service.id ?? '';
+
+    // Formata preço para real brasileiro
+    const precoFormatado = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+    }).format(service.price);
 
     return (
-
         <View style={stylesItem.card}>
             <View style={stylesItem.info}>
-
-                <ItemText label="Nome do Serviço" value={service.name} />
-
-                <ItemText label="Preço" value={service.price} />
-
+                <ItemText label="Nome do serviço" value={service.name} />
+                <ItemText label="Preço" value={precoFormatado} />
                 <ItemImage label="Imagem" imagem={service.pathImage} />
             </View>
 
             <View style={stylesItem.actions}>
-                <ItemButton source={require('../../../assets/images/configuracao.png')} onPress={() => navigate('ManageService', { id: serviceId })} />
+                <ItemButton
+                    source={require('../../../assets/images/configuracao.png')}
+                    onPress={() => navigate('ManageService', { id: serviceId })}
+                />
             </View>
         </View>
-    )
-}
+    );
+};

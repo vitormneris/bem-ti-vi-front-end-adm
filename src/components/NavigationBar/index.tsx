@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from "../../routes/AppRoute";
 
 type NavigationBarProps = {
-    initialTab?: string;
+    initialTab: string;
 };
 
 export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {

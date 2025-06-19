@@ -14,8 +14,14 @@ import { useValidateToken } from '../../../utils/UseValidateToken/useValidateTok
 import { selectImageFromGalery } from "../../../utils/selectImageFromGalery/selectImageFromGalery";
 
 import { styles } from "./style";
+import { ButtonLarge } from "../../../components/ButtonLarge";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "../../../routes/AppRoute";
+import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
 
 export const CreateCategory = () => {
+    const { navigate } = useNavigation<NavigationProps>();
+    
     const [nomeCategoria, setNomeCategoria] = useState<string>("");
     const [corCard, setCorCard] = useState<string>("#8b5cf6");
     const [colorModalVisible, setColorModalVisible] = useState(false);
@@ -25,6 +31,7 @@ export const CreateCategory = () => {
     const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
+    hardwareBackPress(navigate, "SearchCategory");
 
     const selecionarImagem = async () => {
         const imageSelected = await selectImageFromGalery();
@@ -65,12 +72,11 @@ export const CreateCategory = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-
-                <Title text="Informações da Categoria" />
+            <ScrollView>
+                <Title text="Cadastre uma nova categoria" />
 
                 <Input
-                    label="Nome da Categoria"
+                    label="Nome"
                     placeholder="Insira o nome da categoria"
                     keyboardType="default"
                     value={nomeCategoria}
@@ -78,7 +84,7 @@ export const CreateCategory = () => {
                 />
 
                 <InputImage
-                    label="Imagem da Categoria"
+                    label="Imagem"
                     image={imagem}
                     selectImage={selecionarImagem}
                 />
@@ -93,9 +99,9 @@ export const CreateCategory = () => {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
+                    <ButtonLarge
                         icon={require('../../../assets/icons/add.png')}
-                        text="CADASTRAR SERVIÇO"
+                        text="CADASTRAR CATEGORIA"
                         color="#006316"
                         action={sendRequestCreate}
                     />
@@ -120,7 +126,6 @@ export const CreateCategory = () => {
                 }}
             />
 
-            <NavigationBar initialTab="categorias" />
         </SafeAreaView>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, Alert, BackHandler } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, BackHandler, ToastAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { GLOBAL_VAR } from '../../api/config/globalVar';
@@ -15,7 +15,6 @@ export const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-
     const [error, setError] = useState('');
 
     const toggleShowPassword = () => {
@@ -42,13 +41,26 @@ export const Login = () => {
             }
 
         } catch (error) {
-            setError('Não foi possível fazer o login. Verifique sua conexão.');
+            setError('Erro ao tentar acessar o painel. Verifique suas credenciais ou conexão.');
         }
     };
 
+    const [counter, setCounter] = useState<number>(0);
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-            BackHandler.exitApp(); 
+            setCounter(prevCounter => {
+                const newCounter = prevCounter + 1;
+
+                if (newCounter >= 2) {
+                    BackHandler.exitApp();
+                } else {
+                    ToastAndroid.show('Pressione novamente para sair', ToastAndroid.SHORT);
+
+                }
+
+                return newCounter;
+            });
+
             return true;
         });
 
@@ -63,18 +75,18 @@ export const Login = () => {
                     style={styles.logo}
                     resizeMode="contain"
                 />
-                <Text style={styles.logoSubText}>LOGIN</Text>
+                <Text style={styles.logoSubText}>PAINEL ADMINISTRATIVO</Text>
             </View>
 
             <View style={styles.inputContainer}>
                 <Image
-                    source={require('../../assets/images/e-mail.png')}
+                    source={require('../../assets/images/email.png')}
                     style={styles.inputIcon}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Digite seu e-mail"
-                    placeholderTextColor="#256489"
+                    placeholder="E-mail institucional"
+                    placeholderTextColor="#1B3B6F"
                     keyboardType="email-address"
                     autoCapitalize="none"
                     value={email}
@@ -93,8 +105,8 @@ export const Login = () => {
                 </TouchableOpacity>
                 <TextInput
                     style={styles.input}
-                    placeholder="Digite sua senha"
-                    placeholderTextColor="#256489"
+                    placeholder="Senha administrativa"
+                    placeholderTextColor="#1B3B6F"
                     secureTextEntry={!showPassword}
                     value={password}
                     onChangeText={setPassword}
@@ -102,7 +114,7 @@ export const Login = () => {
             </View>
 
             <TouchableOpacity style={styles.loginButton} onPress={sendRequestLogin}>
-                <Text style={styles.loginButtonText}>Login</Text>
+                <Text style={styles.loginButtonText}>Entrar no Painel</Text>
             </TouchableOpacity>
 
             <Text style={styles.error}>{error}</Text>

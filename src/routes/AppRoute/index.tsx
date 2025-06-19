@@ -26,10 +26,10 @@ import CreateAdministrator from '../../screens/create/CreateAdministrator';
 import { SearchAdministrator } from '../../screens/search/SearchAdministrator';
 import { SearchDeactivatedAdministrator } from '../../screens/search/SearchDeactivatedAdministrator';
 
-import SendRequestEmail from '../../screens/email/SendRequestEmail';
 import UpdateEmail from '../../screens/email/UpdateEmail';
+import SendRequestChangeEmail from '../../screens/email/SendRequestChangeEmail';
 
-import UpdatePassword from '../../screens/password/UpdatePassword';
+import UpdatePassword from '../../screens/UpdatePassword';
 
 import SendRequestConfirmationEmail from '../../screens/email/SendRequestConfirmationEmail';
 import ConfirmationEmail from '../../screens/email/ConfirmationEmail';
@@ -39,6 +39,8 @@ import { SearchOrder } from '../../screens/search/SearchOrder';
 
 import { GLOBAL_VAR } from '../../api/config/globalVar';
 import { AdministratorDeactivated } from '../../screens/AdministratorDeactivated';
+import DeleteProfile from '../../screens/DeleteProfile';
+import { SearchCustomer } from '../../screens/search/SearchCustomer';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,14 +61,16 @@ export type RootStackParamList = {
     CreateAdministrator: undefined;
     Login: undefined;
     SearchDeactivatedAdministrator: undefined;
-    SendRequestEmail: undefined;
+    SendRequestChangeEmail: { email: string };
     SendRequestConfirmationEmail: { email: string };
-    UpdateEmail: undefined;
+    UpdateEmail: { email: string };
     SearchAppointment: undefined;
     SearchOrder: undefined;
     UpdatePassword: undefined;
-    ConfirmationEmail: undefined;
+    ConfirmationEmail: { email: string };
     AdministratorDeactivated: undefined;
+    DeleteProfile: undefined;
+    SearchCustomer: undefined
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -367,8 +371,8 @@ export default function AppRoute() {
                 />
 
                 <Stack.Screen
-                    name="SendRequestEmail"
-                    component={SendRequestEmail}
+                    name="SendRequestChangeEmail"
+                    component={SendRequestChangeEmail}
                     options={() => ({
                         header: () => (
                             <Header
@@ -394,7 +398,7 @@ export default function AppRoute() {
                                 iconName="alternate-email"
                                 backScreen="SendRequestEmail"
                                 needProps={false}
-                                props={null}   
+                                props={null}
                             />
                         )
                     })}
@@ -411,7 +415,7 @@ export default function AppRoute() {
                                 iconName="event"
                                 backScreen="Home"
                                 needProps={false}
-                                props={null}   
+                                props={null}
                             />
                         )
                     })}
@@ -428,7 +432,7 @@ export default function AppRoute() {
                                 iconName="shopping-cart"
                                 backScreen="Home"
                                 needProps={false}
-                                props={null}                               
+                                props={null}
                             />
                         )
                     })}
@@ -463,6 +467,40 @@ export default function AppRoute() {
                                 backScreen="SendRequestConfirmationEmail"
                                 needProps={true}
                                 props={{ email: GLOBAL_VAR.USER_EMAIL }}
+                            />
+                        )
+                    })}
+                />
+
+                <Stack.Screen
+                    name="DeleteProfile"
+                    component={DeleteProfile}
+                    options={() => ({
+                        header: () => (
+                            <Header
+                                title="Deletar conta"
+                                activateBackButton={true}
+                                iconName="mail"
+                                backScreen="ShowProfile"
+                                needProps={false}
+                                props={null}
+                            />
+                        )
+                    })}
+                />
+
+                <Stack.Screen
+                    name="SearchCustomer"
+                    component={SearchCustomer}
+                    options={() => ({
+                        header: () => (
+                            <Header
+                                title="Clientes"
+                                activateBackButton={true}
+                                iconName="person"
+                                backScreen="Home"
+                                needProps={false}
+                                props={null}
                             />
                         )
                     })}

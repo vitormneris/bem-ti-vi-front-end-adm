@@ -4,9 +4,7 @@ import { Button } from '../Button';
 import Slider from '@react-native-community/slider';
 import ColorPicker, {
   Panel1,
-  Swatches,
   Preview,
-  OpacitySlider,
   HueSlider,
 } from 'reanimated-color-picker';
 import { styles } from './style';

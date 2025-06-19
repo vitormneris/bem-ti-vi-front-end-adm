@@ -14,15 +14,31 @@ import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/sele
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
 import { styles } from './style';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from '../../../routes/AppRoute';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function CreateAdministrator() {
+    const { navigate } = useNavigation<NavigationProps>();
+
     const [nome, setNome] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [senha, setSenha] = useState<string>('');
+
+    const [password, setPassword] = useState<string>('');
+    const [passwordRepet, setPasswordRepet] = useState<string>('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordRepet, setShowPasswordRepet] = useState(false);
+
     const [fotoPerfil, setFotoPerfil] = useState<string>('');
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+
+    hardwareBackPress(navigate, "SearchAdministrator");
+
+    const toggleShowPassword = () => setShowPassword(!showPassword);
+    const toggleShowPasswordRepet = () => setShowPasswordRepet(!showPasswordRepet);
 
     useValidateToken();
 
@@ -34,12 +50,18 @@ export default function CreateAdministrator() {
     };
 
     const sendRequestCreate = async () => {
+
+        if (password != passwordRepet) {
+            Alert.alert("Atenção!", "As não digitadas não são iguais!");
+            return;
+        }
+
         const administrator: Administrator = {
             id: '',
             name: nome,
             email: email,
             isEmailActive: false,
-            password: senha,
+            password: password,
             pathImage: '',
             activationStatus: null
         };
@@ -50,7 +72,8 @@ export default function CreateAdministrator() {
                 if (success) {
                     setNome('');
                     setEmail('');
-                    setSenha('');
+                    setPassword('');
+                    setPasswordRepet('');
                     setFotoPerfil('');
                     setError('');
                     setFields([]);
@@ -58,7 +81,6 @@ export default function CreateAdministrator() {
                 }
             } else {
                 setError(success.message || "Erro desconhecido.");
-
                 setFields(success.errorFields?.map(field => field.description) || []);
             }
         } catch (error) {
@@ -68,17 +90,13 @@ export default function CreateAdministrator() {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                keyboardShouldPersistTaps="handled"
-            >
-                <Title text="Gerenciar Perfil" />
+            <ScrollView>
+                <Title text="Criar conta de administrador" />
 
                 <View style={styles.formContainer}>
 
                     <Input
-                        label="Nome do Administrador"
+                        label="Nome"
                         placeholder="Insira o nome completo"
                         keyboardType="default"
                         value={nome}
@@ -86,7 +104,7 @@ export default function CreateAdministrator() {
                     />
 
                     <Input
-                        label="E-mail do Administrador"
+                        label="E-mail"
                         placeholder="Insira o e-mail"
                         keyboardType="default"
                         value={email}
@@ -94,11 +112,21 @@ export default function CreateAdministrator() {
                     />
 
                     <InputPassword
-                        label="Senha do Administrador"
-                        placeholder="Insira a nova senha"
-                        keyboardType="default"
-                        value={senha}
-                        onChangeText={setSenha}
+                        label="Senha"
+                        placeholder="Digite sua senha"
+                        toggleShowPassword={toggleShowPassword}
+                        showPassword={showPassword}
+                        password={password}
+                        setPassword={setPassword}
+                    />
+
+                    <InputPassword
+                        label="Repita a senha"
+                        placeholder="Digite a sua senha novamente"
+                        toggleShowPassword={toggleShowPasswordRepet}
+                        showPassword={showPasswordRepet}
+                        password={passwordRepet}
+                        setPassword={setPasswordRepet}
                     />
 
                     <InputImage
@@ -109,9 +137,9 @@ export default function CreateAdministrator() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
+                    <ButtonLarge
                         icon={require('../../../assets/icons/add.png')}
-                        text="CADASTRAR ADMINISTRADOR"
+                        text="CADASTRAR"
                         color="#006316"
                         action={sendRequestCreate}
                     />
@@ -126,7 +154,6 @@ export default function CreateAdministrator() {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar />
         </SafeAreaView>
     );
 }

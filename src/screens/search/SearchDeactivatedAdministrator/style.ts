@@ -5,14 +5,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff'
     },
-    scrollView: {
-        flex: 1,
-        marginBottom: 70
-    },
-    scrollContent: {
-        paddingBottom: 30,
-        paddingHorizontal: 16
-    },
+
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -79,9 +72,11 @@ export const styles = StyleSheet.create({
     },
     listContainer: {
         width: '100%',
-        marginBottom: 20
+        marginBottom: 20,
+        alignItems: 'center'
     },
     adminCard: {
+        width: '90%',
         backgroundColor: '#F8F8F8',
         borderRadius: 12,
         padding: 16,

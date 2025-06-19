@@ -15,8 +15,15 @@ import { useValidateToken } from '../../../utils/UseValidateToken/useValidateTok
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
 import { styles } from './style';
+import { InputSmall } from '../../../components/Inputs/InputSmall';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from '../../../routes/AppRoute';
 
 export const CreateService = () => {
+    const { navigate } = useNavigation<NavigationProps>();
+
     const [nomeServico, setNomeServico] = useState<string>('');
     const [descricaoServico, setDescricaoServico] = useState<string>('');
     const [precoServico, setPrecoServico] = useState<string>('');
@@ -28,6 +35,7 @@ export const CreateService = () => {
     const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
+    hardwareBackPress(navigate, "SearchService");
 
     const selecionarImagem = async () => {
         const imageSelected = await selectImageFromGalery();
@@ -82,42 +90,44 @@ export const CreateService = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+            <ScrollView>
 
-                <Title text="Informações do Serviço" />
+                <Title text="Cadastre um novo serviço" />
 
                 <Input
-                    label="Nome do Serviço"
-                    placeholder="Digite o nome do serviço"
+                    label="Nome"
+                    placeholder="Digite o nome aqui"
                     keyboardType="default"
                     value={nomeServico}
                     onChangeText={setNomeServico}
                 />
 
-                <Input
-                    label="Preço do Serviço"
-                    placeholder="Digite o valor do serviço"
-                    keyboardType="numeric"
-                    value={precoServico}
-                    onChangeText={setPrecoServico}
-                />
+                <View style={styles.subcontainer}>
+                    <InputTime
+                        label="Duração estimada"
+                        durationEstimated={duracaoEstimada}
+                        setShowTimePicker={setShowTimePicker}
+                        showTimePicker={showTimePicker}
+                        handleTimeChange={handleTimeChange}
+                    />
 
-                <InputTime
-                    label="Duração Estimada"
-                    durationEstimated={duracaoEstimada}
-                    setShowTimePicker={setShowTimePicker}
-                    showTimePicker={showTimePicker}
-                    handleTimeChange={handleTimeChange}
-                />
+                    <InputSmall
+                        label="Valor"
+                        placeholder="Digite o valor aqui"
+                        keyboardType="numeric"
+                        value={precoServico}
+                        onChangeText={setPrecoServico}
+                    />
+                </View>
 
                 <InputImage
-                    label="Imagem do Serviço"
+                    label="Imagem"
                     image={imagem}
                     selectImage={selecionarImagem}
                 />
 
                 <InputDescription
-                    label="Descrição do Serviço"
+                    label="Descrição"
                     placeholder="Descreva o serviço em detalhes"
                     keyboardType="default"
                     value={descricaoServico}
@@ -125,7 +135,7 @@ export const CreateService = () => {
                 />
 
                 <View style={styles.buttonsContainer}>
-                    <Button
+                    <ButtonLarge
                         icon={require('../../../assets/icons/add.png')}
                         text="CADASTRAR SERVIÇO"
                         color="#006316"
@@ -143,7 +153,6 @@ export const CreateService = () => {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar initialTab='servicos' />
         </SafeAreaView>
     );
 };

@@ -1,36 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, SafeAreaView, View, Pressable, Text } from 'react-native';
+import { ScrollView, SafeAreaView, View, Pressable, Text, ActivityIndicator } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useNavigation } from '@react-navigation/native';
 
 import { NavigationBar } from '../../../components/NavigationBar';
 import { PaginationControls } from '../../../components/PaginationControls';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
-
 import { Appointment, AppointmentPages, search } from '../../../api/appointment/search/search';
-
 import { Error } from '../../../api/product/update/update';
 
 import { styles } from './style';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from '../../../routes/AppRoute';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export function SearchAppointment() {
-    const { navigate } = useNavigation();
+    const { navigate } = useNavigation<NavigationProps>();
 
+    const today = new Date();
+    const oneMonthAfter = new Date();
+    oneMonthAfter.setMonth(today.getMonth() + 1);
+
+    const [momentStart, setMomentStart] = useState<Date>(today);
+    const [momentEnd, setMomentEnd] = useState<Date>(oneMonthAfter);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
-
-    const [momentStart, setMomentStart] = useState<Date>(new Date());
-    const [momentEnd, setMomentEnd] = useState<Date>(new Date());
-
     const [showStartPicker, setShowStartPicker] = useState(false);
     const [showEndPicker, setShowEndPicker] = useState(false);
-
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useValidateToken();
+
+    hardwareBackPress(navigate, "Home");
 
     const formatDate = (date: Date) => {
         const year = date.getFullYear();
@@ -39,8 +43,26 @@ export function SearchAppointment() {
         return `${year}-${month}-${day}`;
     };
 
+    const formatDateTime = (date: Date) => {
+        return date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
+    useEffect(() => {
+        const debounceTimeout = setTimeout(() => {
+            setPageIndex(0);
+        }, 600);
+        return () => clearTimeout(debounceTimeout);
+    }, [momentStart, momentEnd]);
+
     useEffect(() => {
         async function loadAppointments() {
+            setLoading(true);
             try {
                 const start = formatDate(momentStart);
                 const end = formatDate(momentEnd);
@@ -52,35 +74,43 @@ export function SearchAppointment() {
                     setError('');
                     setFields([]);
                 } else {
-                    setError(data.message || "Erro desconhecido.");
+                    setAppointments([]);
+                    setError(data.message || 'Erro desconhecido.');
                     setFields(data.errorFields?.map(field => field.description) || []);
                 }
-            } catch (error) {
+            } catch {
+                setAppointments([]);
                 setError('Não foi possível carregar os agendamentos. Verifique sua conexão.');
+            } finally {
+                setLoading(false);
             }
         }
-
         loadAppointments();
     }, [pageIndex, momentStart, momentEnd]);
 
     const handleStartChange = (event: any, selectedDate?: Date) => {
         setShowStartPicker(false);
-        if (selectedDate) {
-            setMomentStart(selectedDate);
-        }
+        if (selectedDate) setMomentStart(selectedDate);
     };
 
     const handleEndChange = (event: any, selectedDate?: Date) => {
         setShowEndPicker(false);
-        if (selectedDate) {
-            setMomentEnd(selectedDate);
-        }
+        if (selectedDate) setMomentEnd(selectedDate);
+    };
+
+    const handleNextPage = () => {
+        if (pageIndex + 1 < totalPages) setPageIndex(prev => prev + 1);
+    };
+
+    const handlePrevPage = () => {
+        if (pageIndex > 0) setPageIndex(prev => prev - 1);
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
+                {/* Data Inicial */}
                 <View style={styles.formGroup}>
                     <Text style={styles.label}>Data Inicial</Text>
                     <Pressable onPress={() => setShowStartPicker(true)} style={styles.inputField}>
@@ -96,6 +126,7 @@ export function SearchAppointment() {
                     )}
                 </View>
 
+                {/* Data Final */}
                 <View style={styles.formGroup}>
                     <Text style={styles.label}>Data Final</Text>
                     <Pressable onPress={() => setShowEndPicker(true)} style={styles.inputField}>
@@ -112,29 +143,24 @@ export function SearchAppointment() {
                 </View>
 
                 <View style={styles.itemContainer}>
-                    {appointments.map(appointment => (
-                        <View key={appointment.id} style={styles.itemContainer}>
-                            {appointments.map(appointment => (
-                                <View key={appointment.id} style={styles.card}>
-                                    <Text style={styles.cardTitle}>Cliente: {appointment.customer.name}</Text>
-                                    <Text style={styles.cardSubtitle}>Email: {appointment.customer.email}</Text>
-                                    <Text style={styles.cardSubtitle}>Serviço: {appointment.service.name}</Text>
-                                    <Text style={styles.cardSubtitle}>Descrição: {appointment.service.description}</Text>
-                                    <Text style={styles.cardSubtitle}>Data/Hora: {formatDateTime(new Date(appointment.dateTime))}</Text>
-                                    <Text style={styles.cardSubtitle}>Preço: R$ {appointment.price.toFixed(2)}</Text>
-                                    <Text style={styles.cardSubtitle}>Status de Pagamento: {appointment.paymentStatus}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    ))}
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                    ) : appointments.length > 0 ? (
+                        appointments.map(appointment => (
+                            <View key={appointment.id} style={styles.card}>
+                                <Text style={styles.cardTitle}>Cliente: {appointment.customer.name}</Text>
+                                <Text style={styles.cardSubtitle}>Email: {appointment.customer.email}</Text>
+                                <Text style={styles.cardSubtitle}>Serviço: {appointment.service.name}</Text>
+                                <Text style={styles.cardSubtitle}>Descrição: {appointment.service.description}</Text>
+                                <Text style={styles.cardSubtitle}>Data/Hora: {formatDateTime(new Date(appointment.dateTime))}</Text>
+                                <Text style={styles.cardSubtitle}>Preço: R$ {appointment.price.toFixed(2)}</Text>
+                                <Text style={styles.cardSubtitle}>Status de Pagamento: {appointment.paymentStatus}</Text>
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum agendamento encontrado.</Text>
+                    )}
                 </View>
-
-                <PaginationControls
-                    pageIndex={pageIndex}
-                    totalPages={totalPages}
-                    onNext={() => setPageIndex(prev => Math.min(prev + 1, totalPages - 1))}
-                    onPrev={() => setPageIndex(prev => Math.max(prev - 1, 0))}
-                />
 
                 {error ? (
                     <View style={{ marginVertical: 10, alignSelf: 'center' }}>
@@ -146,17 +172,14 @@ export function SearchAppointment() {
                 ) : null}
             </ScrollView>
 
-            <NavigationBar initialTab='home' />
+            <PaginationControls
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onNext={handleNextPage}
+                onPrev={handlePrevPage}
+            />
+
+            <NavigationBar initialTab="home" />
         </SafeAreaView>
     );
 }
-
-const formatDateTime = (date: Date) => {
-    return date.toLocaleString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};

@@ -6,20 +6,17 @@ export const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
 
-    scrollView: {
-        flex: 1,
-        marginBottom: 70
-    },
-
-    scrollContent: {
-        paddingBottom: 40
-    },
-
     buttonsContainer: {
         justifyContent: 'center',
         paddingHorizontal: 16,
-        marginTop: 32,
-        marginBottom: 30,
+        marginVertical: 20,
     },
+
+    subcontainer: {
+        flexDirection: 'row',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-around'
+    }
 
 });

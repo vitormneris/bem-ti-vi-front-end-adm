@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, TouchableOpacity } from 'react-native';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -14,15 +14,21 @@ import { updateConfirmationEmail } from '../../../api/administrator/update/updat
 import { NavigationProps } from '../../../routes/AppRoute';
 
 import { styles } from './style';
+import { ButtonLarge } from '../../../components/ButtonLarge';
+import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 
 export default function ConfirmationEmail() {
     const { navigate } = useNavigation<NavigationProps>();
+    const route = useRoute();
+    const { email: emailUser } = route.params as { email: string };
 
     const [code, setCode] = useState<string>('');
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
+
+    hardwareBackPress(navigate, "SendRequestConfirmationEmail");
 
     useEffect(() => {
         async function loadAdministratorId() {
@@ -84,13 +90,16 @@ export default function ConfirmationEmail() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
-                    <Button
+                    <ButtonLarge
                         icon={require('../../../assets/icons/add.png')}
                         text="CONFIRMAR E-MAIL"
                         color="#006316"
                         action={sendRequestEmail}
                     />
                 </View>
+                <TouchableOpacity onPress={() => navigate("SendRequestConfirmationEmail", { email: emailUser})}>
+                    <Text style={styles.confirmText}>Não recebi o código</Text>
+                </TouchableOpacity>
                 {error ? (
                     <View style={{ marginVertical: 10, alignSelf: 'center' }}>
                         <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
@@ -100,8 +109,6 @@ export default function ConfirmationEmail() {
                     </View>
                 ) : null}
             </ScrollView>
-
-            <NavigationBar />
         </SafeAreaView>
     );
 }

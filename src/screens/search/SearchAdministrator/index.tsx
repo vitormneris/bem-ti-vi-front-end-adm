@@ -11,6 +11,8 @@ import { Button } from "../../../components/Button";
 import { useValidateToken } from "../../../utils/UseValidateToken/useValidateToken";
 import { styles } from "./style";
 import { Error } from "../../../api/product/update/update";
+import { NavigationBar } from "../../../components/NavigationBar";
+import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
 
 export const SearchAdministrator = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -18,6 +20,7 @@ export const SearchAdministrator = () => {
     const [error, setError] = useState<string>('');
 
     useValidateToken();
+    hardwareBackPress(navigate, "ShowProfile");
 
     useEffect(() => {
         loadAdministrators();
@@ -30,7 +33,7 @@ export const SearchAdministrator = () => {
             if (Array.isArray(result)) {
                 setAdministrators(result);
             } else {
-                setError('Erro ao carregar administradores: ' + result.message);
+                setError(result.message);
             }
         } catch {
             setError('Não foi possível atualizar. Verifique sua conexão.');
@@ -68,47 +71,51 @@ export const SearchAdministrator = () => {
     };
 
     return (
-        <ScrollView style={styles.safeArea} contentContainerStyle={styles.scrollContent}>
-            <View style={[styles.greetingContainer, { marginTop: 30 }]}>
-                <Text style={styles.greetingText}>Administradores Cadastrados</Text>
-                <Text style={styles.subtitle}>Gerencie os administradores do sistema</Text>
-            </View>
+        <>
+            <ScrollView style={styles.safeArea}>
+                <View style={[styles.greetingContainer, { marginTop: 30 }]}>
+                    <Text style={styles.greetingText}>Administradores cadastrados e ativos</Text>
+                    <Text style={styles.subtitle}>Gerencie os administradores do sistema</Text>
+                </View>
 
-            <View style={styles.containerButton}>
-                <Button
-                    icon={require('../../../assets/images/add.png')}
-                    text="CADASTRAR"
-                    color="#256489"
-                    action={() => navigate('CreateAdministrator')}
-                />
-                <Button
-                    icon={require('../../../assets/images/perfil.png')}
-                    text="DESATIVADAS"
-                    color="#256489"
-                    action={() => navigate('SearchDeactivatedAdministrator')}
-                />
-            </View>
+                <View style={styles.containerButton}>
+                    <Button
+                        icon={require('../../../assets/icons/add_user.webp')}
+                        text="CRIAR ADM'S"
+                        color="#256489"
+                        width='45%'
+                        action={() => navigate('CreateAdministrator')}
+                    />
+                    <Button
+                        icon={require('../../../assets/icons/user_deactivated.png')}
+                        text="ADM'S DES."
+                        color="#256489"
+                        width='45%'
+                        action={() => navigate('SearchDeactivatedAdministrator')}
+                    />
+                </View>
 
-            {error.length > 0 && (
-                <Text style={[styles.subtitle, { color: 'red', textAlign: 'center', marginVertical: 10 }]}>
-                    {error}
-                </Text>
-            )}
-
-            <View style={styles.listContainer}>
-                {administrators.length > 0 ? (
-                    administrators.map((admin) => (
-                        <ItemAdministrator
-                            key={admin.id}
-                            administrator={admin}
-                            handleDeactivate={handleDeactivate}
-                        />
-                    ))
-                ) : (
-                    <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum administrador ativo encontrado.</Text>
+                {error.length > 0 && (
+                    <Text style={[styles.subtitle, { color: 'red', textAlign: 'center', marginVertical: 10 }]}>
+                        {error}
+                    </Text>
                 )}
-            </View>
-        </ScrollView>
+
+                <View style={styles.listContainer}>
+                    {administrators.length > 0 ? (
+                        administrators.map((admin) => (
+                            <ItemAdministrator
+                                key={admin.id}
+                                administrator={admin}
+                                handleDeactivate={handleDeactivate}
+                            />
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum administrador ativo encontrado.</Text>
+                    )}
+                </View>
+            </ScrollView>
+        </>
     );
 };
 
@@ -135,7 +142,7 @@ const ItemAdministrator = ({ administrator, handleDeactivate }: ItemAdministrato
                     onPress={() => handleDeactivate(administrator.id, administrator.name)}
                 >
                     <Image
-                        source={require('../../../assets/images/desabilitar.png')}
+                        source={require('../../../assets/icons/deactivate.png')}
                         style={[styles.actionIcon, { width: 40, height: 40, marginLeft: 30 }]}
                     />
                 </TouchableOpacity>
