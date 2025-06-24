@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, Touchable, TouchableOpacity } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, Touchable, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -16,6 +16,7 @@ import { NavigationProps } from '../../../routes/AppRoute';
 import { styles } from './style';
 import { ButtonLarge } from '../../../components/ButtonLarge';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function UpdateEmail() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -27,6 +28,7 @@ export default function UpdateEmail() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "SendRequestChangeEmail");
     
@@ -36,12 +38,15 @@ export default function UpdateEmail() {
                 const administradorId: AdministratorId | undefined = await validateTokenAdm();
                 if (administradorId === undefined) {
                     navigate("Login");
-                    Alert.alert("Atenção!", "Você foi deslogado!");
+                    setError("Atenção!");
+                    setFields(["Você foi deslogado!"])
+                    setErrorModalVisible(true);
                 } else {
                     setAdministratorId(administradorId.id);
                 }
             } catch (error) {
-                console.error('Erro ao carregar o administrador:', error);
+                setError(`Erro ao carregar o administrador: ${error}`);
+                setErrorModalVisible(true);
             }
         }
         loadAdministratorId();
@@ -62,13 +67,18 @@ export default function UpdateEmail() {
                 setError(success.message || "Erro desconhecido.");
 
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
             <ScrollView
                 style={styles.scrollView}
@@ -100,16 +110,15 @@ export default function UpdateEmail() {
                 <TouchableOpacity onPress={() => navigate("SendRequestChangeEmail", { email: emailUser })}>
                     <Text style={styles.confirmText}>Não recebi o código</Text>
                 </TouchableOpacity>
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
         </SafeAreaView>
+    </KeyboardAvoidingView>
     );
 }

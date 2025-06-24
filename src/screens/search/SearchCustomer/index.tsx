@@ -16,6 +16,7 @@ import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPres
 
 import { stylesItem } from '../style';
 import { styles } from './style';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export const SearchCustomer = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -26,6 +27,7 @@ export const SearchCustomer = () => {
     const [clientes, setClientes] = useState<Customer[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "Home");
@@ -46,6 +48,7 @@ export const SearchCustomer = () => {
             setClientes([]);
             setTotalPages(1);
             setError('Erro ao carregar clientes. Verifique sua conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -83,9 +86,11 @@ export const SearchCustomer = () => {
                     setSearchText={setSearchText}
                 />
 
-                {error ? (
-                    <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>{error}</Text>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() =>setErrorModalVisible(false)}
+                />
 
                 <View style={stylesItem.itemContainer}>
                     {loading ? (

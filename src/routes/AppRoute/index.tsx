@@ -41,6 +41,9 @@ import { GLOBAL_VAR } from '../../api/config/globalVar';
 import { AdministratorDeactivated } from '../../screens/AdministratorDeactivated';
 import DeleteProfile from '../../screens/DeleteProfile';
 import { SearchCustomer } from '../../screens/search/SearchCustomer';
+import { UpdatePaymentStatus } from '../../screens/UpdatePaymentStatus';
+import { Order } from '../../api/order/search/search';
+import { Appointment } from '../../api/appointment/search/search';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +74,7 @@ export type RootStackParamList = {
     AdministratorDeactivated: undefined;
     DeleteProfile: undefined;
     SearchCustomer: undefined
+    UpdatePaymentStatus: { item: Order|Appointment, type: string } 
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -431,6 +435,23 @@ export default function AppRoute() {
                                 activateBackButton={true}
                                 iconName="shopping-cart"
                                 backScreen="Home"
+                                needProps={false}
+                                props={null}
+                            />
+                        )
+                    })}
+                />
+
+                <Stack.Screen
+                    name="UpdatePaymentStatus"
+                    component={UpdatePaymentStatus}
+                    options={() => ({
+                        header: () => (
+                            <Header
+                                title="Atualizar Pagamento"
+                                activateBackButton={true}
+                                iconName="shopping-cart"
+                                backScreen="SearchOrder"
                                 needProps={false}
                                 props={null}
                             />

@@ -13,11 +13,13 @@ import { styles } from "./style";
 import { Error } from "../../../api/product/update/update";
 import { NavigationBar } from "../../../components/NavigationBar";
 import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
+import { ErrorModal } from "../../../components/ErrorModal";
 
 export const SearchAdministrator = () => {
     const { navigate } = useNavigation<NavigationProps>();
     const [administrators, setAdministrators] = useState<Administrator[]>([]);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "ShowProfile");
@@ -34,9 +36,11 @@ export const SearchAdministrator = () => {
                 setAdministrators(result);
             } else {
                 setError(result.message);
+                setErrorModalVisible(true);
             }
         } catch {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -64,9 +68,11 @@ export const SearchAdministrator = () => {
                 navigate('SearchDeactivatedAdministrator');
             } else {
                 setError(result.message);
+                setErrorModalVisible(true);
             }
         } catch {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -95,11 +101,11 @@ export const SearchAdministrator = () => {
                     />
                 </View>
 
-                {error.length > 0 && (
-                    <Text style={[styles.subtitle, { color: 'red', textAlign: 'center', marginVertical: 10 }]}>
-                        {error}
-                    </Text>
-                )}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() =>setErrorModalVisible(false)}
+                />
 
                 <View style={styles.listContainer}>
                     {administrators.length > 0 ? (

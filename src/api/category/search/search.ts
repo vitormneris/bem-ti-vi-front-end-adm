@@ -1,10 +1,5 @@
+import { Category, CategoryPages } from "../../../utils/Types";
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Category } from "../create/create";
-
-export type CategoryPages = {
-    categories: Category[],
-    totalPages: number
-}
 
 export async function search( searchText: string, pageIndex: number ): Promise<CategoryPages | undefined>{
 

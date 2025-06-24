@@ -1,10 +1,5 @@
+import { Service, ServicePages } from "../../../utils/Types";
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Service } from "../create/create";
-
-export type ServicePages = {
-    services: Service[],
-    totalPages: number
-}
 
 export async function search(searchText: string, pageIndex: number): Promise<ServicePages | undefined> {
 

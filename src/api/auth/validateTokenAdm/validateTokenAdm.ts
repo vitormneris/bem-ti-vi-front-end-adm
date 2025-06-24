@@ -1,8 +1,5 @@
+import { AdministratorId } from "../../../utils/Types";
 import { GLOBAL_VAR } from "../../config/globalVar"
-
-export type AdministratorId = {
-    id: string
-}
 
 export async function validateTokenAdm(): Promise<AdministratorId | undefined> {
     try {

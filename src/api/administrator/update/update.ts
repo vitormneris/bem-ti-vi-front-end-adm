@@ -1,6 +1,6 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
-import { Administrator } from "../create/create";
+import { Error } from "../../../utils/Types";
+import { Administrator } from "../../../utils/Types";
 
 export async function update(administrator: Administrator, imagem: string, administratorId: string): Promise<boolean | Error> {
 

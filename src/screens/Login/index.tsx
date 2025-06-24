@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, BackHandler, ToastAndroid } from 'react-native';
+import { View, Text, TextInput, Image, TouchableOpacity, BackHandler, ToastAndroid, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { GLOBAL_VAR } from '../../api/config/globalVar';
@@ -8,6 +8,7 @@ import { login, UserAuth } from '../../api/auth/login/login';
 import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const Login = () => {
     const { replace } = useNavigation<NavigationProps>();
@@ -16,6 +17,7 @@ export const Login = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -38,10 +40,14 @@ export const Login = () => {
                 replace('Home');
             } else {
                 setError(response.message);
+				setErrorModalVisible(true);
+
             }
 
         } catch (error) {
             setError('Erro ao tentar acessar o painel. Verifique suas credenciais ou conexão.');
+            setErrorModalVisible(true);
+
         }
     };
 
@@ -68,6 +74,9 @@ export const Login = () => {
     }, []);
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <View style={styles.container}>
             <View style={styles.logoContainer}>
                 <Image
@@ -117,7 +126,12 @@ export const Login = () => {
                 <Text style={styles.loginButtonText}>Entrar no Painel</Text>
             </TouchableOpacity>
 
-            <Text style={styles.error}>{error}</Text>
+            <ErrorModal
+                visible={errorModalVisible}
+                error={error}
+                onClose={() => setErrorModalVisible(false)}
+            />	
         </View>
+    </KeyboardAvoidingView>
     );
 };

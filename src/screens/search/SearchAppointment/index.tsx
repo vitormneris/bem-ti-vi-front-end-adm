@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, SafeAreaView, View, Pressable, Text, ActivityIndicator } from 'react-native';
+import { ScrollView, SafeAreaView, View, Pressable, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { NavigationBar } from '../../../components/NavigationBar';
@@ -13,6 +13,7 @@ import { styles } from './style';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../../routes/AppRoute';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export function SearchAppointment() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -31,6 +32,7 @@ export function SearchAppointment() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -77,10 +79,12 @@ export function SearchAppointment() {
                     setAppointments([]);
                     setError(data.message || 'Erro desconhecido.');
                     setFields(data.errorFields?.map(field => field.description) || []);
+                    setErrorModalVisible(true);
                 }
             } catch {
                 setAppointments([]);
                 setError('Não foi possível carregar os agendamentos. Verifique sua conexão.');
+                setErrorModalVisible(true);
             } finally {
                 setLoading(false);
             }
@@ -155,6 +159,13 @@ export function SearchAppointment() {
                                 <Text style={styles.cardSubtitle}>Data/Hora: {formatDateTime(new Date(appointment.dateTime))}</Text>
                                 <Text style={styles.cardSubtitle}>Preço: R$ {appointment.price.toFixed(2)}</Text>
                                 <Text style={styles.cardSubtitle}>Status de Pagamento: {appointment.paymentStatus}</Text>
+                                <Text style={styles.cardSubtitle}>Método de pagamento: {appointment.methodPaymentByPix ? 'Pix' : 'Dinheiro'}</Text>
+                                <TouchableOpacity
+                                    onPress={() => navigate('UpdatePaymentStatus', {item: appointment, type: 'appointment' })}
+                                    style={styles.updateButton}
+                                >
+                                <Text style={styles.updateButtonText}>Atualizar status do pagamento</Text>
+                                </TouchableOpacity>
                             </View>
                         ))
                     ) : (
@@ -162,14 +173,12 @@ export function SearchAppointment() {
                     )}
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <PaginationControls

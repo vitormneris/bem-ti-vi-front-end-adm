@@ -12,6 +12,7 @@ import { GLOBAL_VAR } from '../../api/config/globalVar';
 
 import { styles } from './style';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../components/ErrorModal';
 
 const logoutRequest = (navigate: any) => {
     Alert.alert(
@@ -39,7 +40,8 @@ export const ShowProfile = () => {
     const [email, setEmail] = useState<string>('');
     const [emailIsActive, setEmailIsActive] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
-
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    
     hardwareBackPress(navigate, "Home");
 
     useEffect(() => {
@@ -70,6 +72,7 @@ export const ShowProfile = () => {
 
             } catch {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         };
 
@@ -151,9 +154,11 @@ export const ShowProfile = () => {
                     </TouchableOpacity>
                 </View>
 
-                {error ? (
-                    <Text style={{ color: 'red', textAlign: 'center', marginTop: 10 }}>{error}</Text>
-                ) : null}
+            <ErrorModal
+                visible={errorModalVisible}
+                error={error}
+                onClose={() => setErrorModalVisible(false)}
+            />	
             </ScrollView>
 
             <NavigationBar initialTab='perfil' />

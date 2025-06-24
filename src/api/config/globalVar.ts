@@ -1,4 +1,4 @@
-const ADDRESS = "192.168.0.17";
+const ADDRESS = "100.100.0.0";
 const PORT = "8080"
 
 export const GLOBAL_VAR = {

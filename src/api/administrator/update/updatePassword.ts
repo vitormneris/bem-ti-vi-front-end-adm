@@ -1,10 +1,6 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
+import { Error, Passwords } from "../../../utils/Types";
 
-export type Passwords = {
-    passwordOld: string,
-    passwordNew: string
-};
 
 export async function updatePassword(administratorId: string, passwords: Passwords): Promise<boolean | Error> {
     try {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
@@ -24,6 +24,7 @@ import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/sele
 
 import { styles } from './style';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function ManageProduct() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -34,11 +35,12 @@ export default function ManageProduct() {
     const [valorProduto, setValorProduto] = useState<string>('');
     const [descricao, setDescricao] = useState<string>('');
     const [imagem, setImagem] = useState<string>('');
-    const [categoriesId, setCategoriesId] = useState<string>('');
+    const [categoriesIds, setCategoriesIds] = useState<string[]>([]);
     const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[]>([]);
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchProduct");
@@ -50,7 +52,8 @@ export default function ManageProduct() {
                 setImagem(imageSelected);
             }
         } catch (error) {
-            console.error('Erro ao selecionar imagem:', error);
+            setError(`Erro ao selecionar imagem: ${error}`);
+            setErrorModalVisible(true);
         }
     };
 
@@ -59,7 +62,9 @@ export default function ManageProduct() {
             try {
                 const produto: Product | undefined = await findById(productId);
                 if (!produto) {
-                    Alert.alert('Erro', 'Produto não encontrado.');
+                    setError('Erro')
+                    setFields(['Produto não encontrado.']);
+                    setErrorModalVisible(true);
                     navigate('SearchProduct');
                     return;
                 }
@@ -69,6 +74,7 @@ export default function ManageProduct() {
                     setCategoriesToSelect(categoriesForInput);
                 } else {
                     setError(categoriesForInput.message);
+                    setErrorModalVisible(true);
                 }
 
                 setNomeProduto(produto.name);
@@ -76,11 +82,13 @@ export default function ManageProduct() {
                 setDescricao(produto.description);
                 setImagem(produto.pathImage);
 
-                const selectedCategoryId = produto.categories[0]?.id ?? '';
-                setCategoriesId(selectedCategoryId);
+                const selectedCategoryIds = produto.categories.map(c => c.id);
+                setCategoriesIds(selectedCategoryIds);
 
             } catch (error) {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
+                setErrorModalVisible(true);
+
             }
         };
 
@@ -88,7 +96,7 @@ export default function ManageProduct() {
     }, [productId, navigate]);
 
     const handleUpdate = async () => {
-        if (!nomeProduto.trim() || !valorProduto.trim() || !descricao.trim() || !categoriesId.trim()) {
+        if (!nomeProduto.trim() || !valorProduto.trim() || !descricao.trim() || !categoriesIds) {
             Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
             return;
         }
@@ -99,12 +107,12 @@ export default function ManageProduct() {
             return;
         }
 
-        const categoria: Category = {
-            id: categoriesId,
+        const categoriasSelecionadas: Category[] = categoriesIds.map(id => ({
+            id,
             name: "",
             pathImage: "",
             cardColor: ""
-        };
+        }));
 
         const produtoAtualizado: Product = {
             id: productId,
@@ -112,7 +120,7 @@ export default function ManageProduct() {
             price: preco,
             pathImage: imagem,
             description: descricao,
-            categories: [categoria]
+            categories: categoriasSelecionadas
         };
 
         try {
@@ -126,10 +134,12 @@ export default function ManageProduct() {
             } else {
                 setError(result.message || "Erro desconhecido.");
                 setFields(result.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar o produto. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -157,12 +167,16 @@ export default function ManageProduct() {
                 navigate('SearchProduct');
             }
         } catch (error) {
-            console.error('Erro ao excluir produto:', error);
-            Alert.alert('Erro', 'Não foi possível excluir o produto.');
+            setError(`Erro ao excluir produto: ${error}`);
+            setFields(['Não foi possível excluir o produto.']);
+            setErrorModalVisible(true);
         }
     };
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
             <ScrollView>
                 <Title text="Atualize este produto" />
@@ -191,10 +205,10 @@ export default function ManageProduct() {
                 />
 
                 <InputCategory
-                    label="Categoria"
-                    category={categoriesId}
-                    setCategory={setCategoriesId}
-                    categoriesToSelect={categoriesToSelect}
+                    label="Categorias"
+					selectedCategories={categoriesIds}
+					setSelectedCategories={setCategoriesIds}
+					categoriesToSelect={categoriesToSelect}
                 />
 
                 <InputDescription
@@ -220,17 +234,16 @@ export default function ManageProduct() {
                     />
                 </View>
 
-                {error ? (
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={styles.error}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={styles.field}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
 
             </ScrollView>
 
         </SafeAreaView>
+    </KeyboardAvoidingView>
     );
 }

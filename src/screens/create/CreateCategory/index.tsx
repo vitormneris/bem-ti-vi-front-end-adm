@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { Title } from "../../../components/Title";
 import { NavigationBar } from "../../../components/NavigationBar";
@@ -18,6 +18,7 @@ import { ButtonLarge } from "../../../components/ButtonLarge";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProps } from "../../../routes/AppRoute";
 import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
+import { ErrorModal } from "../../../components/ErrorModal";
 
 export const CreateCategory = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -29,6 +30,7 @@ export const CreateCategory = () => {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchCategory");
@@ -64,13 +66,18 @@ export const CreateCategory = () => {
                 setError(success.message || "Erro desconhecido.");
 
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
             <ScrollView>
                 <Title text="Cadastre uma nova categoria" />
@@ -106,14 +113,12 @@ export const CreateCategory = () => {
                         action={sendRequestCreate}
                     />
                 </View>
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />	
             </ScrollView>
 
             <ColorPickerModal
@@ -127,5 +132,6 @@ export const CreateCategory = () => {
             />
 
         </SafeAreaView>
+    </KeyboardAvoidingView>
     );
 };

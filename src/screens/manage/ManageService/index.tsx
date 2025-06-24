@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 
@@ -26,6 +26,7 @@ import { InputTime } from '../../../components/Inputs/InputTime';
 import { Text } from 'react-native';
 import { InputSmall } from '../../../components/Inputs/InputSmall';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function ManageService() {
     const route = useRoute();
@@ -41,6 +42,7 @@ export default function ManageService() {
     const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchService");
@@ -66,8 +68,9 @@ export default function ManageService() {
                 setDuracaoEstimada(data.estimatedDuration);
                 setImagem(data.pathImage);
             } catch (erro) {
-                console.error('Erro ao buscar servico:', erro);
-                Alert.alert('Erro', 'Não foi possível carregar os dados do serviço.');
+                setError(`Erro ao buscar servico: ${erro}`);
+                setFields(['Não foi possível carregar os dados do serviço.']);
+                setErrorModalVisible(true);
             }
         };
 
@@ -76,7 +79,9 @@ export default function ManageService() {
 
     const handleUpdate = async () => {
         if (!nomeServico || !precoServico || !duracaoEstimada || !descricaoServico) {
-            Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
+            setError(`Campos obrigatórios`);
+            setFields(['Preencha todos os campos antes de atualizar.']);
+            setErrorModalVisible(true);
             return;
         }
 
@@ -100,10 +105,12 @@ export default function ManageService() {
             } else {
                 setError(result.message || "Erro desconhecido.");
                 setFields(result.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar o produto. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -149,6 +156,9 @@ export default function ManageService() {
     };
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
             <ScrollView>
                 <Title text="Atualize este serviço" />
@@ -207,16 +217,15 @@ export default function ManageService() {
                         action={handleUpdate}
                     />
                 </View>
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
         </SafeAreaView>
+    </KeyboardAvoidingView>
     );
 };

@@ -22,6 +22,7 @@ import { styles } from './style';
 import { stylesItem } from '../style';
 import { ButtonLarge } from '../../../components/ButtonLarge';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export const SearchCategory = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -31,6 +32,7 @@ export const SearchCategory = () => {
     const [categorias, setCategorias] = useState<Category[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -48,11 +50,13 @@ export const SearchCategory = () => {
                 setCategorias([]);
                 setTotalPages(1);
                 setError('Nenhuma categoria encontrada.');
+                setErrorModalVisible(true);
             }
         } catch {
             setCategorias([]);
             setTotalPages(1);
             setError('Erro ao carregar categorias. Verifique sua conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -99,9 +103,11 @@ export const SearchCategory = () => {
                     setSearchText={setSearchText}
                 />
 
-                {error ? (
-                    <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>{error}</Text>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() =>setErrorModalVisible(false)}
+                />
 
                 <View style={stylesItem.itemContainer}>
                     {loading ? (

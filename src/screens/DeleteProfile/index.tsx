@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { NavigationProps } from '../../routes/AppRoute';
@@ -11,6 +11,7 @@ import { ButtonLarge } from '../../components/ButtonLarge';
 import { styles } from './style';
 import { Error as ApiError } from '../../api/product/update/update';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export default function DeleteProfile() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -20,6 +21,7 @@ export default function DeleteProfile() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "ShowProfile");
 
@@ -28,14 +30,17 @@ export default function DeleteProfile() {
             try {
                 const administradorId: AdministratorId | undefined = await validateTokenAdm();
                 if (administradorId === undefined) {
-                    Alert.alert("Atenção!", "Você foi deslogado!");
+                    setError("Atenção!");
+                    setFields(["Você foi deslogado!"])
+                    setErrorModalVisible(true);
                     navigate("Login");
                 } else {
                     setAdministratorId(administradorId.id);
                 }
             } catch (error) {
-                console.error('Erro ao carregar o administrador:', error);
-                Alert.alert('Erro', 'Não foi possível validar sua sessão. Tente novamente.');
+                setError(`Erro ao carregar o administrador: ${error}`);
+                setFields(['Não foi possível validar sua sessão. Tente novamente.'])
+                setErrorModalVisible(true);
             }
         }
         loadAdministratorId();
@@ -55,11 +60,12 @@ export default function DeleteProfile() {
             } else {
                 setError(success.message || "Erro desconhecido.");
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
-            console.error('Erro na exclusão:', error);
-            Alert.alert('Erro', 'Não foi possível deletar. Verifique sua conexão.');
-            setError('Não foi possível deletar. Verifique sua conexão.');
+            setError(`Erro na exclusão: ${error}`);
+            setFields(['Não foi possível deletar. Verifique sua conexão.']);
+            setErrorModalVisible(true);
         }
     };
 
@@ -79,6 +85,9 @@ export default function DeleteProfile() {
     };
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
             <ScrollView>
                 <Title text="Deletar conta" />
@@ -105,15 +114,14 @@ export default function DeleteProfile() {
                     />
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />	
             </ScrollView>
         </SafeAreaView>
+    </KeyboardAvoidingView>
     );
 }

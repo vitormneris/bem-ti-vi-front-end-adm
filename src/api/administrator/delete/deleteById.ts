@@ -1,5 +1,5 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
+import { Error } from "../../../utils/Types";
 
 export async function deleteById(administratorId: string, password: string): Promise<boolean | Error> {
     try {

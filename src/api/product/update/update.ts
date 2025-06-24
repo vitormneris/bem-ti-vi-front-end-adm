@@ -1,18 +1,6 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Product } from "../create/create";
+import { Product, Error } from "../../../utils/Types";
 
-export type Error = {
-    code: string;
-    status: string;
-    message: string;
-    timestamp: string;
-    path: string;
-    errorFields: {
-        name: string;
-        description: string;
-        value: string;
-    }[] | null;
-};
 
 export async function update(product: Product, image: string, productId: string): Promise<boolean | Error> {
     const formData = new FormData();

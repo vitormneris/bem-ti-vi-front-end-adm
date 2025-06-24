@@ -1,15 +1,6 @@
 import { Alert } from "react-native";
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
-
-export type Service = {
-    id: string | null,
-    name: string,
-    price: number,
-    pathImage: string,
-    estimatedDuration: string,
-    description: string
-};
+import { Service,Error } from "../../../utils/Types";
 
 export async function create(service: Service, image: string): Promise<boolean | Error> {
     if (!image) {

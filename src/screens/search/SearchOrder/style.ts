@@ -54,4 +54,16 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         color: '#333',
     },
+    updateButton: {
+        backgroundColor: '#006516',
+        padding: 10,
+        borderRadius: 10,
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    updateButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontFamily:"Montserrat"
+    },
 });

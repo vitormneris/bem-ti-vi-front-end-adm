@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
 import { GLOBAL_VAR } from '../../config/globalVar';
-import { Error } from '../../product/update/update';
+import { Error } from '../../../utils/Types';
 
 type ActivationStatus = {
     isActive: boolean;

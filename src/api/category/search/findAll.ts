@@ -1,11 +1,5 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
-import { Category } from "../create/create";
-
-export type CategoryFormated = {
-    label: string,
-    key: string
-}
+import { Category, CategoryFormated, Error } from "../../../utils/Types";
 
 export async function findAll(): Promise<CategoryFormated[] | Error> {
 

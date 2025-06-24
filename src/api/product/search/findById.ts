@@ -1,5 +1,5 @@
+import { Product } from "../../../utils/Types";
 import { GLOBAL_VAR } from "../../config/globalVar"
-import { Product } from "../create/create"
 
 export async function findById(productId: string ): Promise<Product | undefined> {
 

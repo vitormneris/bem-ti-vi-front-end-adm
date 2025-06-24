@@ -1,13 +1,6 @@
 import { Alert } from 'react-native';
 import { GLOBAL_VAR } from '../../config/globalVar';
-import { Error } from '../../product/update/update';
-
-export type Category = {
-    id: string;
-    name: string;
-    pathImage: string;
-    cardColor: string;
-};
+import { Category, Error } from '../../../utils/Types';
 
 export async function create(category: Category, image: string): Promise<boolean | Error> {
     if (!image) {

@@ -1,28 +1,6 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
-import { Service } from "../../service/create/create";
+import { Appointment, AppointmentPages, Error } from "../../../utils/Types";
 
-export type Customer = {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-    pathImage: string;
-}
-
-export type Appointment = {
-    id: string | null,
-    dateTime: Date,
-    customer: Customer,
-    price: number,
-    paymentStatus: string,
-    service: Service
-}
-
-export type AppointmentPages = {
-    appointments: Appointment[],
-    totalPages: number
-}
 
 export async function search(momentStart: string, momentEnd: string, pageIndex: number): Promise<AppointmentPages | Error> {
 
@@ -45,7 +23,8 @@ export async function search(momentStart: string, momentEnd: string, pageIndex: 
                 customer: item.customer,
                 price: item.price,
                 paymentStatus: item.paymentStatus,
-                service: item.service
+                service: item.service,
+                methodPaymentByPix: item.methodPaymentByPix
             }));
 
             return {

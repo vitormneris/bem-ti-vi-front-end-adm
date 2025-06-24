@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 
@@ -21,6 +21,7 @@ import { useValidateToken } from '../../../utils/UseValidateToken/useValidateTok
 
 import { styles } from './style';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function ManageCategory() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -34,6 +35,7 @@ export default function ManageCategory() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchCategory");
@@ -57,8 +59,9 @@ export default function ManageCategory() {
                 setImagem(data.pathImage);
                 setCorCard(data.cardColor);
             } catch (erro) {
-                console.error('Erro ao buscar categoria:', erro);
-                Alert.alert('Erro', 'Não foi possível carregar os dados.');
+                setError(`Erro ao buscar categoria: ${erro}`);
+                setFields(['Não foi possível carregar os dados.']);
+                setErrorModalVisible(true);
             }
         };
 
@@ -89,10 +92,12 @@ export default function ManageCategory() {
             } else {
                 setError(result.message || "Erro desconhecido.");
                 setFields(result.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar o produto. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -121,11 +126,16 @@ export default function ManageCategory() {
             }
 
         } catch (error) {
-            Alert.alert('Erro', 'Não foi possível excluir a categoria.');
+            setError('Erro')
+            setFields(['Não foi possível excluir a categoria.']);
+            setErrorModalVisible(true);
         }
     };
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
             <ScrollView>
                 <Title text="Atualize esta categoria" />
@@ -168,14 +178,12 @@ export default function ManageCategory() {
                     />
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <ColorPickerModal
@@ -189,5 +197,6 @@ export default function ManageCategory() {
             />
 
         </SafeAreaView>
+    </KeyboardAvoidingView>
     );
 };

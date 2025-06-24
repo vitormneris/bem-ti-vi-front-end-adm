@@ -1,6 +1,5 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
-import { Category } from "../create/create";
+import { Category, Error } from "../../../utils/Types";
 
 export async function update(categoria: Category, imagem: string, categoryId: string ): Promise<boolean | Error> {
 

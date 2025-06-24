@@ -1,37 +1,6 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
 
-import { Product } from "../../product/create/create";
-
-import { Error } from "../../product/update/update";
-
-export type Customer = {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-    pathImage: string;
-}
-
-export type OrderItem = {
-    id: string;
-    price: number;
-    quantity: number;
-    product: Product;
-}
-
-export type Order = {
-    id: string | null;
-    moment: Date;
-    customer: Customer;
-    totalPrice: number;
-    paymentStatus: string;
-    orderItems: OrderItem;
-}
-
-export type OrderPages = {
-    orders: Order[];
-    totalPages: number;
-}
+import { Error, Order, OrderPages } from "../../../utils/Types";
 
 export async function search(momentStart: string, momentEnd: string, pageIndex: number): Promise<OrderPages | Error> {
 
@@ -54,7 +23,9 @@ export async function search(momentStart: string, momentEnd: string, pageIndex: 
                 customer: item.customer,
                 totalPrice: item.totalPrice,
                 paymentStatus: item.paymentStatus,
-                orderItems: item.orderItems
+                orderItems: item.orderItems,
+                methodPaymentByPix: item.methodPaymentByPix,
+                deliverToAddress: item.deliverToAddress
             }));
 
             return {

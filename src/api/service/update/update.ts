@@ -1,6 +1,6 @@
+import { Service, Error } from "../../../utils/Types";
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
-import { Service } from "../create/create";
+
 
 export async function update( serviceId: string, servico: Service, image: string ): Promise<boolean | Error> {
 

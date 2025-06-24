@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, SafeAreaView, Image, Text, Alert } from 'react-native';
+import { View, ScrollView, SafeAreaView, Image, Text, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
@@ -20,6 +20,7 @@ import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/sele
 import { styles } from './style';
 import { ButtonLarge } from '../../../components/ButtonLarge';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function ManageProfile() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -30,6 +31,7 @@ export default function ManageProfile() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "ShowProfile");
 
@@ -40,7 +42,8 @@ export default function ManageProfile() {
                 setFotoPerfil(imageSelected);
             }
         } catch (error) {
-            console.error('Erro ao selecionar imagem:', error);
+            setError(`Erro ao selecionar imagem: ${error}`);
+            setErrorModalVisible(true);
         }
     };
 
@@ -71,6 +74,7 @@ export default function ManageProfile() {
 
             } catch (error) {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         };
 
@@ -99,14 +103,19 @@ export default function ManageProfile() {
                 setError(success.message || "Erro desconhecido.");
 
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
     return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}>
         <SafeAreaView style={styles.safeArea}>
             <ScrollView keyboardShouldPersistTaps="handled">
                 <Title text="Atualize o seu Perfil" />
@@ -146,16 +155,15 @@ export default function ManageProfile() {
                         action={updateSend}
                     />
                 </View>
-                {error ? (
-                    <View style={{ marginVertical: 10 }}>
-                        <Text style={{ color: 'red' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
         </SafeAreaView>
+    </KeyboardAvoidingView>
     );
 }

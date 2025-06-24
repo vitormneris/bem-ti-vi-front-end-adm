@@ -22,6 +22,7 @@ import { styles } from './style';
 import { stylesItem } from '../style';
 import { ButtonLarge } from '../../../components/ButtonLarge';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export const SearchService = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -31,6 +32,7 @@ export const SearchService = () => {
     const [servicos, setServicos] = useState<Service[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -48,6 +50,7 @@ export const SearchService = () => {
                 setServicos([]);
                 setTotalPages(1);
                 setError('Nenhum serviço encontrado.');
+                setErrorModalVisible(true);
             }
         } catch {
             setServicos([]);
@@ -100,12 +103,11 @@ export const SearchService = () => {
                     searchText={searchText}
                     setSearchText={setSearchText}
                 />
-
-                {error ? (
-                    <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>
-                        {error}
-                    </Text>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() =>setErrorModalVisible(false)}
+                />
 
                 <View style={stylesItem.itemContainer}>
                     {loading ? (

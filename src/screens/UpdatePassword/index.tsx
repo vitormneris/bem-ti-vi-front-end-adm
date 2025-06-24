@@ -12,6 +12,7 @@ import { styles } from './style';
 import { InputPassword } from '../../components/Inputs/InputPassword';
 import { ButtonLarge } from '../../components/ButtonLarge';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export default function UpdatePassword() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -23,6 +24,7 @@ export default function UpdatePassword() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "ShowProfile");
 
@@ -72,6 +74,7 @@ export default function UpdatePassword() {
             } else {
                 setError(result.message || "Erro desconhecido.");
                 setFields(result.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
@@ -114,14 +117,12 @@ export default function UpdatePassword() {
                     />
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
         </SafeAreaView>

@@ -1,5 +1,5 @@
+import { Category } from "../../../utils/Types";
 import { GLOBAL_VAR } from "../../config/globalVar"
-import { Category } from "../create/create"
 
 export async function findById( categoryId: string ): Promise<Category | undefined> {
     try {

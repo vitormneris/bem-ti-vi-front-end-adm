@@ -1,22 +1,5 @@
 import { GLOBAL_VAR } from '../../config/globalVar'
-
-export type UserAuth = {
-    email: string,
-    password: string,
-};
-
-export type Token = {
-    token: string;
-};
-
-export type Error = {
-    code: string;
-    status: string;
-    message: string;
-    timestamp: string;
-    path: string;
-    errorFields: string | null;
-};
+import { Error, Token, UserAuth } from '../../../utils/Types';
 
 export async function login(userAuth: UserAuth): Promise<Token | Error> {
     try {

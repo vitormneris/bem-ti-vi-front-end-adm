@@ -12,11 +12,13 @@ import { styles } from "./style";
 import { Error } from "../../../api/product/update/update";
 import { NavigationBar } from "../../../components/NavigationBar";
 import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
+import { ErrorModal } from "../../../components/ErrorModal";
 
 export const SearchDeactivatedAdministrator = () => {
     const { navigate } = useNavigation<NavigationProps>();
     const [administrators, setAdministrators] = useState<Administrator[]>([]);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -34,9 +36,11 @@ export const SearchDeactivatedAdministrator = () => {
                 setAdministrators(result);
             } else {
                 setError('Erro ao carregar administradores: ' + result.message);
+                setErrorModalVisible(true);
             }
         } catch {
             setError('Erro de conexão. Tente novamente mais tarde.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -78,11 +82,11 @@ export const SearchDeactivatedAdministrator = () => {
                     <Text style={styles.subtitle}>Reative contas de administradores</Text>
                 </View>
 
-                {error.length > 0 && (
-                    <Text style={[styles.subtitle, { color: 'red', textAlign: 'center', marginVertical: 10 }]}>
-                        {error}
-                    </Text>
-                )}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() =>setErrorModalVisible(false)}
+                />
 
                 <View style={styles.listContainer}>
                     {administrators.length > 0 ? (

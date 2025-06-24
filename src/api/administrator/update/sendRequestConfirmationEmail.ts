@@ -1,6 +1,6 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Error } from "../../product/update/update";
-import { Administrator } from "../create/create";
+import { Error } from "../../../utils/Types";
+import { Administrator } from "../../../utils/Types";
 
 export async function sendRequestConfirmationEmail(administratorId: string, newEmail: string): Promise<boolean | Error> {
 

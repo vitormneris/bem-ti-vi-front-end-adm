@@ -1,6 +1,6 @@
 import { GLOBAL_VAR } from "../../config/globalVar"
 
-import { Administrator } from "../create/create"
+import { Administrator } from "../../../utils/Types";
 
 export async function findById(administratorId: string): Promise<Administrator | undefined> {
     try {

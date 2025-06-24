@@ -23,6 +23,7 @@ import { stylesItem } from '../style';
 import { styles } from './style';
 import { ButtonLarge } from '../../../components/ButtonLarge';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export const SearchProduct = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -32,6 +33,7 @@ export const SearchProduct = () => {
     const [produtos, setProdutos] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -54,6 +56,7 @@ export const SearchProduct = () => {
             setProdutos([]);
             setTotalPages(1);
             setError('Erro ao carregar produtos. Verifique sua conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -103,9 +106,11 @@ export const SearchProduct = () => {
                     setSearchText={setSearchText}
                 />
 
-                {error ? (
-                    <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>{error}</Text>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() =>setErrorModalVisible(false)}
+                />
 
                 <View style={stylesItem.itemContainer}>
                     {loading ? (
@@ -148,8 +153,8 @@ export const ItemProduct = ({ product }: ItemProductProps) => {
             <View style={stylesItem.info}>
                 <ItemText label="Nome do produto" value={product.name} />
                 <ItemText
-                    label="Categoria"
-                    value={product.categories.length > 0 ? product.categories[0].name : "Sem categoria"}
+                    label="Categorias"
+                    value={product.categories.length > 0 ? product.categories.map(cat => cat.name).join(', ') : 'Sem categorias'}
                 />
                 <ItemText label="Valor" value={precoFormatado} />
                 <ItemImage label="Imagem" imagem={product.pathImage} />

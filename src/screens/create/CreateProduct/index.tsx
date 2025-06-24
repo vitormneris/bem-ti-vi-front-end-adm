@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
 
 import { Title } from '../../../components/Title';
 import { NavigationBar } from '../../../components/NavigationBar';
@@ -22,6 +22,7 @@ import { ButtonLarge } from '../../../components/ButtonLarge';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from '../../../routes/AppRoute';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export const CreateProduct = () => {
 	const { navigate } = useNavigation<NavigationProps>();
@@ -30,11 +31,12 @@ export const CreateProduct = () => {
 	const [valorProduto, setValorProduto] = useState<string>('');
 	const [descricaoProduto, setDescricaoProduto] = useState<string>('');
 	const [imagem, setImagem] = useState<string>('');
-	const [categoriesId, setCategoriesId] = useState<string>('');
+	const [categoriesIds, setCategoriesIds] = useState<string[]>([]);
 	const [categoriesToSelect, setCategoriesToSelect] = useState<CategoryFormated[]>([]);
 
 	const [error, setError] = useState<string>('');
 	const [fields, setFields] = useState<string[]>([]);
+	const [errorModalVisible, setErrorModalVisible] = useState(false);
 
 	useValidateToken();
 	hardwareBackPress(navigate, "SearchProduct");
@@ -55,9 +57,11 @@ export const CreateProduct = () => {
 					setCategoriesToSelect(categoriesForInput);
 				} else {
 					setError(categoriesForInput.message);
+					setErrorModalVisible(true);
 				}
 			} catch {
 				setError('Não foi possível atualizar. Verifique sua conexão.');
+				setErrorModalVisible(true);
 			}
 		}
 		carregarCategorias();
@@ -65,16 +69,19 @@ export const CreateProduct = () => {
 
 
 	const sendRequestCreate = async () => {
-		const category: Category = { id: categoriesId, name: "", pathImage: "", cardColor: "" };
+		const categoriasSelecionadas: Category[] = categoriesIds.map(id => ({
+			id,
+			name: "",
+			pathImage: "",
+			cardColor: ""
+		}));
 		const produto: Product = {
 			id: null,
 			name: nomeProduto,
 			price: parseFloat(valorProduto),
 			pathImage: imagem,
 			description: descricaoProduto,
-			categories: [
-				category
-			],
+			categories: categoriasSelecionadas
 		};
 
 		try {
@@ -83,7 +90,7 @@ export const CreateProduct = () => {
 
 			if (typeof success === "boolean") {
 				if (success) {
-					setCategoriesId('');
+					setCategoriesIds([]);
 					setNomeProduto('');
 					setValorProduto('');
 					setDescricaoProduto('');
@@ -94,18 +101,23 @@ export const CreateProduct = () => {
 				}
 			} else {
 				setError(success.message || "Erro desconhecido.");
-
 				setFields(success.errorFields?.map(field => field.description) || []);
+				setErrorModalVisible(true);
 			}
 
 
 		} catch (error) {
 			setError('Não foi possível atualizar. Verifique sua conexão.');
+			setErrorModalVisible(true);
 		}
 	};
 
 	return (
-		<View style={styles.safeArea}>
+	<KeyboardAvoidingView
+		behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+		style={{ flex: 1 }}>
+
+		<SafeAreaView style={styles.safeArea}>
 			<ScrollView>
 
 				<Title text="Cadastre um novo produto" />
@@ -127,9 +139,9 @@ export const CreateProduct = () => {
 				/>
 
 				<InputCategory
-					label="Categoria"
-					category={categoriesId}
-					setCategory={setCategoriesId}
+					label="Categorias"
+					selectedCategories={categoriesIds}
+					setSelectedCategories={setCategoriesIds}
 					categoriesToSelect={categoriesToSelect}
 				/>
 
@@ -159,17 +171,15 @@ export const CreateProduct = () => {
 				): (
 					<Text style={styles.warningText}>Para criar um produto você deverá ter ao menos uma categoria criada!</Text>
 				)}
-
-				{error ? (
-					<View style={{ marginVertical: 10, alignSelf: 'center' }}>
-						<Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-						{fields.map((field, index) => (
-							<Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-						))}
-					</View>
-				) : null}
+				<ErrorModal
+					visible={errorModalVisible}
+					error={error}
+					fields={fields}
+					onClose={() => setErrorModalVisible(false)}
+				/>	
 			</ScrollView>
 
-		</View>
+		</SafeAreaView>
+	</KeyboardAvoidingView>
 	);
 };

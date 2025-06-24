@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, SafeAreaView, View, Pressable, Text, ActivityIndicator } from 'react-native';
+import { ScrollView, SafeAreaView, View, Pressable, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,6 +15,7 @@ import { useValidateToken } from '../../../utils/UseValidateToken/useValidateTok
 import { NavigationProps } from '../../../routes/AppRoute';
 
 import { styles } from './style';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export function SearchOrder() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -33,6 +34,7 @@ export function SearchOrder() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -80,6 +82,7 @@ export function SearchOrder() {
                     setOrders([]);
                     setError(data.message || 'Erro desconhecido.');
                     setFields(data.errorFields?.map(f => f.description) || []);
+                    setErrorModalVisible(true);
                 }
             } catch {
                 setOrders([]);
@@ -162,11 +165,19 @@ export function SearchOrder() {
                                             <Text style={styles.cardText}>Produto: {item.product.name}</Text>
                                             <Text style={styles.cardText}>Quantidade: {item.quantity}</Text>
                                             <Text style={styles.cardText}>Preço Unitário: R$ {item.price.toFixed(2)}</Text>
+                                            <Text style={styles.cardText}>Método de pagamento: {order.methodPaymentByPix ? 'Pix' : 'Dinheiro'}</Text>
+                                            <Text style={styles.cardText}>Entrega: {order.deliverToAddress ? 'Entregar no endereço' : 'Retirar no local'}</Text>
                                         </View>
                                     ))
                                 ) : (
                                     <Text style={styles.cardText}>Nenhum item.</Text>
                                 )}
+                                <TouchableOpacity
+                                    onPress={() => navigate('UpdatePaymentStatus', {item: order, type: 'order' })}
+                                    style={styles.updateButton}
+                                >
+                                <Text style={styles.updateButtonText}>Atualizar status do pagamento</Text>
+                                </TouchableOpacity>
                             </View>
                         ))
                     ) : (
@@ -174,14 +185,12 @@ export function SearchOrder() {
                     )}
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, i) => (
-                            <Text key={i} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <PaginationControls

@@ -1,51 +1,6 @@
+import { Customer, CustomerPages } from "../../../utils/Types";
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Product } from "../../product/create/create";
-import { Service } from "../../service/create/create";
 
-export type Customer = {
-    id: string;
-    name: string;
-    email: string;
-    pathImage: string;
-    appointments: Appointment[]
-    orders: Order[]
-    pets: Pet[]
-}
-
-export type Pet = {
-    id: string;
-    name: string;
-}
-
-export type OrderItem = {
-    id: string;
-    price: number;
-    quantity: number;
-    product: Product;
-}
-
-export type Order = {
-    id: string;
-    dateTime: Date;
-    customer: Customer;
-    totalPrice: number;
-    paymentStatus: string;
-    orderItems: OrderItem;
-}
-
-export type Appointment = {
-    id: string,
-    dateTime: Date,
-    customer: Customer,
-    price: number,
-    paymentStatus: string,
-    service: Service
-}
-
-export type CustomerPages = {
-    customers: Customer[],
-    totalPages: number
-}
 
 export async function search(searchText: string, pageIndex: number): Promise<CustomerPages | undefined> {
     try {
