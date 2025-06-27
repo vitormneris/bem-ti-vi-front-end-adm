@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, SafeAreaView, Image, Text, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, ScrollView, SafeAreaView, Image, Text, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
@@ -11,9 +11,9 @@ import { InputImage } from '../../../components/Inputs/InputImage';
 import { NavigationProps } from "../../../routes/AppRoute";
 
 import { update } from '../../../api/administrator/update/update';
-import { Administrator } from '../../../api/administrator/create/create';
 import { findById } from '../../../api/administrator/search/findById';
-import { AdministratorId, validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
+import { validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
+import { Administrator, AdministratorId } from '../../../utils/Types';
 
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
 
@@ -32,6 +32,8 @@ export default function ManageProfile() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
+
 
     hardwareBackPress(navigate, "ShowProfile");
 
@@ -92,6 +94,7 @@ export default function ManageProfile() {
         } as Administrator;
 
         try {
+            setLoading(true);
             const success = await update(objAdm, fotoPerfil, administratorId);
 
             if (typeof success === "boolean") {
@@ -102,14 +105,20 @@ export default function ManageProfile() {
             } else {
                 setError(success.message || "Erro desconhecido.");
 
-                setFields(success.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(success.errorFields) 
+                    ? success.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     return (
@@ -147,6 +156,9 @@ export default function ManageProfile() {
                     />
                 </View>
 
+                {loading ? (
+					<ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+				):
                 <View style={styles.buttonsContainer}>
                     <ButtonLarge
                         icon={require('../../../assets/icons/edit.png')}
@@ -155,6 +167,8 @@ export default function ManageProfile() {
                         action={updateSend}
                     />
                 </View>
+                }
+
                 <ErrorModal
                     visible={errorModalVisible}
                     error={error}

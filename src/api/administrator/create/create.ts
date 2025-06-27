@@ -1,22 +1,6 @@
 import { Alert } from 'react-native';
 import { GLOBAL_VAR } from '../../config/globalVar';
-import { Error } from '../../../utils/Types';
-
-type ActivationStatus = {
-    isActive: boolean;
-    creationDate: string;
-    deactivationDate: string;
-}
-
-export type Administrator = {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-    pathImage: string;
-    isEmailActive: boolean;
-    activationStatus: ActivationStatus | null;
-};
+import { Administrator, Error } from '../../../utils/Types';
 
 export async function create(administrator: Administrator, image: string): Promise<boolean | Error> {
     if (!image) {

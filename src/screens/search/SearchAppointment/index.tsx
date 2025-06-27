@@ -6,8 +6,8 @@ import { NavigationBar } from '../../../components/NavigationBar';
 import { PaginationControls } from '../../../components/PaginationControls';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
-import { Appointment, AppointmentPages, search } from '../../../api/appointment/search/search';
-import { Error } from '../../../api/product/update/update';
+import { search } from '../../../api/appointment/search/search';
+import { Error, Appointment, AppointmentPages } from '../../../utils/Types';
 
 import { styles } from './style';
 import { useNavigation } from '@react-navigation/native';
@@ -78,7 +78,11 @@ export function SearchAppointment() {
                 } else {
                     setAppointments([]);
                     setError(data.message || 'Erro desconhecido.');
-                    setFields(data.errorFields?.map(field => field.description) || []);
+                    setFields(
+                    Array.isArray(data.errorFields) 
+                    ? data.errorFields.map(field => field.description) 
+                    : []
+                );
                     setErrorModalVisible(true);
                 }
             } catch {

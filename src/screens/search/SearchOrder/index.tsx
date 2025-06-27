@@ -6,8 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { NavigationBar } from '../../../components/NavigationBar';
 import { PaginationControls } from '../../../components/PaginationControls';
 
-import { Order, OrderPages, search } from '../../../api/order/search/search';
-import { Error } from '../../../api/product/update/update';
+import { search } from '../../../api/order/search/search';
+import { Error,Order,OrderPages } from '../../../utils/Types';
 
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
@@ -81,7 +81,11 @@ export function SearchOrder() {
                 } else {
                     setOrders([]);
                     setError(data.message || 'Erro desconhecido.');
-                    setFields(data.errorFields?.map(f => f.description) || []);
+                    setFields(
+                    Array.isArray(data.errorFields) 
+                    ? data.errorFields.map(field => field.description) 
+                    : []
+                );
                     setErrorModalVisible(true);
                 }
             } catch {

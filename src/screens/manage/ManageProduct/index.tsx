@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
@@ -12,10 +12,9 @@ import { Input } from '../../../components/Inputs/Input';
 
 import { findById } from '../../../api/product/search/findById';
 import { deleteById } from '../../../api/product/delete/deleteById';
-import { Error, update } from '../../../api/product/update/update';
-import { CategoryFormated, findAll } from '../../../api/category/search/findAll';
-import { Category } from '../../../api/category/create/create';
-import { Product } from '../../../api/product/create/create';
+import { update } from '../../../api/product/update/update';
+import { findAll } from '../../../api/category/search/findAll';
+import { Product,Category,CategoryFormated,Error } from '../../../utils/Types';
 
 import { NavigationProps } from "../../../routes/AppRoute";
 
@@ -41,6 +40,7 @@ export default function ManageProduct() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchProduct");
@@ -96,6 +96,7 @@ export default function ManageProduct() {
     }, [productId, navigate]);
 
     const handleUpdate = async () => {
+        setLoading(true);
         if (!nomeProduto.trim() || !valorProduto.trim() || !descricao.trim() || !categoriesIds) {
             Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
             return;
@@ -120,7 +121,8 @@ export default function ManageProduct() {
             price: preco,
             pathImage: imagem,
             description: descricao,
-            categories: categoriasSelecionadas
+            categories: categoriasSelecionadas,
+            activationStatus:null
         };
 
         try {
@@ -133,14 +135,20 @@ export default function ManageProduct() {
                 }
             } else {
                 setError(result.message || "Erro desconhecido.");
-                setFields(result.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(result.errorFields) 
+                    ? result.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar o produto. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     const handleDelete = () => {
@@ -219,6 +227,9 @@ export default function ManageProduct() {
                     onChangeText={setDescricao}
                 />
 
+                {loading ? (
+					<ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+				):
                 <View style={styles.buttonsContainer}>
                     <Button
                         icon={require('../../../assets/icons/delete.png')}
@@ -233,6 +244,7 @@ export default function ManageProduct() {
                         action={handleUpdate}
                     />
                 </View>
+                }
 
                 <ErrorModal
                     visible={errorModalVisible}

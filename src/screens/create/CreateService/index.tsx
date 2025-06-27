@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, Pressable, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 import { Title } from '../../../components/Title';
 import { NavigationBar } from '../../../components/NavigationBar';
@@ -9,7 +9,8 @@ import { InputImage } from '../../../components/Inputs/InputImage';
 import { InputDescription } from '../../../components/Inputs/InputDescription';
 import { InputTime } from '../../../components/Inputs/InputTime';
 
-import { create, Service } from '../../../api/service/create/create';
+import { create } from '../../../api/service/create/create';
+import { Service } from '../../../utils/Types';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
@@ -35,6 +36,7 @@ export const CreateService = () => {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchService");
@@ -59,6 +61,7 @@ export const CreateService = () => {
     };
 
     const sendRequestCreate = async () => {
+        setLoading(true);
         const servico: Service = {
             id: null,
             name: nomeServico,
@@ -66,6 +69,7 @@ export const CreateService = () => {
             pathImage: imagem,
             estimatedDuration: duracaoEstimada,
             description: descricaoServico,
+            activationStatus: null,
         };
 
         try {
@@ -83,13 +87,19 @@ export const CreateService = () => {
                 }
             } else {
                 setError(success.message || "Erro desconhecido.");
-                setFields(success.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(success.errorFields) 
+                    ? success.errorFields.map(field => field.description) 
+                    : []
+                );
 				setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     return (
@@ -141,6 +151,9 @@ export const CreateService = () => {
                     onChangeText={setDescricaoServico}
                 />
 
+                {loading ? (
+                    <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                ):
                 <View style={styles.buttonsContainer}>
                     <ButtonLarge
                         icon={require('../../../assets/icons/add.png')}
@@ -149,6 +162,7 @@ export const CreateService = () => {
                         action={sendRequestCreate}
                     />
                 </View>
+                }
 
                 <ErrorModal
                     visible={errorModalVisible}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 
@@ -17,7 +17,7 @@ import { NavigationProps } from '../../../routes/AppRoute';
 import { findById } from '../../../api/service/search/findById';
 import { deleteById } from '../../../api/service/delete/deleteById';
 import { update } from '../../../api/service/update/update';
-import { Service } from '../../../api/service/create/create';
+import { Service } from '../../../utils/Types';
 
 import { styles } from './style';
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
@@ -43,6 +43,8 @@ export default function ManageService() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
+
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchService");
@@ -91,10 +93,12 @@ export default function ManageService() {
             price: parseFloat(precoServico),
             pathImage: imagem,
             estimatedDuration: duracaoEstimada,
-            description: descricaoServico
+            description: descricaoServico,
+            activationStatus: null
         };
 
         try {
+            setLoading(true);
             const result = await update(serviceId, servico, imagem);
 
             if (typeof result === "boolean") {
@@ -104,14 +108,20 @@ export default function ManageService() {
                 }
             } else {
                 setError(result.message || "Erro desconhecido.");
-                setFields(result.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(result.errorFields) 
+                    ? result.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar o produto. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     const handleTimeChange = (event: any, selectedDate?: Date) => {
@@ -202,7 +212,10 @@ export default function ManageService() {
                     value={descricaoServico}
                     onChangeText={setDescricaoServico}
                 />
-
+                
+                {loading ? (
+					<ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+				):
                 <View style={styles.buttonsContainer}>
                     <Button
                         icon={require('../../../assets/icons/delete.png')}
@@ -217,6 +230,8 @@ export default function ManageService() {
                         action={handleUpdate}
                     />
                 </View>
+                }
+
                 <ErrorModal
                     visible={errorModalVisible}
                     error={error}

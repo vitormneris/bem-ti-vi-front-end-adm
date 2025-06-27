@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, SafeAreaView, View, Text, ActivityIndicator } from 'react-native';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -14,8 +14,7 @@ import { ItemButton } from '../../../components/Items/ItemButton/ItemButton';
 import { NavigationProps } from '../../../routes/AppRoute';
 
 import { ProductPages, search } from '../../../api/product/search/search';
-import { Product } from '../../../api/product/create/create';
-import { Category } from '../../../api/category/create/create';
+import { Product,Category } from '../../../utils/Types';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
@@ -149,7 +148,7 @@ export const ItemProduct = ({ product }: ItemProductProps) => {
     const precoFormatado = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price);
 
     return (
-        <View style={stylesItem.card}>
+        <TouchableOpacity style={stylesItem.card} onPress={()=> navigate("ViewProduct",{product})}>
             <View style={stylesItem.info}>
                 <ItemText label="Nome do produto" value={product.name} />
                 <ItemText
@@ -166,6 +165,6 @@ export const ItemProduct = ({ product }: ItemProductProps) => {
                     onPress={() => navigate('ManageProduct', { id: productId })}
                 />
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };

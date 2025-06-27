@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 import { useRoute, useNavigation } from '@react-navigation/native';
 
@@ -36,6 +36,7 @@ export default function ManageCategory() {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchCategory");
@@ -69,6 +70,7 @@ export default function ManageCategory() {
     }, [categoryId]);
 
     const handleUpdate = async () => {
+        setLoading(true);
         if (!nomeCategoria || !imagem || !corCard) {
             Alert.alert("Campos obrigatórios", "Preencha todos os campos antes de atualizar.");
             return;
@@ -91,14 +93,20 @@ export default function ManageCategory() {
                 }
             } else {
                 setError(result.message || "Erro desconhecido.");
-                setFields(result.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(result.errorFields) 
+                    ? result.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
 
         } catch (error) {
             setError('Não foi possível atualizar o produto. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     const handleDelete = async () => {
@@ -163,6 +171,9 @@ export default function ManageCategory() {
                     />
                 </View>
 
+                {loading ? (
+					<ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+				):
                 <View style={styles.buttonsContainer}>
                     <Button
                         icon={require('../../../assets/icons/delete.png')}
@@ -177,7 +188,8 @@ export default function ManageCategory() {
                         action={handleUpdate}
                     />
                 </View>
-
+                }
+                
                 <ErrorModal
                     visible={errorModalVisible}
                     error={error}

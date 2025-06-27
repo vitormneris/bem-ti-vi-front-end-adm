@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, BackHandler } from 'react-native';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, BackHandler, TouchableOpacity } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -13,8 +13,8 @@ import { ItemButton } from '../../../components/Items/ItemButton/ItemButton';
 
 import { NavigationProps } from '../../../routes/AppRoute';
 
-import { Service } from '../../../api/service/create/create';
-import { search, ServicePages } from '../../../api/service/search/search';
+import { Service,ServicePages } from '../../../utils/Types';
+import { search } from '../../../api/service/search/search';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 
@@ -150,7 +150,7 @@ export const ItemService = ({ service }: ItemServiceProps) => {
     }).format(service.price);
 
     return (
-        <View style={stylesItem.card}>
+        <TouchableOpacity style={stylesItem.card} onPress={()=> navigate("ViewServices",{service})}>
             <View style={stylesItem.info}>
                 <ItemText label="Nome do serviço" value={service.name} />
                 <ItemText label="Preço" value={precoFormatado} />
@@ -163,6 +163,6 @@ export const ItemService = ({ service }: ItemServiceProps) => {
                     onPress={() => navigate('ManageService', { id: serviceId })}
                 />
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };

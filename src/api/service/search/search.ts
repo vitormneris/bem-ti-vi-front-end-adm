@@ -25,6 +25,8 @@ export async function search(searchText: string, pageIndex: number): Promise<Ser
             price: item.price,
             description: item.description,
             estimatedDuration: item.estimatedDuration,
+            rate: item.rate,
+            activationStatus: item.activationStatus,
         }));
 
         return {

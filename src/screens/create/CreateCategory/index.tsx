@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 import { Title } from "../../../components/Title";
 import { NavigationBar } from "../../../components/NavigationBar";
@@ -8,7 +8,8 @@ import ColorPickerModal from "../../../components/ColorPickerModal";
 import { Input } from "../../../components/Inputs/Input";
 import { InputImage } from "../../../components/Inputs/InputImage";
 
-import { Category, create } from "../../../api/category/create/create";
+import { create } from "../../../api/category/create/create";
+import { Category } from "../../../utils/Types";
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 import { selectImageFromGalery } from "../../../utils/selectImageFromGalery/selectImageFromGalery";
@@ -31,6 +32,7 @@ export const CreateCategory = () => {
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "SearchCategory");
@@ -43,6 +45,7 @@ export const CreateCategory = () => {
     };
 
     const sendRequestCreate = async () => {
+        setLoading(true);
         const categoria: Category = {
             id: "",
             name: nomeCategoria,
@@ -65,13 +68,19 @@ export const CreateCategory = () => {
             } else {
                 setError(success.message || "Erro desconhecido.");
 
-                setFields(success.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(success.errorFields) 
+                    ? success.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     return (
@@ -105,6 +114,9 @@ export const CreateCategory = () => {
                     />
                 </View>
 
+                {loading ? (
+                    <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                ):
                 <View style={styles.buttonsContainer}>
                     <ButtonLarge
                         icon={require('../../../assets/icons/add.png')}
@@ -112,7 +124,7 @@ export const CreateCategory = () => {
                         color="#006316"
                         action={sendRequestCreate}
                     />
-                </View>
+                </View>}
                 <ErrorModal
                     visible={errorModalVisible}
                     error={error}

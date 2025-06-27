@@ -13,8 +13,8 @@ import { ItemButton } from '../../../components/Items/ItemButton/ItemButton';
 
 import { NavigationProps } from '../../../routes/AppRoute';
 
-import { CategoryPages, search } from '../../../api/category/search/search';
-import { Category } from '../../../api/category/create/create';
+import { search } from '../../../api/category/search/search';
+import { Category, CategoryPages } from '../../../utils/Types';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, ScrollView, Text, TouchableOpacity, Image, Alert } from "react-native";
+import { View, ScrollView, Text, TouchableOpacity, Image, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { Administrator } from "../../../api/administrator/create/create";
 import { findByStatus } from "../../../api/administrator/search/findByStatus";
 import { activationById } from "../../../api/administrator/delete/activationById";
 
 import { NavigationProps } from "../../../routes/AppRoute";
 import { useValidateToken } from "../../../utils/UseValidateToken/useValidateToken";
 import { styles } from "./style";
-import { Error } from "../../../api/product/update/update";
+import { Administrator, Error } from "../../../utils/Types";
 import { NavigationBar } from "../../../components/NavigationBar";
 import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
 import { ErrorModal } from "../../../components/ErrorModal";
@@ -19,6 +18,7 @@ export const SearchDeactivatedAdministrator = () => {
     const [administrators, setAdministrators] = useState<Administrator[]>([]);
     const [error, setError] = useState<string>('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useValidateToken();
 
@@ -30,6 +30,7 @@ export const SearchDeactivatedAdministrator = () => {
 
     const loadAdministrators = async () => {
         try {
+            setLoading(true);
             const result: Administrator[] | Error = await findByStatus(false);
 
             if (Array.isArray(result)) {
@@ -41,7 +42,9 @@ export const SearchDeactivatedAdministrator = () => {
         } catch {
             setError('Erro de conexão. Tente novamente mais tarde.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     const handleActivate = (id: string, name: string) => {
@@ -87,7 +90,10 @@ export const SearchDeactivatedAdministrator = () => {
                     error={error}
                     onClose={() =>setErrorModalVisible(false)}
                 />
-
+                
+                {loading ? (
+					<ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+				):
                 <View style={styles.listContainer}>
                     {administrators.length > 0 ? (
                         administrators.map((admin) => (
@@ -101,6 +107,7 @@ export const SearchDeactivatedAdministrator = () => {
                         <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum administrador desativado encontrado.</Text>
                     )}
                 </View>
+                }
             </ScrollView>
         </>
     );

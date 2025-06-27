@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
 import { Input } from '../../../components/Inputs/Input';
 
-import { AdministratorId, validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
+import { validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
 import { sendRequestEmail } from '../../../api/administrator/update/sendRequestEmail';
+import { AdministratorId } from '../../../utils/Types';
 
 import { NavigationProps } from '../../../routes/AppRoute';
 
@@ -29,6 +30,7 @@ export default function SendRequestChangeEmail() {
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     hardwareBackPress(navigate, "ShowProfile");
 
@@ -54,6 +56,7 @@ export default function SendRequestChangeEmail() {
     }, []);
 
     const sendRequestCreate = async () => {
+        setLoading(true);
         try {
             const success = await sendRequestEmail(administratorId, newEmail);
             if (typeof success === "boolean") {
@@ -65,14 +68,19 @@ export default function SendRequestChangeEmail() {
                 }
             } else {
                 setError(success.message || "Erro desconhecido.");
-
-                setFields(success.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(success.errorFields) 
+                    ? success.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     return (
@@ -98,7 +106,9 @@ export default function SendRequestChangeEmail() {
                     />
 
                 </View>
-
+                {loading ? (
+                    <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                ):
                 <View style={styles.buttonsContainer}>
                     <ButtonLarge
                         icon={require('../../../assets/icons/send.png')}
@@ -108,6 +118,7 @@ export default function SendRequestChangeEmail() {
                         action={sendRequestCreate}
                     />
                 </View>
+                }
                 <ErrorModal
                     visible={errorModalVisible}
                     error={error}

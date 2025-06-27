@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Title } from '../../components/Title';
 
-import { Passwords, updatePassword } from '../../api/administrator/update/updatePassword';
-import { AdministratorId, validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
+import { updatePassword } from '../../api/administrator/update/updatePassword';
+import { validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
 import { NavigationProps } from '../../routes/AppRoute';
+import { Passwords, AdministratorId } from '../../utils/Types';
 
 import { styles } from './style';
 import { InputPassword } from '../../components/Inputs/InputPassword';
@@ -25,6 +26,7 @@ export default function UpdatePassword() {
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     hardwareBackPress(navigate, "ShowProfile");
 
@@ -60,6 +62,7 @@ export default function UpdatePassword() {
         };
 
         try {
+            setLoading(true);
             const result = await updatePassword(administratorId, passwords);
 
             if (typeof result === "boolean") {
@@ -73,12 +76,18 @@ export default function UpdatePassword() {
                 }
             } else {
                 setError(result.message || "Erro desconhecido.");
-                setFields(result.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(result.errorFields) 
+                    ? result.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     return (
@@ -107,6 +116,9 @@ export default function UpdatePassword() {
                 </View>
 
                 <View style={styles.buttonsContainer}>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                    ):
                     <ButtonLarge
                         icon={require('../../assets/icons/edit.png')}
                         text="ATUALIZAR SENHA"
@@ -115,6 +127,7 @@ export default function UpdatePassword() {
                         action={sendRequestCreate}
                         disabled={!administratorId}
                     />
+                    }
                 </View>
 
                 <ErrorModal

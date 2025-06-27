@@ -42,8 +42,10 @@ import { AdministratorDeactivated } from '../../screens/AdministratorDeactivated
 import DeleteProfile from '../../screens/DeleteProfile';
 import { SearchCustomer } from '../../screens/search/SearchCustomer';
 import { UpdatePaymentStatus } from '../../screens/UpdatePaymentStatus';
-import { Order } from '../../api/order/search/search';
-import { Appointment } from '../../api/appointment/search/search';
+import { ViewServices } from '../../screens/views/ViewServices';
+import { Order, Appointment, Customer, Administrator, Product, Service } from '../../utils/Types';
+import { ViewAdministrator } from '../../screens/views/ViewAdministrator';
+import { ViewProduct } from '../../screens/views/ViewProduct';
 
 const Stack = createNativeStackNavigator();
 
@@ -75,6 +77,9 @@ export type RootStackParamList = {
     DeleteProfile: undefined;
     SearchCustomer: undefined
     UpdatePaymentStatus: { item: Order|Appointment, type: string } 
+    ViewServices: {service: Service}
+    ViewAdministrator: {administrator: Administrator}
+    ViewProduct: {product: Product}
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -83,6 +88,54 @@ export default function AppRoute() {
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Login">
+                <Stack.Screen
+                    name="ViewProduct"
+                    component={ViewProduct}
+                    options={() => ({
+                        header: () => (
+                            <Header
+                                title="Produtos"
+                                activateBackButton={true}
+                                iconName="inventory"
+                                backScreen="SearchProduct"
+                                needProps={false}
+                                props={null}
+                            />
+                        )
+                    })}
+                />
+                <Stack.Screen
+                    name="ViewAdministrator"
+                    component={ViewAdministrator}
+                    options={() => ({
+                        header: () => (
+                            <Header
+                                title="Perfil"
+                                activateBackButton={true}
+                                iconName="person"
+                                backScreen="ShowProfile"
+                                needProps={false}
+                                props={null}
+                            />
+                        )
+                    })}
+                />
+                <Stack.Screen
+                    name="ViewServices"
+                    component={ViewServices}
+                    options={() => ({
+                        header: () => (
+                            <Header
+                                title="Serviços"
+                                activateBackButton={true}
+                                iconName="miscellaneous-services"
+                                backScreen="SearchService"
+                                needProps={false}
+                                props={null}
+                            />
+                        )
+                    })}
+                />
 
                 <Stack.Screen
                     name="AdministratorDeactivated"

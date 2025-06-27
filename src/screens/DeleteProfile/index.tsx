@@ -3,13 +3,13 @@ import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Plat
 import { useNavigation } from '@react-navigation/native';
 
 import { NavigationProps } from '../../routes/AppRoute';
-import { AdministratorId, validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
+import { validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
+import { AdministratorId,Error as ApiError } from '../../utils/Types';
 import { deleteById } from '../../api/administrator/delete/deleteById';
 import { Title } from '../../components/Title';
 import { InputPassword } from '../../components/Inputs/InputPassword';
 import { ButtonLarge } from '../../components/ButtonLarge';
 import { styles } from './style';
-import { Error as ApiError } from '../../api/product/update/update';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { ErrorModal } from '../../components/ErrorModal';
 
@@ -59,7 +59,11 @@ export default function DeleteProfile() {
                 }
             } else {
                 setError(success.message || "Erro desconhecido.");
-                setFields(success.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(success.errorFields) 
+                    ? success.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
         } catch (error) {

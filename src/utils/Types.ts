@@ -86,7 +86,9 @@ export type Service = {
     price: number,
     pathImage: string,
     estimatedDuration: string,
-    description: string
+    description: string;
+    rate?: number;
+    activationStatus:ActivationStatus | null
 };
 
 export type ServicePages = {
@@ -114,8 +116,10 @@ export type Product = {
     name: string,
     price: number,
     pathImage: string,
+    rate?: number,
     description: string,
     categories: Category[],
+    activationStatus: ActivationStatus | null
 };
 
 export type ProductPages = {

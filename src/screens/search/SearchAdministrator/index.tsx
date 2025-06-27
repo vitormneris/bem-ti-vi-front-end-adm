@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, ScrollView, Text, TouchableOpacity, Image, Alert } from "react-native";
+import { View, ScrollView, Text, TouchableOpacity, Image, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { Administrator } from "../../../api/administrator/create/create";
+import { Administrator } from "../../../utils/Types";
 import { findByStatus } from "../../../api/administrator/search/findByStatus";
 import { deactivationById } from "../../../api/administrator/delete/deactivationById";
 
@@ -10,7 +10,7 @@ import { NavigationProps } from "../../../routes/AppRoute";
 import { Button } from "../../../components/Button";
 import { useValidateToken } from "../../../utils/UseValidateToken/useValidateToken";
 import { styles } from "./style";
-import { Error } from "../../../api/product/update/update";
+import { Error } from "../../../utils/Types";
 import { NavigationBar } from "../../../components/NavigationBar";
 import hardwareBackPress from "../../../utils/hardwareBackPress/hardwareBackPress";
 import { ErrorModal } from "../../../components/ErrorModal";
@@ -20,6 +20,7 @@ export const SearchAdministrator = () => {
     const [administrators, setAdministrators] = useState<Administrator[]>([]);
     const [error, setError] = useState<string>('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "ShowProfile");
@@ -30,6 +31,7 @@ export const SearchAdministrator = () => {
 
     const loadAdministrators = async () => {
         try {
+            setLoading(true);
             const result: Administrator[] | Error = await findByStatus(true);
 
             if (Array.isArray(result)) {
@@ -41,7 +43,9 @@ export const SearchAdministrator = () => {
         } catch {
             setError('Não foi possível atualizar. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     const handleDeactivate = (id: string, name: string) => {
@@ -107,6 +111,9 @@ export const SearchAdministrator = () => {
                     onClose={() =>setErrorModalVisible(false)}
                 />
 
+                {loading ? (
+                    <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                ):
                 <View style={styles.listContainer}>
                     {administrators.length > 0 ? (
                         administrators.map((admin) => (
@@ -120,6 +127,8 @@ export const SearchAdministrator = () => {
                         <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum administrador ativo encontrado.</Text>
                     )}
                 </View>
+                }
+
             </ScrollView>
         </>
     );
@@ -131,8 +140,9 @@ type ItemAdministratorProps = {
 };
 
 const ItemAdministrator = ({ administrator, handleDeactivate }: ItemAdministratorProps) => {
+    const { navigate } = useNavigation<NavigationProps>();
     return (
-        <View style={styles.adminCard}>
+        <TouchableOpacity style={styles.adminCard} onPress={()=>navigate('ViewAdministrator', { administrator })}>
             <Image
                 source={
                     administrator.pathImage
@@ -153,6 +163,6 @@ const ItemAdministrator = ({ administrator, handleDeactivate }: ItemAdministrato
                     />
                 </TouchableOpacity>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };

@@ -3,7 +3,8 @@ import { View, Text, TextInput, Image, TouchableOpacity, BackHandler, ToastAndro
 import { useNavigation } from '@react-navigation/native';
 
 import { GLOBAL_VAR } from '../../api/config/globalVar';
-import { login, UserAuth } from '../../api/auth/login/login';
+import { login } from '../../api/auth/login/login';
+import { UserAuth } from '../../utils/Types';
 
 import { NavigationProps } from '../../routes/AppRoute';
 

@@ -5,8 +5,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { NavigationBar } from '../../components/NavigationBar';
 import { findById } from '../../api/administrator/search/findById';
-import { validateTokenAdm, AdministratorId } from '../../api/auth/validateTokenAdm/validateTokenAdm';
-import { Administrator } from '../../api/administrator/create/create';
+import { validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
+import { Administrator,AdministratorId } from '../../utils/Types';
 import { NavigationProps } from '../../routes/AppRoute';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
 
@@ -41,6 +41,7 @@ export const ShowProfile = () => {
     const [emailIsActive, setEmailIsActive] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [administratorObj, setAdministratorObj] = useState<Administrator>();
     
     hardwareBackPress(navigate, "Home");
 
@@ -69,6 +70,7 @@ export const ShowProfile = () => {
                 setPhotoProfile(administrator.pathImage);
                 setEmail(administrator.email);
                 setEmailIsActive(administrator.isEmailActive);
+                setAdministratorObj(administrator)
 
             } catch {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
@@ -107,7 +109,13 @@ export const ShowProfile = () => {
                         <ItemProfile
                             label="Ver Meus Dados"
                             icon="account-outline"
-                            onPress={() => navigate("Home")}
+                            onPress={() => {
+                                if (administratorObj) {
+                                    navigate("ViewAdministrator", { administrator: administratorObj });
+                                } else {
+                                    Alert.alert("Erro", "Dados do administrador ainda não foram carregados.");
+                                }
+                            }}
                         />
                         <ItemProfile
                             label="Editar Perfil"

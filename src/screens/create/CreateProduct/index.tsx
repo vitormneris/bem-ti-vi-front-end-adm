@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 import { Title } from '../../../components/Title';
 import { NavigationBar } from '../../../components/NavigationBar';
@@ -9,10 +9,9 @@ import { InputImage } from '../../../components/Inputs/InputImage';
 import { InputCategory } from '../../../components/Inputs/InputCategory';
 import { Input } from '../../../components/Inputs/Input';
 
-import { create, Product } from '../../../api/product/create/create';
-import { CategoryFormated, findAll } from '../../../api/category/search/findAll';
-import { Category } from '../../../api/category/create/create';
-import { Error } from '../../../api/product/update/update';
+import { create } from '../../../api/product/create/create';
+import { findAll } from '../../../api/category/search/findAll';
+import { Error,Product,CategoryFormated,Category } from '../../../utils/Types';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 import { selectImageFromGalery } from '../../../utils/selectImageFromGalery/selectImageFromGalery';
@@ -37,6 +36,7 @@ export const CreateProduct = () => {
 	const [error, setError] = useState<string>('');
 	const [fields, setFields] = useState<string[]>([]);
 	const [errorModalVisible, setErrorModalVisible] = useState(false);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useValidateToken();
 	hardwareBackPress(navigate, "SearchProduct");
@@ -69,6 +69,7 @@ export const CreateProduct = () => {
 
 
 	const sendRequestCreate = async () => {
+		setLoading(true);
 		const categoriasSelecionadas: Category[] = categoriesIds.map(id => ({
 			id,
 			name: "",
@@ -81,7 +82,8 @@ export const CreateProduct = () => {
 			price: parseFloat(valorProduto),
 			pathImage: imagem,
 			description: descricaoProduto,
-			categories: categoriasSelecionadas
+			categories: categoriasSelecionadas,
+			activationStatus:null
 		};
 
 		try {
@@ -101,7 +103,11 @@ export const CreateProduct = () => {
 				}
 			} else {
 				setError(success.message || "Erro desconhecido.");
-				setFields(success.errorFields?.map(field => field.description) || []);
+				setFields(
+                    Array.isArray(success.errorFields) 
+                    ? success.errorFields.map(field => field.description) 
+                    : []
+                );
 				setErrorModalVisible(true);
 			}
 
@@ -109,6 +115,8 @@ export const CreateProduct = () => {
 		} catch (error) {
 			setError('Não foi possível atualizar. Verifique sua conexão.');
 			setErrorModalVisible(true);
+		}finally {
+			setLoading(false);
 		}
 	};
 
@@ -159,18 +167,22 @@ export const CreateProduct = () => {
 					onChangeText={setDescricaoProduto}
 				/>
 
-				{categoriesToSelect.length >= 1 ? (
+				{loading ? (
+					<ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+				):
+				categoriesToSelect.length >= 1 ? (
 					<View style={styles.buttonsContainer}>
-						<ButtonLarge
+						{<ButtonLarge
 							icon={require('../../../assets/icons/add.png')}
 							text="CADASTRAR PRODUTO"
 							color="#006316"
 							action={sendRequestCreate}
-						/>
+						/>}
 					</View>
 				): (
 					<Text style={styles.warningText}>Para criar um produto você deverá ter ao menos uma categoria criada!</Text>
-				)}
+				)
+				}
 				<ErrorModal
 					visible={errorModalVisible}
 					error={error}

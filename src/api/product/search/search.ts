@@ -29,6 +29,8 @@ export async function search(searchText: string, pageIndex: number): Promise<Pro
             pathImage: item.pathImage,
             description: item.description,
             categories: item.categories,
+            activationStatus:item.activationStatus,
+            rate:item.rate,
         }));
 
         return {

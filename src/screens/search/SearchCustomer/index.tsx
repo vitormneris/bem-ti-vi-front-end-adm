@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, Image } from 'react-native';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,7 +9,8 @@ import { PaginationControls } from '../../../components/PaginationControls';
 
 import { NavigationProps } from '../../../routes/AppRoute';
 
-import { Customer, CustomerPages, search } from '../../../api/customer/search/search';
+import { search } from '../../../api/customer/search/search';
+import { Customer, CustomerPages } from '../../../utils/Types';
 
 import { useValidateToken } from '../../../utils/UseValidateToken/useValidateToken';
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
@@ -122,8 +123,10 @@ type ItemCustomerProps = {
 };
 
 export const ItemCustomer = ({ customer }: ItemCustomerProps) => {
+    const { navigate } = useNavigation<NavigationProps>();
     return (
-        <View style={stylesItem.card}>
+        // <TouchableOpacity style={stylesItem.card} onPress={()=>navigate("ViewCustomer", {customer})}>
+        <TouchableOpacity style={stylesItem.card}>
             <View style={stylesItem.info}>
                 {customer.pathImage ? (
                     <Image source={{ uri: customer.pathImage }} style={styles.image} />
@@ -135,10 +138,10 @@ export const ItemCustomer = ({ customer }: ItemCustomerProps) => {
 
                 <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Nome:</Text> {customer.name}</Text>
                 <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Email:</Text> {customer.email}</Text>
-                <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Pets:</Text> {customer.pets.length}</Text>
-                <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Agendamentos:</Text> {customer.appointments.length}</Text>
-                <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Pedidos:</Text> {customer.orders.length}</Text>
+                <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Pets:</Text> {customer.pets?.length}</Text>
+                <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Agendamentos:</Text> {customer.appointments?.length}</Text>
+                <Text style={styles.label}><Text style={{ fontWeight: 'bold' }}>Pedidos:</Text> {customer.orders?.length}</Text>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 };

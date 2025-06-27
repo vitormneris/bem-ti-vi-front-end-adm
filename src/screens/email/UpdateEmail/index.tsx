@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, Touchable, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Alert, ScrollView, SafeAreaView, Text, Touchable, TouchableOpacity, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -8,8 +8,9 @@ import { Button } from '../../../components/Button';
 import { NavigationBar } from '../../../components/NavigationBar';
 import { Input } from '../../../components/Inputs/Input';
 
-import { AdministratorId, validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
+import { validateTokenAdm } from '../../../api/auth/validateTokenAdm/validateTokenAdm';
 import { updateEmail } from '../../../api/administrator/update/updateEmail';
+import { AdministratorId } from '../../../utils/Types';
 
 import { NavigationProps } from '../../../routes/AppRoute';
 
@@ -29,6 +30,7 @@ export default function UpdateEmail() {
     const [fields, setFields] = useState<string[]>([]);
     const [administratorId, setAdministratorId] = useState<string>('');
     const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     hardwareBackPress(navigate, "SendRequestChangeEmail");
     
@@ -53,6 +55,7 @@ export default function UpdateEmail() {
     }, []);
 
     const sendRequestEmail = async () => {
+        setLoading(true);
         try {
             const success = await updateEmail(administratorId, code);
             if (typeof success === "boolean") {
@@ -66,13 +69,19 @@ export default function UpdateEmail() {
             } else {
                 setError(success.message || "Erro desconhecido.");
 
-                setFields(success.errorFields?.map(field => field.description) || []);
+                setFields(
+                    Array.isArray(success.errorFields) 
+                    ? success.errorFields.map(field => field.description) 
+                    : []
+                );
                 setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
             setErrorModalVisible(true);
-        }
+        }finally {
+			setLoading(false);
+		}
     };
 
     return (
@@ -99,6 +108,9 @@ export default function UpdateEmail() {
 
                 </View>
 
+                {loading ? (
+					<ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+				):
                 <View style={styles.buttonsContainer}>
                     <ButtonLarge
                         icon={require('../../../assets/icons/edit.png')}
@@ -107,6 +119,8 @@ export default function UpdateEmail() {
                         action={sendRequestEmail}
                     />
                 </View>
+                }
+                
                 <TouchableOpacity onPress={() => navigate("SendRequestChangeEmail", { email: emailUser })}>
                     <Text style={styles.confirmText}>Não recebi o código</Text>
                 </TouchableOpacity>
