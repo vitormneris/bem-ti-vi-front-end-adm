@@ -2,7 +2,7 @@
 
 ## Instalação
 
-### 1. Dentro da pasta do projeto, digite em um terminal o comando abaixo para baixar as dependências do projeto
+### 1. Dentro da pasta do projeto, digite em um terminal o comando abaixo para baixar as dependências
 ```
 npm install
 ```
