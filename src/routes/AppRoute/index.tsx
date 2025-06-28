@@ -46,6 +46,7 @@ import { ViewServices } from '../../screens/views/ViewServices';
 import { Order, Appointment, Customer, Administrator, Product, Service } from '../../utils/Types';
 import { ViewAdministrator } from '../../screens/views/ViewAdministrator';
 import { ViewProduct } from '../../screens/views/ViewProduct';
+import ChatADM from '../../screens/ChatADM';
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +81,7 @@ export type RootStackParamList = {
     ViewServices: {service: Service}
     ViewAdministrator: {administrator: Administrator}
     ViewProduct: {product: Product}
+    ChatADM: { name: string }
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -579,6 +581,25 @@ export default function AppRoute() {
                         )
                     })}
                 />
+
+                <Stack.Screen
+                    name="ChatADM"
+                    component={ChatADM}
+                    options={() => ({
+                        header: () => (
+                            <Header
+                                title="ChatADM"
+                                activateBackButton={true}
+                                iconName="person"
+                                backScreen="ShowProfile"
+                                needProps={false}
+                                props={null}
+                            />
+                        )
+                    })}
+                />
+
+                
             </Stack.Navigator>
         </NavigationContainer>
     );

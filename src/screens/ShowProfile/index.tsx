@@ -144,6 +144,12 @@ export const ShowProfile = () => {
                             onPress={() => navigate("DeleteProfile")}
                         />
 
+                        <ItemProfile
+                            label="Chat"
+                            icon="account-remove-outline"
+                            onPress={() => navigate("ChatADM", { name: name })}
+                        />
+
                         {!emailIsActive && (
                             <ItemProfile
                                 label="Confirmar e-mail"
