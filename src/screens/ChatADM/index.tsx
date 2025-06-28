@@ -94,7 +94,6 @@ export default function ChatADM() {
                             };
                         });
 
-                        // ✅ Corrige nome e lista lateral
                         setClientsInfo((prevClients) => {
                             const exists = prevClients.some((c) => c.id === body.userId);
                             if (!exists) {
@@ -146,6 +145,7 @@ export default function ChatADM() {
                 userName: nameAdm,
                 sender: 'ADMINISTRATOR',
                 content: message.trim(),
+                moment: new Date().toISOString(), 
             };
 
             clientRef.current.publish({
@@ -183,6 +183,10 @@ export default function ChatADM() {
             <View style={[styles.message, { backgroundColor: isAdmin ? '#D1E7DD' : '#F8D7DA', alignSelf: isAdmin ? 'flex-end' : 'flex-start' }]}>
                 <Text style={styles.name}>{item.userName}</Text>
                 <Text style={styles.content}>{item.content}</Text>
+                {/* ✅ Usando new Date() para garantir formatação correta mesmo se moment for string */}
+                <Text style={styles.moment}>
+                    {item.moment ? new Date(item.moment).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
+                </Text>
             </View>
         );
     };
