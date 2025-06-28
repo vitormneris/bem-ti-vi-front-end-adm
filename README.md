@@ -7,7 +7,7 @@
 npm install
 ```
 
-### 2. Em seguida, digite o comando abaixo inicar o projeto
+### 2. Em seguida, digite o comando abaixo para inicar o projeto
 ```
 npx expo start
 ```
