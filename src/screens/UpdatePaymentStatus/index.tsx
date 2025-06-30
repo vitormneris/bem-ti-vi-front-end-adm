@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Alert, Button, ActivityIndicator } from "react-native";
+import { View, Text, Alert, Button, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 
@@ -7,6 +7,7 @@ import { updatePaymentStatus as updateOrder } from "../../api/order/update/updat
 import { updatePaymentStatus as updateAppointment } from "../../api/appointment/update/update";
 
 import { Order, Appointment } from "../../utils/Types";
+import { styles } from "./style";
 
 export function UpdatePaymentStatus() {
   const { goBack } = useNavigation();
@@ -70,16 +71,21 @@ export function UpdatePaymentStatus() {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text>Atualizar status de pagamento</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Atualizar status de pagamento</Text>
+      <View style={styles.pickerContainer}>
       <Picker
         selectedValue={newPaymentStatus}
         onValueChange={(value) => setNewPaymentStatus(value)}
+        style={styles.picker}
+        dropdownIconColor="#256489"
+
       >
         {pickerItems.map((item) => (
           <Picker.Item key={item.value} label={item.label} value={item.value} />
         ))}
       </Picker>
+      </View>
 
       {loading ? (
         <ActivityIndicator
@@ -88,7 +94,9 @@ export function UpdatePaymentStatus() {
           style={{ marginTop: 20 }}
         />
       ) : (
-        <Button title="Salvar" onPress={handleUpdate} />
+        <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+          <Text style={styles.updateButtonText}>Salvar</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
