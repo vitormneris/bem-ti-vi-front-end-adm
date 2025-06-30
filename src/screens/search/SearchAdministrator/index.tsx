@@ -91,14 +91,14 @@ export const SearchAdministrator = () => {
                 <View style={styles.containerButton}>
                     <Button
                         icon={require('../../../assets/icons/add_user.webp')}
-                        text="CRIAR ADM'S"
+                        text="Criar ADM'S"
                         color="#256489"
                         width='45%'
                         action={() => navigate('CreateAdministrator')}
                     />
                     <Button
                         icon={require('../../../assets/icons/user_deactivated.png')}
-                        text="ADM'S DES."
+                        text="ADM'S Des."
                         color="#256489"
                         width='45%'
                         action={() => navigate('SearchDeactivatedAdministrator')}

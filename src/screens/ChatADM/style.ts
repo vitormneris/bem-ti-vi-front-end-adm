@@ -13,10 +13,21 @@ export const styles = StyleSheet.create({
         borderColor: '#ccc',
         paddingHorizontal: 10,
     },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 18,
+    sidebarHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 10,
+    },
+    chatHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    title: {
+        fontFamily: 'Montserrat-SemiBold',
+        fontSize: 18,
+        marginLeft: 8,
+        color: '#333',
     },
     clientItem: {
         paddingVertical: 8,
@@ -29,7 +40,9 @@ export const styles = StyleSheet.create({
         backgroundColor: '#a0c4ff',
     },
     clientText: {
+        fontFamily: 'Montserrat-Medium',
         fontSize: 14,
+        color: '#333',
     },
     chatArea: {
         flex: 1,
@@ -50,8 +63,12 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 8,
         marginRight: 10,
+        fontFamily: 'Montserrat-Regular',
+        fontSize: 16,
     },
-
+    sendButton: {
+        padding: 8,
+    },
     message: {
         borderRadius: 8,
         marginVertical: 4,
@@ -60,14 +77,26 @@ export const styles = StyleSheet.create({
     },
     name: {
         fontFamily: 'Montserrat-Bold',
-        fontSize: 14
+        fontSize: 14,
+        color: '#333',
     },
     content: {
         fontFamily: 'Montserrat-Medium',
-        fontSize: 16
+        fontSize: 16,
+        color: '#333',
+        marginVertical: 4,
     },
     moment: {
+        fontFamily: 'Montserrat-Regular',
+        fontSize: 12,
+        color: '#666',
+        textAlign: 'right',
+    },
+    emptyText: {
         fontFamily: 'Montserrat-Medium',
-        fontSize: 14
+        fontSize: 16,
+        color: '#666',
+        marginTop: 20,
+        textAlign: 'center',
     }
 });

@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavigationBar } from '../../components/NavigationBar';
 import { findById } from '../../api/administrator/search/findById';
 import { validateTokenAdm } from '../../api/auth/validateTokenAdm/validateTokenAdm';
-import { Administrator,AdministratorId } from '../../utils/Types';
+import { Administrator, AdministratorId } from '../../utils/Types';
 import { NavigationProps } from '../../routes/AppRoute';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
 
@@ -146,7 +146,7 @@ export const ShowProfile = () => {
 
                         <ItemProfile
                             label="Chat"
-                            icon="account-remove-outline"
+                            icon={require('../../assets/images/chat.png')}
                             onPress={() => navigate("ChatADM", { name: name })}
                         />
 
@@ -168,11 +168,11 @@ export const ShowProfile = () => {
                     </TouchableOpacity>
                 </View>
 
-            <ErrorModal
-                visible={errorModalVisible}
-                error={error}
-                onClose={() => setErrorModalVisible(false)}
-            />	
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
+                />	
             </ScrollView>
 
             <NavigationBar initialTab='perfil' />
@@ -181,7 +181,7 @@ export const ShowProfile = () => {
 };
 
 type ItemProfileProps = {
-    icon: string;
+    icon: any;
     label: string;
     onPress: () => void;
 };
@@ -193,7 +193,14 @@ const ItemProfile = ({ label, icon, onPress }: ItemProfileProps) => {
             activeOpacity={0.7}
             onPress={onPress}
         >
-            <Icon name={icon} size={24} color="#256489" style={styles.menuItemIcon} />
+            {typeof icon === 'string' ? (
+                <Icon name={icon} size={24} color="#256489" style={styles.menuItemIcon} />
+            ) : (
+                <Image 
+                    source={icon} 
+                    style={[styles.menuItemIcon, { width: 24, height: 24, tintColor: '#256489' }]} 
+                />
+            )}
             <Text style={styles.menuItemText}>{label}</Text>
         </TouchableOpacity>
     );

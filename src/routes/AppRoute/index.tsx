@@ -1,42 +1,31 @@
 import React from 'react';
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Header } from '../../components/Header';
-
 import { Home } from '../../screens/Home';
 import { Login } from '../../screens/Login';
-
 import { CreateProduct } from '../../screens/create/CreateProduct';
 import ManageProduct from '../../screens/manage/ManageProduct';
 import { SearchProduct } from '../../screens/search/SearchProduct';
-
 import { CreateService } from '../../screens/create/CreateService';
 import ManageService from '../../screens/manage/ManageService';
 import { SearchService } from '../../screens/search/SearchService';
-
 import { CreateCategory } from '../../screens/create/CreateCategory';
 import ManageCategory from '../../screens/manage/ManageCategory';
 import { SearchCategory } from '../../screens/search/SearchCategory';
-
 import { ShowProfile } from '../../screens/ShowProfile';
 import ManageProfile from '../../screens/manage/ManageProfile';
-
 import CreateAdministrator from '../../screens/create/CreateAdministrator';
 import { SearchAdministrator } from '../../screens/search/SearchAdministrator';
 import { SearchDeactivatedAdministrator } from '../../screens/search/SearchDeactivatedAdministrator';
-
 import UpdateEmail from '../../screens/email/UpdateEmail';
 import SendRequestChangeEmail from '../../screens/email/SendRequestChangeEmail';
-
 import UpdatePassword from '../../screens/UpdatePassword';
-
 import SendRequestConfirmationEmail from '../../screens/email/SendRequestConfirmationEmail';
 import ConfirmationEmail from '../../screens/email/ConfirmationEmail';
-
 import { SearchAppointment } from '../../screens/search/SearchAppointment';
 import { SearchOrder } from '../../screens/search/SearchOrder';
-
 import { GLOBAL_VAR } from '../../api/config/globalVar';
 import { AdministratorDeactivated } from '../../screens/AdministratorDeactivated';
 import DeleteProfile from '../../screens/DeleteProfile';
@@ -76,12 +65,12 @@ export type RootStackParamList = {
     ConfirmationEmail: { email: string };
     AdministratorDeactivated: undefined;
     DeleteProfile: undefined;
-    SearchCustomer: undefined
-    UpdatePaymentStatus: { item: Order|Appointment, type: string } 
-    ViewServices: {service: Service}
-    ViewAdministrator: {administrator: Administrator}
-    ViewProduct: {product: Product}
-    ChatADM: { name: string }
+    SearchCustomer: undefined;
+    UpdatePaymentStatus: { item: Order|Appointment, type: string };
+    ViewServices: {service: Service};
+    ViewAdministrator: {administrator: Administrator};
+    ViewProduct: {product: Product};
+    ChatADM: { name: string };
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
@@ -96,7 +85,7 @@ export default function AppRoute() {
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Produtos"
+                                title="PRODUTOS"
                                 activateBackButton={true}
                                 iconName="inventory"
                                 backScreen="SearchProduct"
@@ -112,7 +101,7 @@ export default function AppRoute() {
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Perfil"
+                                title="PERFIL"
                                 activateBackButton={true}
                                 iconName="person"
                                 backScreen="ShowProfile"
@@ -128,7 +117,7 @@ export default function AppRoute() {
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Serviços"
+                                title="SERVIÇOS"
                                 activateBackButton={true}
                                 iconName="miscellaneous-services"
                                 backScreen="SearchService"
@@ -138,17 +127,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="AdministratorDeactivated"
                     component={AdministratorDeactivated}
                     options={() => ({
-                        header: () => (
-                            <></>
-                        )
+                        header: () => <></>
                     })}
                 />
-
                 <Stack.Screen
                     name="Login"
                     component={Login}
@@ -156,14 +141,13 @@ export default function AppRoute() {
                         header: () => <></>
                     }}
                 />
-
                 <Stack.Screen
                     name="Home"
                     component={Home}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Início"
+                                title="INÍCIO"
                                 activateBackButton={false}
                                 iconName="home"
                                 backScreen={null}
@@ -173,14 +157,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="CreateProduct"
                     component={CreateProduct}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Cadastrar Produto"
+                                title="CADASTRAR PRODUTO"
                                 activateBackButton={true}
                                 iconName="add-shopping-cart"
                                 backScreen="SearchProduct"
@@ -190,14 +173,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="ManageProduct"
                     component={ManageProduct}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Editar Produto"
+                                title="EDITAR PRODUTO"
                                 activateBackButton={true}
                                 iconName="edit"
                                 backScreen="SearchProduct"
@@ -207,14 +189,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchProduct"
                     component={SearchProduct}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Produtos"
+                                title="PRODUTOS"
                                 activateBackButton={false}
                                 iconName="inventory"
                                 backScreen={null}
@@ -224,14 +205,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="CreateService"
                     component={CreateService}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Cadastrar Serviço"
+                                title="CADASTRAR SERVIÇOS"
                                 activateBackButton={true}
                                 iconName="build"
                                 backScreen="SearchService"
@@ -241,14 +221,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="ManageService"
                     component={ManageService}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Editar Serviço"
+                                title="EDITAR SERVIÇO"
                                 activateBackButton={true}
                                 iconName="edit"
                                 backScreen="SearchService"
@@ -258,14 +237,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchService"
                     component={SearchService}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Serviços"
+                                title="SERVIÇOS"
                                 activateBackButton={false}
                                 iconName="miscellaneous-services"
                                 backScreen={null}
@@ -275,14 +253,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="CreateCategory"
                     component={CreateCategory}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Cadastrar Categoria"
+                                title="CADASTRAR CATEGORIA"
                                 activateBackButton={true}
                                 iconName="category"
                                 backScreen="SearchCategory"
@@ -292,14 +269,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="ManageCategory"
                     component={ManageCategory}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Editar Categoria"
+                                title="EDITAR CATEGORIA"
                                 activateBackButton={true}
                                 iconName="edit"
                                 backScreen="SearchCategory"
@@ -309,14 +285,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchCategory"
                     component={SearchCategory}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Categorias"
+                                title="CATEGORIAS"
                                 activateBackButton={false}
                                 iconName="category"
                                 backScreen={null}
@@ -326,14 +301,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="CreateAdministrator"
                     component={CreateAdministrator}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Cadastrar Administrador"
+                                title="CADASTRAR ADMINISTRADOR"
                                 activateBackButton={true}
                                 iconName="person-add"
                                 backScreen="SearchAdministrator"
@@ -343,14 +317,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchAdministrator"
                     component={SearchAdministrator}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Administradores"
+                                title="ADMINISTRADORES"
                                 activateBackButton={true}
                                 iconName="admin-panel-settings"
                                 backScreen="ShowProfile"
@@ -360,14 +333,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchDeactivatedAdministrator"
                     component={SearchDeactivatedAdministrator}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Administradores Inativos"
+                                title="ADMINISTRADORES INATIVOS"
                                 activateBackButton={true}
                                 iconName="person-off"
                                 backScreen="SearchAdministrator"
@@ -377,14 +349,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="ShowProfile"
                     component={ShowProfile}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Perfil"
+                                title="PERFIL"
                                 activateBackButton={false}
                                 iconName="person"
                                 backScreen={null}
@@ -394,14 +365,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="ManageProfile"
                     component={ManageProfile}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Editar Perfil"
+                                title="EDITAR PERFIL"
                                 activateBackButton={true}
                                 iconName="manage-accounts"
                                 backScreen="ShowProfile"
@@ -411,14 +381,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="UpdatePassword"
                     component={UpdatePassword}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Atualizar Senha"
+                                title="ATUALIZAR SENHA"
                                 activateBackButton={true}
                                 iconName="lock-reset"
                                 backScreen="ShowProfile"
@@ -428,14 +397,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SendRequestChangeEmail"
                     component={SendRequestChangeEmail}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Solicitar Alteração de Email"
+                                title="ALTERAR E-MAIL"
                                 activateBackButton={true}
                                 iconName="mail"
                                 backScreen="ShowProfile"
@@ -445,14 +413,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="UpdateEmail"
                     component={UpdateEmail}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Atualizar Email"
+                                title="ATUALIZAR E-MAIL"
                                 activateBackButton={true}
                                 iconName="alternate-email"
                                 backScreen="SendRequestEmail"
@@ -462,14 +429,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchAppointment"
                     component={SearchAppointment}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Agendamentos"
+                                title="AGENDAMENTOS"
                                 activateBackButton={true}
                                 iconName="event"
                                 backScreen="Home"
@@ -479,14 +445,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchOrder"
                     component={SearchOrder}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Pedidos"
+                                title="PEDIDOS"
                                 activateBackButton={true}
                                 iconName="shopping-cart"
                                 backScreen="Home"
@@ -496,14 +461,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="UpdatePaymentStatus"
                     component={UpdatePaymentStatus}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Atualizar Pagamento"
+                                title="ATUALIZAR PAGAMENTO"
                                 activateBackButton={true}
                                 iconName="shopping-cart"
                                 backScreen="SearchOrder"
@@ -513,14 +477,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SendRequestConfirmationEmail"
                     component={SendRequestConfirmationEmail}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Confirmar Email"
+                                title="CONFIRMAR E-MAIL"
                                 activateBackButton={true}
                                 iconName="mail"
                                 backScreen="ShowProfile"
@@ -530,14 +493,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="ConfirmationEmail"
                     component={ConfirmationEmail}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Confirmar Email"
+                                title="CONFIRMAR E-MAIL"
                                 activateBackButton={true}
                                 iconName="mail"
                                 backScreen="SendRequestConfirmationEmail"
@@ -547,14 +509,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="DeleteProfile"
                     component={DeleteProfile}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Deletar conta"
+                                title="DELETAR CONTA"
                                 activateBackButton={true}
                                 iconName="mail"
                                 backScreen="ShowProfile"
@@ -564,14 +525,13 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="SearchCustomer"
                     component={SearchCustomer}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="Clientes"
+                                title="CLIENTES"
                                 activateBackButton={true}
                                 iconName="person"
                                 backScreen="Home"
@@ -581,16 +541,15 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
                 <Stack.Screen
                     name="ChatADM"
                     component={ChatADM}
                     options={() => ({
                         header: () => (
                             <Header
-                                title="ChatADM"
+                                title="CHAT ADM"
                                 activateBackButton={true}
-                                iconName="person"
+                                iconName="message"
                                 backScreen="ShowProfile"
                                 needProps={false}
                                 props={null}
@@ -598,8 +557,6 @@ export default function AppRoute() {
                         )
                     })}
                 />
-
-                
             </Stack.Navigator>
         </NavigationContainer>
     );

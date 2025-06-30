@@ -183,7 +183,6 @@ export default function ChatADM() {
             <View style={[styles.message, { backgroundColor: isAdmin ? '#D1E7DD' : '#F8D7DA', alignSelf: isAdmin ? 'flex-end' : 'flex-start' }]}>
                 <Text style={styles.name}>{item.userName}</Text>
                 <Text style={styles.content}>{item.content}</Text>
-                {/* ✅ Usando new Date() para garantir formatação correta mesmo se moment for string */}
                 <Text style={styles.moment}>
                     {item.moment ? new Date(item.moment).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
                 </Text>
@@ -194,17 +193,19 @@ export default function ChatADM() {
     return (
         <View style={styles.container}>
             <View style={styles.sidebar}>
-                <Text style={styles.title}>Clientes</Text>
+                <Text style={[styles.title, { fontFamily: 'Montserrat-SemiBold' }]}>Clientes</Text>
                 <FlatList
                     data={clientsInfo}
                     keyExtractor={(item) => item.id}
                     renderItem={renderClientItem}
-                    ListEmptyComponent={<Text>Nenhum cliente conectado</Text>}
+                    ListEmptyComponent={
+                        <Text style={{ fontFamily: 'Montserrat-Medium', marginLeft: 10 }}>Nenhum cliente conectado</Text>
+                    }
                 />
             </View>
 
             <View style={styles.chatArea}>
-                <Text style={styles.title}>
+                <Text style={[styles.title, { fontFamily: 'Montserrat-SemiBold' }]}>
                     {selecteduserId
                         ? `Chat com: ${clientsInfo.find(c => c.id === selecteduserId)?.name ?? "Desconhecido"}`
                         : 'Selecione um cliente'}
@@ -223,15 +224,22 @@ export default function ChatADM() {
                         <View style={styles.messageInputContainer}>
                             <TextInput
                                 placeholder="Digite sua mensagem"
+                                placeholderTextColor="#999"
                                 value={message}
                                 onChangeText={setMessage}
-                                style={styles.messageInput}
+                                style={[styles.messageInput, { fontFamily: 'Montserrat-Regular' }]}
                             />
-                            <Button title="Enviar" onPress={sendMessage} disabled={!message.trim()} />
+                            <Button 
+                                title="Enviar" 
+                                onPress={sendMessage} 
+                                disabled={!message.trim()} 
+                            />
                         </View>
                     </>
                 ) : (
-                    <Text style={{ marginTop: 20 }}>Nenhuma conversa selecionada.</Text>
+                    <Text style={[styles.emptyText, { fontFamily: 'Montserrat-Medium', marginTop: 10 }]}>
+                        Nenhuma conversa selecionada.
+                    </Text>
                 )}
             </View>
         </View>

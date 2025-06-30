@@ -15,9 +15,10 @@ export const styles = StyleSheet.create({
         marginBottom: 16,
     },
     label: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 14,
         marginBottom: 8,
+        marginLeft: 5,
+        fontFamily: 'Montserrat-Bold'
     },
     inputField: {
         borderWidth: 1,

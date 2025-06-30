@@ -173,7 +173,7 @@ export function SearchAppointment() {
                             </View>
                         ))
                     ) : (
-                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum agendamento encontrado.</Text>
+                        <Text style={{ textAlign: 'center', marginTop: 20, fontFamily: 'Montserrat-Medium' }}>Nenhum agendamento encontrado.</Text>
                     )}
                 </View>
 

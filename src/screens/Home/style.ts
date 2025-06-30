@@ -2,34 +2,50 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     screen: {
+        marginTop: 15,
         flex: 1,
-        paddingTop: 20,
         backgroundColor: '#F5F5F5',
         justifyContent: 'space-between',
     },
-
-    button: {
-        borderRadius: 10,
-        borderTopWidth: 1,
-        borderLeftWidth: 1,
-        borderRightWidth: 3,
-        borderBottomWidth: 3,
-        padding: 10,
-        marginVertical: 10,
-        marginHorizontal: 20,
-        width: '90%',
-        height: 80,
-        backgroundColor: '#FFFFFF',
-        elevation: 1,
-        justifyContent: 'center',
-        borderColor: '#DDD'
+    container: {
+        flex: 1,
+        paddingHorizontal: 20,
     },
-    
+    welcomeTitle: {
+        marginTop: 20,
+        marginBottom: 30,
+    },
+    buttonsContainer: {
+        alignItems: 'center',
+    },
+    button: {
+        borderRadius: 12,
+        padding: 20,
+        marginVertical: 12,
+        width: '100%',
+        height: 90,
+        backgroundColor: '#FFFFFF',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        borderLeftWidth: 4,
+        borderLeftColor: '#256489',
+    },
+    buttonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 16,
+    },
     buttonText: {
-        fontSize: 13,
-        fontWeight: '700',
-        fontFamily: 'google-sans',
-        textAlign: 'center',
-        color: '#333'
+        fontSize: 16,
+        fontWeight: '600',
+        fontFamily: 'Montserrat-Bold',
+        color: '#333',
     }
 });

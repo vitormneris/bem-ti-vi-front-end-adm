@@ -133,7 +133,7 @@ export const styles = StyleSheet.create({
     },
     cadastrarButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: 'Montserrat-Bold',
         letterSpacing: 0.5,
         marginLeft: 8

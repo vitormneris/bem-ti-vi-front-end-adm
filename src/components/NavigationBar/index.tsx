@@ -1,8 +1,6 @@
-import React, { useState } from "react"
-import { Image, Text, TouchableOpacity, View } from "react-native"
-
-import { styles } from "./style"
-
+import React, { useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { styles } from "./style";
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProps } from "../../routes/AppRoute";
 
@@ -11,7 +9,7 @@ type NavigationBarProps = {
 };
 
 export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
-    const { navigate } = useNavigation<NavigationProps>()
+    const { navigate } = useNavigation<NavigationProps>();
     const [activeTab, setActiveTab] = useState(initialTab);
 
     return (
@@ -32,7 +30,6 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
                 text="Produtos"
                 onPress={() => navigate('SearchProduct')}
             />
-
             <NavItem
                 setActiveTab={() => setActiveTab('servicos')}
                 activeTab={activeTab}
@@ -41,7 +38,6 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
                 text="Serviços"
                 onPress={() => navigate('SearchService')}
             />
-
             <NavItem
                 setActiveTab={() => setActiveTab('categorias')}
                 activeTab={activeTab}
@@ -59,20 +55,36 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
                 onPress={() => navigate('ShowProfile')}
             />
         </View>
-    )
-}
-
+    );
+};
 
 function NavItem(props: any) {
     return (
-        <TouchableOpacity style={styles.navItem} onPress={() => { props.setActiveTab(); props.onPress() }}>
+        <TouchableOpacity 
+            style={styles.navItem} 
+            onPress={() => { 
+                props.setActiveTab(); 
+                props.onPress(); 
+            }}
+        >
             <View style={styles.navIconContainer}>
-                {props.activeTab === props.type &&
+                {props.activeTab === props.type && (
                     <View style={styles.activeIndicator} />
-                }
-                <Image source={props.icon} style={styles.navIcon} />
+                )}
+                <Image 
+                    source={props.icon} 
+                    style={[
+                        styles.navIcon,
+                        { tintColor: props.activeTab === props.type ? '#256489' : '#000000' }
+                    ]} 
+                />
             </View>
-            <Text style={styles.navLabel}> {props.text} </Text>
+            <Text style={[
+                styles.navLabel,
+                { color: props.activeTab === props.type ? '#256489' : '#000000' }
+            ]}>
+                {props.text}
+            </Text>
         </TouchableOpacity>
-    )
+    );
 }

@@ -185,7 +185,7 @@ export function SearchOrder() {
                             </View>
                         ))
                     ) : (
-                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum pedido encontrado.</Text>
+                        <Text style={{ textAlign: 'center', marginTop: 20, fontFamily: 'Montserrat-Medium' }}>Nenhum pedido encontrado.</Text>
                     )}
                 </View>
 

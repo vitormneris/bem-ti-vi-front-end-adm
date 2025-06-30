@@ -22,19 +22,23 @@ export const styles = StyleSheet.create({
         marginBottom: 16,
     },
     label: {
-        fontSize: 16,
+        fontSize: 14,
         marginBottom: 8,
         color: '#555',
+        fontFamily: 'Montserrat-Bold',
+        marginLeft: 5
     },
     inputField: {
         padding: 12,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 8,
+        fontFamily: 'Montserrat-Medium',
         backgroundColor: '#fff',
     },
     itemContainer: {
         marginTop: 16,
+        fontFamily: 'Montserrat-Medium',
     },
     card: {
         backgroundColor: '#fff',
@@ -42,6 +46,7 @@ export const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 12,
         shadowColor: '#000',
+        fontFamily: 'Montserrat-Medium',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -51,6 +56,7 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 4,
+        fontFamily: 'Montserrat-Medium'
     },
     cardSubtitle: {
         fontSize: 14,

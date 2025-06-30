@@ -1,55 +1,51 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    
     bottomNavigation: {
-        marginTop: 5,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        backgroundColor: '#f8f8f8',
-        paddingVertical: 14,
+        backgroundColor: '#fff',
+        paddingVertical: 8,
         borderTopWidth: 1,
         borderTopColor: '#e0e0e0',
-        height: 70
+        height: 70,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5
     },
-
-    navIcon: {
-        width: 26,
-        height: 26,
-        resizeMode: 'contain',
-        zIndex: 1
-    },
-
-    navLabel: {
-        fontSize: 11,
-        color: '#333',
-        fontFamily: 'Montserrat-Medium',
-        marginTop: 2
-    },
-
     navItem: {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
-        height: 60,
-        padding: 5,
-        position: 'relative'
+        padding: 4,
     },
-
     navIconContainer: {
-        position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 36,
-        height: 36
+        width: 40,
+        height: 30,
+        marginBottom: 2,
+        position: 'relative'
     },
-
+    navIcon: {
+        width: 24,
+        height: 24,
+        resizeMode: 'contain',
+    },
+    navLabel: {
+        fontSize: 10,
+        fontFamily: 'Montserrat-Medium',
+        marginTop: 2,
+        textAlign: 'center'
+    },
     activeIndicator: {
         position: 'absolute',
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: '#D3E5F5',
-        zIndex: 0
-    },
-})
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(37, 100, 137, 0.1)', // #256489 with 10% opacity
+        top: -5,
+    }
+});
