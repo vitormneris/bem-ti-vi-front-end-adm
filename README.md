@@ -25,7 +25,6 @@ Esta aplicação foi desenvolvida para complementar o back-end, garantindo uma e
 ### Front-end
 - **React Native**: Desenvolvimento de aplicações móveis (Android/iOS) com base de código unificada.
 - **TypeScript**: Tipagem estática, maior segurança e melhor manutenção do código.
-- **CSS3 e HTML5**: Estrutura e estilização do conteúdo.
 
 ## Pré-requisitos
 - Nodejs 
